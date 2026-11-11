@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>โครงงานหม้อแปลง (Transformers)</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="brand-mark" aria-hidden="true">TP</div>
+    <div class="heading-copy">
+      <p class="eyebrow">TRANSFORMER PROJECT / TECHNICAL DRAWING</p>
+      <h1>แบบพิมพ์เขียวหม้อแปลง</h1>
+      <p class="subtitle">ภาพจำลอง 3 มิติและข้อมูลประกอบสำหรับตรวจดูชิ้นส่วน</p>
+    </div>
+    <div class="header-tag"><span class="status-dot"></span> EE-05 REFERENCE MODEL</div>
+    <button id="fullscreen-toggle" class="fullscreen-toggle" type="button" aria-pressed="false">
+      <span aria-hidden="true">⛶</span> ดูแบบเต็มจอ
+    </button>
+  </header>
+  <main>
+    <p id="error" role="alert" hidden></p>
+    <section class="blueprint-layout" aria-label="ภาพจำลองและข้อมูลหม้อแปลง">
+      <section class="drawing-sheet" aria-labelledby="drawing-title">
+        <div class="sheet-heading">
+          <div>
+            <p class="eyebrow">EE-05 / REFERENCE ASSEMBLY VIEW</p>
+            <h2 id="drawing-title">ชุดหม้อแปลงติดตั้งบนเสา</h2>
+          </div>
+          <span class="sheet-index">REF. EE-05</span>
+        </div>
+        <div id="stage">
+          <canvas id="cv" aria-label="โมเดลสามมิติชุดหม้อแปลง เลื่อนเพื่อหมุน และคลิกชิ้นส่วนเพื่อดูข้อมูล"></canvas>
+          <div id="model-callout" class="model-callout" hidden aria-live="polite">
+            <svg id="callout-arrow" class="callout-arrow" aria-hidden="true">
+              <defs>
+                <marker id="callout-arrowhead" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                  <path d="M 0 0 L 8 4 L 0 8 z"></path>
+                </marker>
+              </defs>
+              <line id="callout-line" marker-start="url(#callout-arrowhead)"></line>
+            </svg>
+            <div id="callout-card" class="callout-card">
+              <p class="eyebrow">ข้อมูลชิ้นส่วน / COMPONENT DETAILS</p>
+              <strong id="callout-manufacturer">ผู้ผลิตไม่ระบุ</strong>
+              <span id="callout-rating" class="callout-rating">1,000 kVA</span>
+              <span id="callout-dimensions" class="callout-dimensions"></span>
+              <span class="callout-note">สัดส่วนประกอบภาพ · ไม่ใช่ขนาดจริงจากผู้ผลิต</span>
+            </div>
+          </div>
+        </div>
+        <div class="model-controls" role="group" aria-label="ควบคุมมุมมองโมเดล 3 มิติ">
+          <span class="control-label">มุมมอง</span>
+          <button class="view-button" type="button" data-view="front" aria-pressed="false">มุมหน้า</button>
+          <button class="view-button" type="button" data-view="angle" aria-pressed="true">มุมเฉียง</button>
+          <button class="view-button" type="button" data-view="side" aria-pressed="false">ด้านข้าง</button>
+          <button class="view-button" type="button" data-view="top" aria-pressed="false">มุมบน</button>
+          <button id="auto-rotate" class="view-button auto-rotate" type="button" aria-pressed="false">หมุนอัตโนมัติ</button>
+          <button id="show-all-parts" class="view-button" type="button">แสดงทุกชิ้นส่วน</button>
+        </div>
+        <div class="sheet-footer">
+          <span><b>VIEW</b> LIVE 3D</span>
+          <span><b>UNIT</b> METER</span>
+          <span><b>PARTS</b> <span id="part-count">0</span></span>
+          <span class="interaction-hint">ลากเพื่อหมุน · เลื่อนล้อเพื่อซูม · คลิกชิ้นส่วนเพื่อดูข้อมูล</span>
+        </div>
+      </section>
+
+      <aside id="panel" aria-label="ข้อมูลโครงงานและชิ้นส่วน">
+        <section class="project-card">
+          <p class="eyebrow">PROJECT SPECIFICATION</p>
+          <h2>ข้อมูลระบบ</h2>
+          <dl id="project-specs" class="spec-list"></dl>
+        </section>
+        <section class="component-card">
+          <p class="eyebrow">COMPONENT INSPECTOR</p>
+          <h2 id="pt">เลือกชิ้นส่วนเพื่อดูรายละเอียด</h2>
+          <p id="part-hint" class="muted">เลือกจากรายการหรือคลิกชิ้นส่วนในแบบจำลอง</p>
+          <table id="pl"></table>
+        </section>
+        <section class="parts-card">
+          <div class="parts-heading">
+            <h2>รายการชิ้นส่วน</h2>
+            <span id="parts-count-label">0 รายการ</span>
+          </div>
+          <div id="parts-list" class="parts-list"></div>
+        </section>
+      </aside>
+    </section>
+
+    <footer class="drawing-titleblock">
+      <div><span class="eyebrow">DRAWING TITLE</span><strong>ชุดหม้อแปลงไฟฟ้าบนเสาคอนกรีต</strong></div>
+      <div>      <span class="eyebrow">REFERENCE</span><strong>EE-05</strong></div>
+      <div><span class="eyebrow">REVISION</span><strong>ภาพจำลองประกอบ</strong></div>
+      <div><span class="eyebrow">NOTICE</span><strong>แบบจำลองประกอบ อ้างอิงแบบ EE-05 ไม่ใช่แบบก่อสร้าง · ตรวจสอบระยะจริงหน้างาน</strong></div>
+    </footer>
+  </main>
+
+  <!-- Load Three.js before the project data and application scripts. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/scene.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

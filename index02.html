@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Electrical Calculator | Attaporn Engineering & Supply</title>
+    <style>
+         :root {
+            --navy: #071426;
+            --main: #0B1F3A;
+            --hi: #168BFF;
+            --cy: #6fd0ff;
+            --mute: #b9c8dc;
+            --line: rgba(22, 139, 255, .3);
+            color-scheme: dark
+        }
+        
+        @property --a {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        html {
+            scroll-behavior: smooth
+        }
+        
+        body {
+            margin: 0;
+            color: #fff;
+            background: #000;
+            font-family: "Prompt", "Noto Sans Thai", system-ui, sans-serif;
+            line-height: 1.7;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+        
+        a {
+            color: inherit;
+            text-decoration: none
+        }
+        
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: #000
+        }
+        
+        .bg>i {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(90px);
+            opacity: .5;
+            animation: float 14s ease-in-out infinite alternate
+        }
+        
+        .bg>i:nth-child(1) {
+            width: 560px;
+            height: 560px;
+            background: #0a4fb0;
+            left: -140px;
+            top: -120px
+        }
+        
+        .bg>i:nth-child(2) {
+            width: 480px;
+            height: 480px;
+            background: var(--main);
+            right: -100px;
+            top: 35%;
+            animation-delay: -5s
+        }
+        
+        .bg>i:nth-child(3) {
+            width: 400px;
+            height: 400px;
+            background: var(--hi);
+            opacity: .2;
+            left: 38%;
+            bottom: -180px;
+            animation-delay: -9s
+        }
+        
+        .bg::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: .35;
+            background-image: linear-gradient(rgba(22, 139, 255, .12) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 139, 255, .12) 1px, transparent 1px);
+            background-size: 44px 44px;
+            -webkit-mask-image: radial-gradient(ellipse at 45% 25%, #000, transparent 75%);
+            mask-image: radial-gradient(ellipse at 45% 25%, #000, transparent 75%)
+        }
+        
+        .dot {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: var(--cy);
+            box-shadow: 0 0 8px var(--cy);
+            opacity: 0;
+            animation: rise 9s linear infinite
+        }
+        
+        @keyframes rise {
+            10% {
+                opacity: .9
+            }
+            100% {
+                transform: translateY(-110vh);
+                opacity: 0
+            }
+        }
+        
+        @keyframes float {
+            to {
+                transform: translate(60px, 40px) scale(1.15)
+            }
+        }
+        
+        .wrap {
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 0 clamp(16px, 3vw, 32px)
+        }
+        
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            padding: calc(20px + env(safe-area-inset-top, 0px)) 0 14px
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px
+        }
+        
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 24px;
+            background: linear-gradient(135deg, #0B1F3A, #168BFF);
+            box-shadow: 0 0 28px rgba(22, 139, 255, .65), inset 0 0 0 1px rgba(255, 255, 255, .25);
+            animation: glow 3s ease-in-out infinite alternate
+        }
+        
+        @keyframes glow {
+            to {
+                box-shadow: 0 0 46px rgba(22, 139, 255, .95), inset 0 0 0 1px rgba(255, 255, 255, .4)
+            }
+        }
+        
+        .brand b {
+            display: block;
+            font-size: clamp(22px, 3.2vw, 32px);
+            line-height: 1.15;
+            background: linear-gradient(90deg, #fff, var(--cy));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent
+        }
+        
+        .brand small {
+            color: var(--mute);
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: 600
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 24px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(11, 31, 58, .55);
+            color: #fff;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .2s, box-shadow .2s, background .2s, border-color .2s
+        }
+        
+        .btn:hover {
+            transform: translateY(-4px);
+            border-color: var(--hi);
+            box-shadow: 0 10px 26px rgba(22, 139, 255, .4)
+        }
+        
+        .btn.pri {
+            background: linear-gradient(135deg, #1573e6, var(--hi));
+            border-color: var(--hi);
+            box-shadow: 0 0 22px rgba(22, 139, 255, .55)
+        }
+        
+        .btn[disabled] {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding: 14px 0;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line)
+        }
+        
+        .tab {
+            padding: 8px 20px;
+            border-radius: 99px;
+            border: 1px solid var(--line);
+            background: rgba(11, 31, 58, .45);
+            font-weight: 600;
+            transition: .2s
+        }
+        
+        .tab:hover {
+            border-color: var(--hi);
+            transform: translateY(-3px)
+        }
+        
+        .tab.on {
+            background: var(--hi);
+            color: #000;
+            box-shadow: 0 0 22px rgba(22, 139, 255, .7);
+            border-color: var(--hi)
+        }
+        
+        .glass {
+            position: relative;
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: rgba(11, 31, 58, .42);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            overflow: hidden
+        }
+        
+        .glass::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .3s;
+            background: radial-gradient(380px circle at var(--mx, 50%) var(--my, 50%), rgba(22, 139, 255, .24), transparent 60%)
+        }
+        
+        .glass:hover::before {
+            opacity: 1
+        }
+        
+        .glass>* {
+            position: relative
+        }
+        
+        .hero {
+            display: grid;
+            grid-template-columns: 1.1fr .9fr;
+            gap: 28px;
+            align-items: center;
+            margin-top: 26px;
+            padding: clamp(24px, 4vw, 52px);
+            position: relative
+        }
+
+        .hero .bg-layer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .hero .bg-glow {
+            overflow: hidden;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse at 18% 18%, rgba(255, 190, 92, .15), transparent 34%),
+                radial-gradient(ellipse at 82% 76%, rgba(31, 159, 255, .16), transparent 38%);
+        }
+
+        .hero .bg-glow::before,
+        .hero .bg-glow::after {
+            content: "";
+            position: absolute;
+            width: clamp(180px, 30vw, 390px);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            filter: blur(55px);
+            opacity: .24;
+            background: #e8ad58;
+            animation: heroGlowDrift 12s ease-in-out infinite alternate;
+        }
+
+        .hero .bg-glow::before {
+            top: -34%;
+            left: 8%;
+        }
+
+        .hero .bg-glow::after {
+            right: 4%;
+            bottom: -48%;
+            background: #168bff;
+            animation-delay: -6s;
+        }
+
+        .hero .bg-grid {
+            z-index: 1;
+            opacity: .24;
+            background-image:
+                linear-gradient(rgba(99, 174, 255, .11) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99, 174, 255, .11) 1px, transparent 1px);
+            background-size: 42px 42px;
+            -webkit-mask-image: radial-gradient(ellipse at 52% 42%, #000 12%, transparent 78%);
+            mask-image: radial-gradient(ellipse at 52% 42%, #000 12%, transparent 78%);
+        }
+
+        .hero .bg-network {
+            z-index: 2;
+        }
+
+        .hero .bg-spotlight {
+            z-index: 3;
+            background: radial-gradient(ellipse at 73% 48%, rgba(255, 202, 123, .12), transparent 40%);
+            animation: heroSpotlightPulse 7s ease-in-out infinite alternate;
+        }
+
+        .hero .bg-scanline {
+            z-index: 4;
+            overflow: hidden;
+            opacity: .5;
+            background: repeating-linear-gradient(
+                to bottom,
+                transparent 0,
+                transparent 5px,
+                rgba(147, 205, 255, .035) 6px,
+                transparent 7px
+            );
+        }
+
+        .hero .bg-scanline::after {
+            content: "";
+            position: absolute;
+            top: -25%;
+            left: 0;
+            width: 100%;
+            height: 24%;
+            background: linear-gradient(180deg, transparent, rgba(80, 183, 255, .09), transparent);
+            animation: heroScan 9s linear infinite;
+        }
+
+        .hero .bg-vignette {
+            z-index: 5;
+            background: radial-gradient(ellipse at center, transparent 38%, rgba(1, 7, 17, .58) 100%);
+        }
+
+        .hero .hero-content,
+        .hero > .calc {
+            z-index: 6;
+        }
+
+        @keyframes heroGlowDrift {
+            to { transform: translate3d(28px, 18px, 0) scale(1.12); }
+        }
+
+        @keyframes heroSpotlightPulse {
+            to { opacity: .55; }
+        }
+
+        @keyframes heroScan {
+            from { transform: translateY(-20%); }
+            to { transform: translateY(520%); }
+        }
+        
+        .hero .circuit {
+            position: absolute;
+            z-index: 6;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: .5;
+            pointer-events: none
+        }
+        
+        .circuit path {
+            fill: none;
+            stroke: var(--hi);
+            stroke-width: 1.6;
+            stroke-dasharray: 6 16;
+            animation: flow 2.4s linear infinite
+        }
+        
+        .circuit path:nth-child(2n) {
+            animation-duration: 3.6s;
+            stroke: var(--cy)
+        }
+        
+        .circuit circle {
+            fill: var(--cy);
+            animation: pulse 2s ease-in-out infinite
+        }
+        
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -44
+            }
+        }
+        
+        @keyframes pulse {
+            50% {
+                opacity: .25;
+                r: 7
+            }
+        }
+        
+        .eyebrow {
+            color: var(--cy);
+            font-size: 13px;
+            letter-spacing: 3px;
+            text-transform: uppercase
+        }
+        
+        h1 {
+            margin: 6px 0 12px;
+            font-size: clamp(34px, 5.4vw, 66px);
+            line-height: 1.12;
+            background: linear-gradient(90deg, #fff, var(--cy) 55%, var(--hi));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 22px rgba(22, 139, 255, .4))
+        }
+        
+        .lead {
+            color: var(--mute);
+            font-size: clamp(16px, 1.4vw, 19px);
+            max-width: 560px;
+            margin: 0 0 20px
+        }
+        
+        .cta {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap
+        }
+        
+        .chips {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 20px
+        }
+        
+        .chip {
+            padding: 4px 14px;
+            border-radius: 99px;
+            border: 1px solid var(--line);
+            background: rgba(22, 139, 255, .1);
+            font-size: 13px;
+            color: var(--mute)
+        }
+        
+        .calc {
+            padding: 24px;
+            background: rgba(7, 20, 38, .7)
+        }
+        
+        .calc h2 {
+            margin: 0 0 12px;
+            font-size: 19px
+        }
+        
+        .seg {
+            display: flex;
+            gap: 6px;
+            padding: 4px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, .5);
+            border: 1px solid var(--line);
+            margin-bottom: 14px
+        }
+        
+        .seg button {
+            flex: 1;
+            font: inherit;
+            color: var(--mute);
+            padding: 6px;
+            border: 0;
+            border-radius: 9px;
+            background: none;
+            cursor: pointer;
+            transition: .2s
+        }
+        
+        .seg button.on {
+            background: var(--hi);
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 0 16px rgba(22, 139, 255, .6)
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px
+        }
+        
+        label {
+            display: block;
+            color: var(--mute);
+            font-size: 13px
+        }
+        
+        input[type=number],
+        select {
+            width: 100%;
+            margin-top: 4px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: rgba(0, 0, 0, .55);
+            color: #fff;
+            font: inherit
+        }
+        
+        input[type=range] {
+            width: 100%;
+            accent-color: var(--hi);
+            margin: 2px 0 10px
+        }
+        
+        .gauge {
+            display: grid;
+            place-items: center;
+            position: relative;
+            margin: 4px auto 0;
+            width: 200px
+        }
+        
+        .gauge svg {
+            width: 200px;
+            height: 200px;
+            transform: rotate(-90deg)
+        }
+        
+        .gauge .bgc {
+            fill: none;
+            stroke: rgba(255, 255, 255, .08);
+            stroke-width: 12
+        }
+        
+        .gauge .fg {
+            fill: none;
+            stroke: url(#gg);
+            stroke-width: 12;
+            stroke-linecap: round;
+            stroke-dasharray: 502.65;
+            stroke-dashoffset: 502.65;
+            transition: stroke-dashoffset .8s cubic-bezier(.22, 1, .36, 1);
+            filter: drop-shadow(0 0 8px var(--hi))
+        }
+        
+        .gauge .txt {
+            position: absolute;
+            text-align: center
+        }
+        
+        .gauge .txt b {
+            display: block;
+            font-size: 40px;
+            line-height: 1;
+            text-shadow: 0 0 18px rgba(22, 139, 255, .9)
+        }
+        
+        .gauge .txt small {
+            color: var(--mute)
+        }
+        
+        .formula {
+            margin: 10px 0 0;
+            text-align: center;
+            color: var(--mute);
+            font-size: 13px
+        }
+        
+        .wave {
+            margin-top: 22px;
+            padding: 18px 22px 8px
+        }
+        
+        .wave h3 {
+            margin: 0;
+            font-size: 16px
+        }
+        
+        .wave small {
+            color: var(--mute)
+        }
+        
+        .wave svg {
+            display: block;
+            width: 100%;
+            height: 130px;
+            margin-top: 6px
+        }
+        
+        .wv {
+            animation: slide 9s linear infinite
+        }
+        
+        @keyframes slide {
+            to {
+                transform: translateX(-1200px)
+            }
+        }
+        
+        .sec {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 46px 0 16px;
+            font-size: 22px
+        }
+        
+        .sec::before {
+            content: "";
+            width: 8px;
+            height: 24px;
+            border-radius: 4px;
+            background: var(--hi);
+            box-shadow: 0 0 14px var(--hi)
+        }
+        
+        .sec::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--line), transparent)
+        }
+        
+        .acct {
+            padding: 22px;
+            text-align: center
+        }
+        
+        .acct h3 {
+            margin: 0
+        }
+        
+        .acct p {
+            margin: 2px 0 14px;
+            color: var(--mute)
+        }
+        
+        .acct .st {
+            display: inline-block;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff5a5f;
+            box-shadow: 0 0 10px #ff5a5f;
+            margin-right: 8px
+        }
+        
+        .acct .btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+            perspective: 1000px
+        }
+        
+        .card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 22px;
+            border-radius: 20px;
+            border: 2px solid transparent;
+            background: linear-gradient(#071426, #0a1a30) padding-box, conic-gradient(from var(--a), #d33a3a, #2fb26a, #d8b73a, var(--hi), #d33a3a) border-box;
+            animation: spin 8s linear infinite;
+            transition: box-shadow .25s;
+            will-change: transform
+        }
+        
+        .card:hover {
+            box-shadow: 0 18px 40px rgba(22, 139, 255, .35)
+        }
+        
+        @keyframes spin {
+            to {
+                --a: 360deg
+            }
+        }
+        
+        .ic {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            background: rgba(22, 139, 255, .15);
+            border: 1px solid var(--line);
+            box-shadow: 0 0 18px rgba(22, 139, 255, .3)
+        }
+        
+        .ic svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: var(--cy);
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round
+        }
+        
+        .card h3 {
+            margin: 8px 0 0;
+            font-size: 20px
+        }
+        
+        .card p {
+            margin: 0;
+            color: var(--mute);
+            flex: 1
+        }
+        
+        .card .go {
+            margin-top: 12px;
+            text-align: center;
+            padding: 9px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: rgba(22, 139, 255, .12);
+            font-weight: 600;
+            transition: .2s
+        }
+        
+        .card:hover .go {
+            background: var(--hi);
+            color: #000;
+            border-color: var(--hi)
+        }
+        
+        .foot {
+            margin-top: 50px;
+            padding: 24px 0 40px;
+            text-align: center;
+            color: var(--mute);
+            font-size: 14px;
+            border-top: 1px solid var(--line)
+        }
+        
+        .rv {
+            opacity: 0
+        }
+        
+        .rv.in {
+            opacity: 1;
+            animation: up .7s cubic-bezier(.34, 1.3, .64, 1) backwards
+        }
+        
+        @keyframes up {
+            from {
+                opacity: 0;
+                transform: translateY(28px) scale(.97)
+            }
+        }
+        
+        @media(max-width:900px) {
+            .hero {
+                grid-template-columns: 1fr
+            }
+        }
+        
+        @media(prefers-reduced-motion:reduce) {
+            * {
+                animation: none!important;
+                transition: none!important
+            }
+            .rv {
+                opacity: 1
+            }
+            .dot {
+                display: none
+            }
+            .hero .bg-network {
+                opacity: .45
+            }
+        }
+
+        /* Warm, AI-inspired control-room treatment */
+        :root {
+            --navy: #120905;
+            --main: #1b0c05;
+            --hi: #ff5a14;
+            --cy: #ffd2a8;
+            --mute: #d4b8a5;
+            --line: rgba(255, 100, 30, .32);
+        }
+
+        body,
+        .bg {
+            background: #080402
+        }
+
+        .bg>i:nth-child(1) {
+            background: #ff4500;
+            opacity: .24
+        }
+
+        .bg>i:nth-child(2) {
+            background: #351305;
+            opacity: .48
+        }
+
+        .bg>i:nth-child(3) {
+            background: #ff5a14;
+            opacity: .13
+        }
+
+        .bg::after {
+            background-image: linear-gradient(rgba(255, 100, 30, .09) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 100, 30, .09) 1px, transparent 1px)
+        }
+
+        .dot {
+            background: #ffd2a8;
+            box-shadow: 0 0 10px #ff5a14
+        }
+
+        .mark {
+            background: linear-gradient(135deg, #281006, #ff5a14);
+            box-shadow: 0 0 28px rgba(255, 90, 20, .48), inset 0 0 0 1px rgba(255, 255, 255, .25)
+        }
+
+        @keyframes glow {
+            to {
+                box-shadow: 0 0 42px rgba(255, 90, 20, .8), inset 0 0 0 1px rgba(255, 255, 255, .4)
+            }
+        }
+
+        .brand small {
+            letter-spacing: 1.5px
+        }
+
+        .btn:hover {
+            box-shadow: 0 10px 26px rgba(255, 90, 20, .3)
+        }
+
+        .btn.pri,
+        .tab.on,
+        .seg button.on {
+            color: #fff;
+            background: linear-gradient(135deg, #e84208, #ff8a2a);
+            border-color: #ff6a1a;
+            box-shadow: 0 0 22px rgba(255, 90, 20, .42)
+        }
+
+        .hero {
+            background:
+                radial-gradient(ellipse at 82% 100%, rgba(255, 74, 0, .13), transparent 48%),
+                linear-gradient(135deg, rgba(28, 12, 5, .82), rgba(8, 4, 2, .75))
+        }
+
+        .circuit path {
+            stroke: #ff5a14
+        }
+
+        .circuit path:nth-child(2n) {
+            stroke: #ffd2a8
+        }
+
+        .circuit circle {
+            fill: #ffb36b
+        }
+
+        h1 {
+            background: linear-gradient(100deg, #fff8f1 8%, #ffd2a8 53%, #ff5a14);
+            -webkit-background-clip: text;
+            background-clip: text;
+            filter: drop-shadow(0 0 22px rgba(255, 90, 20, .36))
+        }
+
+        .chip {
+            background: rgba(255, 90, 20, .09)
+        }
+
+        .calc {
+            background: linear-gradient(155deg, rgba(37, 17, 7, .92), rgba(11, 6, 3, .94))
+        }
+
+        .gauge .txt b {
+            text-shadow: 0 0 18px rgba(255, 100, 30, .78)
+        }
+
+        .gauge .fg {
+            filter: drop-shadow(0 0 8px #ff5a14)
+        }
+
+        .sec::before {
+            box-shadow: 0 0 14px #ff5a14
+        }
+
+        .card {
+            background: linear-gradient(#140a05, #0b0603) padding-box, conic-gradient(from var(--a), #ff4500, #ffb347, #ffd2a8, #ff5a14, #ff4500) border-box
+        }
+
+        .card:hover {
+            box-shadow: 0 18px 40px rgba(255, 90, 20, .23)
+        }
+
+        .ic {
+            background: rgba(255, 90, 20, .11);
+            border-color: var(--line);
+            box-shadow: 0 0 18px rgba(255, 90, 20, .2)
+        }
+
+        .ic svg {
+            stroke: #ffd2a8
+        }
+
+        .card:hover .go {
+            color: #fff;
+            background: linear-gradient(135deg, #e84208, #ff8a2a);
+            border-color: #ff6a1a
+        }
+
+        .ai-insight {
+            display: grid;
+            grid-template-columns: 38px 1fr;
+            gap: 11px;
+            align-items: start;
+            margin-top: 12px;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 138, 42, .35);
+            border-radius: 14px;
+            background: linear-gradient(120deg, rgba(255, 90, 20, .12), rgba(22, 10, 4, .45));
+        }
+
+        .ai-orb {
+            display: grid;
+            place-items: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(255, 178, 107, .55);
+            border-radius: 12px;
+            color: #ffe3c8;
+            background: radial-gradient(circle at 35% 25%, #ffb36b, #b63208 70%);
+            box-shadow: 0 0 18px rgba(255, 90, 20, .35);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .ai-copy strong {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            color: #ffd2a8;
+            font-size: 12px;
+            letter-spacing: .08em;
+        }
+
+        .ai-copy strong::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ff8a2a;
+            box-shadow: 0 0 9px #ff5a14;
+        }
+
+        .ai-copy p {
+            margin: 3px 0 0;
+            color: var(--mute);
+            font-size: 12px;
+            line-height: 1.55;
+        }
+
+        .ai-disclaimer {
+            margin: 7px 0 0;
+            color: #a98e7a;
+            font-size: 10px;
+            text-align: center;
+        }
+
+        @media(max-width:560px) {
+            .ai-insight {
+                grid-template-columns: 34px 1fr;
+                padding: 10px
+            }
+            .ai-orb {
+                width: 32px;
+                height: 32px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg"><i></i><i></i><i></i>
+        <div id="dots"></div>
+    </div>
+    <div class="wrap">
+        <header class="top">
+            <a class="brand" href="?page=dashboard"><span class="mark">AK</span><span><b>Electrical Calculator</b><small>ATTAPORN ENGINEERING &amp; SUPPLY</small></span></a>
+            <div class="btns"><a class="btn" data-link="login">Login</a> <a class="btn pri" data-link="register">Register</a></div>
+        </header>
+        <nav class="tabs" id="tabs"></nav>
+
+        <section class="glass hero rv">
+            <div class="bg-layer bg-glow" aria-hidden="true"></div>
+            <div class="bg-layer bg-grid" aria-hidden="true"></div>
+            <canvas class="bg-layer bg-network" aria-hidden="true"></canvas>
+            <div class="bg-layer bg-spotlight" aria-hidden="true"></div>
+            <div class="bg-layer bg-scanline" aria-hidden="true"></div>
+            <div class="bg-layer bg-vignette" aria-hidden="true"></div>
+            <svg class="circuit" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><path d="M0 330H260L330 270H620L690 330H1000"/><path d="M0 70H180L240 130H560L620 70H1000"/><path d="M500 0V90L560 150V400"/><circle cx="330" cy="270" r="4"/><circle cx="620" cy="270" r="4"/><circle cx="240" cy="130" r="4"/><circle cx="560" cy="150" r="4"/></svg>
+            <div class="hero-content">
+                <div class="eyebrow">Electrical · Intelligence · Supply</div>
+                <h1>ศูนย์ควบคุม<br>พลังงานไฟฟ้า</h1>
+                <p class="lead">เครื่องมือคำนวณงานไฟฟ้าในหน้าตาแบบห้องควบคุมยุคใหม่ พร้อมข้อมูลสรุปที่อ่านง่ายและใช้งานได้ทันที</p>
+                <div class="cta"><a class="btn pri" href="#calc">⚡ เริ่มคำนวณเลย</a><a class="btn" href="#tools">ดูเครื่องมือทั้งหมด</a></div>
+                <div class="chips"><span class="chip">01 · 1 เฟส / 3 เฟส</span><span class="chip">02 · kVA → แอมป์</span><span class="chip">03 · หม้อแปลง · เสาไฟ</span></div>
+            </div>
+            <div class="glass calc" id="calc">
+                <h2>⚡ คำนวณกระแสด่วน</h2>
+                <div class="seg" id="seg"><button data-p="3" class="on">3 เฟส</button><button data-p="1">1 เฟส</button></div>
+                <label>กำลังไฟฟ้า (kVA): <b id="kv">100</b><input type="range" id="kva" min="1" max="1000" value="100"></label>
+                <div class="row">
+                    <label>ป้อนค่า kVA<input type="number" id="kn" min="1" max="1000" value="100"></label>
+                    <label>แรงดัน (V)<select id="volt"><option>416</option><option>400</option><option>380</option><option>230</option><option>220</option></select></label>
+                </div>
+                <div class="gauge"><svg viewBox="0 0 200 200"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd2a8"/><stop offset="1" stop-color="#ff5a14"/></linearGradient></defs><circle class="bgc" cx="100" cy="100" r="80"/><circle class="fg" id="ring" cx="100" cy="100" r="80"/></svg>
+                    <div
+                        class="txt"><b id="amp">0</b><small>แอมป์ (A)</small></div>
+            </div>
+            <p class="formula" id="fm"></p>
+            <div class="ai-insight" aria-live="polite">
+                <div class="ai-orb" aria-hidden="true">AI</div>
+                <div class="ai-copy">
+                    <strong>SMART INSIGHT · RULE-BASED</strong>
+                    <p id="insight">วิเคราะห์ค่ากำลังและแรงดันเพื่อแสดงข้อสังเกตเบื้องต้น</p>
+                </div>
+            </div>
+            <p class="ai-disclaimer">ระบบสรุปตามสูตรคำนวณเบื้องต้น ไม่ใช่ AI ที่เชื่อมต่อบริการภายนอก และไม่ใช้แทนวิศวกร</p>
+    </div>
+    </section>
+
+    <section class="glass wave rv">
+        <h3>ระบบไฟฟ้า 3 เฟส <small>· สามคลื่นต่างกัน 120°</small></h3>
+        <svg viewBox="0 0 1200 130" preserveAspectRatio="none" aria-hidden="true"><g class="wv" id="wv"></g></svg>
+    </section>
+
+    <h2 class="sec rv">บัญชีผู้ใช้</h2>
+    <div class="glass acct rv">
+        <h3><span class="st"></span>ยังไม่ได้เข้าสู่ระบบ</h3>
+        <p>เข้าสู่ระบบเพื่อบันทึกและใช้งานเครื่องมือทั้งหมด</p>
+        <div class="btns"><a class="btn" data-link="login">Login</a><a class="btn" data-link="register">Register</a><button class="btn" disabled>Logout</button></div>
+    </div>
+
+    <h2 class="sec rv" id="tools">เครื่องมือและข้อมูล</h2>
+    <div class="cards" id="cards"></div>
+
+    <footer class="foot">ATTAPORN ENGINEERING &amp; SUPPLY · ค่าจากเครื่องมือเป็นการประมาณ ไม่ใช่ข้อมูลสำหรับออกแบบหรือก่อสร้างจริง</footer>
+    </div>
+
+    <script>
+        /* แก้ชื่อไฟล์ปลายทางของแต่ละหน้าตรงนี้ที่เดียว */
+        var LINKS = {
+            login: "?page=login",
+            register: "?page=register",
+            current: "?page=current_calc",
+            trans: "?page=transformer_calc",
+            model: "?page=transformer_3d",
+            info: "?page=transformer_info",
+            pole: "?page=poles"
+        };
+        var $ = function(s) {
+            return document.querySelector(s)
+        };
+        document.querySelectorAll("[data-link]").forEach(function(a) {
+            a.href = LINKS[a.dataset.link]
+        });
+        document.addEventListener("click", function(e) {
+            var link = e.target.closest('a[href^="?page="]');
+            if (!link) return;
+            var page = new URL(link.href, window.location.href).searchParams.get("page");
+            if (!page) return;
+            e.preventDefault();
+            if (window.parent === window) {
+                window.location.assign(link.href);
+                return;
+            }
+            window.parent.postMessage({type: "ak-app-navigate", page: page}, "*");
+        });
+        var ICON = {
+            g: '<svg viewBox="0 0 24 24"><path d="M4 18a9 9 0 1 1 16 0"/><path d="M12 14l4-5"/><circle cx="12" cy="14" r="1"/></svg>',
+            t: '<svg viewBox="0 0 24 24"><circle cx="9" cy="12" r="4"/><circle cx="15" cy="12" r="4"/><path d="M3 12h2M19 12h2M12 3v3M12 18v3"/></svg>',
+            c: '<svg viewBox="0 0 24 24"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>',
+            d: '<svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>',
+            p: '<svg viewBox="0 0 24 24"><path d="M12 3v18M6 7h12M8 11h8M9 21h6"/></svg>'
+        };
+        var ITEMS = [{
+            i: "g",
+            t: "คำนวณกระแส",
+            d: "คำนวณกระแสไฟฟ้าจากกำลังและแรงดัน",
+            k: "current"
+        }, {
+            i: "t",
+            t: "คำนวณหม้อแปลง",
+            d: "คำนวณ kVA พร้อมดูรูปอุปกรณ์ไฟฟ้า",
+            k: "trans"
+        }, {
+            i: "c",
+            t: "โมเดลหม้อแปลง 3D",
+            d: "ดูโมเดลเต็มหน้าจอพร้อมข้อมูลชิ้นส่วน",
+            k: "model"
+        }, {
+            i: "d",
+            t: "ข้อมูลหม้อแปลง 3 เฟส",
+            d: "100 / 160 / 250 kVA กระแส ค่าสูญเสีย และแหล่งอ้างอิง",
+            k: "info"
+        }, {
+            i: "p",
+            t: "เสาไฟคอนกรีต",
+            d: "เสา 6–12 เมตร รูป 4 ขนาด พร้อมตารางขนาดและน้ำหนัก",
+            k: "pole",
+            go: "ดูข้อมูลเสาไฟ →"
+        }];
+        $("#tabs").innerHTML = [
+            ["หน้าแรก", "?page=dashboard"],
+            ["คำนวณกระแส", LINKS.current],
+            ["คำนวณหม้อแปลง", LINKS.trans],
+            ["หม้อแปลง 3 เฟส", LINKS.info],
+            ["เสาไฟ", LINKS.pole]
+        ].map(function(x, n) {
+            return '<a class="tab' + (n ? '' : ' on') + '" href="' + x[1] + '">' + x[0] + '</a>'
+        }).join("");
+        $("#cards").innerHTML = ITEMS.map(function(c) {
+            return '<a class="card rv" href="' + LINKS[c.k] + '"><div class="ic">' + ICON[c.i] + '</div><h3>' + c.t + '</h3><p>' + c.d + '</p><span class="go">' + (c.go || "เปิดหน้า →") + '</span></a>'
+        }).join("");
+
+        for (var n = 0; n < 30; n++) {
+            var d = document.createElement("i");
+            d.className = "dot";
+            d.style.cssText = "left:" + Math.random() * 100 + "%;top:" + (60 + Math.random() * 50) + "%;animation-delay:" + (-Math.random() * 9) + "s;animation-duration:" + (7 + Math.random() * 7) + "s";
+            $("#dots").appendChild(d)
+        }
+
+        (function initHeroNetwork() {
+            var canvas = document.querySelector(".hero .bg-network");
+            if (!canvas || typeof canvas.getContext !== "function") return;
+            var context = canvas.getContext("2d");
+            if (!context) return;
+
+            var hero = canvas.closest(".hero");
+            var media = window.matchMedia("(prefers-reduced-motion: reduce)");
+            var particles = [];
+            var frame = 0;
+            var width = 0;
+            var height = 0;
+
+            function resize() {
+                if (frame) {
+                    window.cancelAnimationFrame(frame);
+                    frame = 0;
+                }
+                var rect = hero.getBoundingClientRect();
+                var ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+                width = Math.max(1, rect.width);
+                height = Math.max(1, rect.height);
+                canvas.width = Math.round(width * ratio);
+                canvas.height = Math.round(height * ratio);
+                context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+                var count = Math.min(42, Math.max(18, Math.round(width / 22)));
+                particles = Array.from({length: count}, function() {
+                    return {
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        vx: (Math.random() - .5) * .22,
+                        vy: (Math.random() - .5) * .16,
+                        radius: Math.random() * 1.5 + .7
+                    };
+                });
+                draw();
+            }
+
+            function draw() {
+                context.clearRect(0, 0, width, height);
+                var linkDistance = Math.min(145, width * .23);
+
+                for (var i = 0; i < particles.length; i++) {
+                    var point = particles[i];
+                    if (!media.matches && !document.hidden) {
+                        point.x += point.vx;
+                        point.y += point.vy;
+                        if (point.x < 0 || point.x > width) point.vx *= -1;
+                        if (point.y < 0 || point.y > height) point.vy *= -1;
+                    }
+
+                    for (var j = i + 1; j < particles.length; j++) {
+                        var other = particles[j];
+                        var dx = point.x - other.x;
+                        var dy = point.y - other.y;
+                        var distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance < linkDistance) {
+                            context.beginPath();
+                            context.strokeStyle = "rgba(120, 195, 255, " + (1 - distance / linkDistance) * .24 + ")";
+                            context.lineWidth = .7;
+                            context.moveTo(point.x, point.y);
+                            context.lineTo(other.x, other.y);
+                            context.stroke();
+                        }
+                    }
+
+                    context.beginPath();
+                    context.fillStyle = "rgba(255, 207, 135, .76)";
+                    context.shadowColor = "rgba(93, 190, 255, .8)";
+                    context.shadowBlur = 8;
+                    context.arc(point.x, point.y, point.radius, 0, Math.PI * 2);
+                    context.fill();
+                }
+                context.shadowBlur = 0;
+
+                if (!media.matches && !document.hidden) {
+                    frame = window.requestAnimationFrame(draw);
+                } else {
+                    frame = 0;
+                }
+            }
+
+            function updateMotion() {
+                if (frame) {
+                    window.cancelAnimationFrame(frame);
+                    frame = 0;
+                }
+                draw();
+            }
+
+            if ("ResizeObserver" in window) {
+                new ResizeObserver(resize).observe(hero);
+            } else {
+                window.addEventListener("resize", resize, {passive: true});
+            }
+            if (typeof media.addEventListener === "function") {
+                media.addEventListener("change", updateMotion);
+            } else if (typeof media.addListener === "function") {
+                media.addListener(updateMotion);
+            }
+            document.addEventListener("visibilitychange", updateMotion);
+            resize();
+        })();
+
+        var cols = ["#ffd2a8", "#ff5a14", "#e8cdb8"],
+            h = "";
+        cols.forEach(function(c, k) {
+            var pts = [];
+            for (var x = 0; x <= 2400; x += 8) pts.push((x ? "L" : "M") + x + " " + (65 + 48 * Math.sin(2 * Math.PI * x / 600 - k * 2 * Math.PI / 3)).toFixed(1));
+            h += '<path d="' + pts.join("") + '" fill="none" stroke="' + c + '" stroke-width="2.4" style="filter:drop-shadow(0 0 5px ' + c + ')"/>'
+        });
+        $("#wv").innerHTML = h;
+
+        var ph = 3,
+            shown = 0,
+            tw;
+
+        function fmt(n, d) {
+            return n.toLocaleString("en-US", {
+                minimumFractionDigits: d,
+                maximumFractionDigits: d
+            })
+        }
+
+        function calc() {
+            var k = Math.min(1000, Math.max(1, +$("#kn").value || 1)),
+                v = +$("#volt").value;
+            var i = ph === 3 ? k * 1000 / (Math.sqrt(3) * v) : k * 1000 / v;
+            $("#kv").textContent = k;
+            $("#kva").value = k;
+            $("#ring").style.strokeDashoffset = 502.65 * (1 - k / 1000);
+            $("#fm").textContent = (ph === 3 ? "I = kVA×1000 / (√3 × V)" : "I = kVA×1000 / V") + " · ที่ PF 0.8 ≈ " + fmt(k * 0.8, 1) + " kW";
+            var note = i >= 500 ?
+                "กระแสที่คำนวณได้สูง ควรให้วิศวกรตรวจสอบพิกัดอุปกรณ์และเงื่อนไขการติดตั้งก่อนใช้งานจริง" :
+                i >= 250 ?
+                "โหลดอยู่ในช่วงสูง โปรดตรวจสอบแรงดันจริงและข้อมูลอุปกรณ์ให้ตรงกับหน้างาน" :
+                "ผลลัพธ์เป็นค่าประมาณจาก kVA และแรงดันที่เลือก ตรวจสอบ Power Factor และข้อมูลโหลดก่อนออกแบบ";
+            $("#insight").textContent = "ระบบ " + (ph === 3 ? "3 เฟส" : "1 เฟส") + " · " + fmt(k, 0) + " kVA · " + fmt(v, 0) + " V · " + fmt(i, 1) + " A — " + note;
+            cancelAnimationFrame(tw);
+            var from = shown,
+                t0 = performance.now();
+            (function s(t) {
+                var p = Math.min(1, (t - t0) / 600);
+                shown = from + (i - from) * (1 - Math.pow(1 - p, 3));
+                $("#amp").textContent = fmt(shown, 1);
+                if (p < 1) tw = requestAnimationFrame(s)
+            })(t0);
+        }
+        $("#kva").addEventListener("input", function() {
+            $("#kn").value = this.value;
+            calc()
+        });
+        $("#kn").addEventListener("input", calc);
+        $("#volt").addEventListener("change", calc);
+        $("#seg").addEventListener("click", function(e) {
+            var b = e.target.closest("button");
+            if (!b) return;
+            ph = +b.dataset.p;
+            this.querySelectorAll("button").forEach(function(x) {
+                x.classList.toggle("on", x === b)
+            });
+            var s = $("#volt");
+            s.value = ph === 3 ? "416" : "230";
+            calc()
+        });
+        calc();
+
+        document.querySelectorAll(".glass").forEach(function(g) {
+            g.addEventListener("pointermove", function(e) {
+                var r = g.getBoundingClientRect();
+                g.style.setProperty("--mx", (e.clientX - r.left) + "px");
+                g.style.setProperty("--my", (e.clientY - r.top) + "px")
+            })
+        });
+        document.querySelectorAll(".card").forEach(function(c) {
+            c.addEventListener("pointermove", function(e) {
+                var r = c.getBoundingClientRect(),
+                    x = (e.clientX - r.left) / r.width - .5,
+                    y = (e.clientY - r.top) / r.height - .5;
+                c.style.transform = "rotateY(" + x * 12 + "deg) rotateX(" + (-y * 12) + "deg) translateY(-6px)"
+            });
+            c.addEventListener("pointerleave", function() {
+                c.style.transform = ""
+            });
+        });
+        var els = document.querySelectorAll(".rv");
+        if ("IntersectionObserver" in window) {
+            var io = new IntersectionObserver(function(es) {
+                es.forEach(function(x) {
+                    if (x.isIntersecting) {
+                        x.target.classList.add("in");
+                        io.unobserve(x.target)
+                    }
+                })
+            }, {
+                threshold: .08
+            });
+            els.forEach(function(e) {
+                io.observe(e)
+            })
+        } else {
+            els.forEach(function(e) {
+                e.classList.add("in")
+            })
+        }
+    </script>
+</body>
+
+</html>

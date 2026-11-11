@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>ศูนย์ควบคุมพลังงานไฟฟ้า · HUD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Prompt:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #070103;
+            --wine: #2b030b;
+            --red: #e0112b;
+            --red2: #ff4b5c;
+            --g1: #fff3c4;
+            --g2: #f2c14e;
+            --g3: #a97a14;
+            --ink: #f8ece4;
+            --mute: #bf9f93;
+            --gold: linear-gradient(135deg, var(--g1) 0%, var(--g2) 42%, var(--g3) 100%);
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px)
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        html {
+            color-scheme: dark;
+            scroll-behavior: smooth;
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font-family: Prompt, system-ui, 'Noto Sans Thai', sans-serif;
+            font-weight: 300;
+            overflow-x: hidden
+        }
+        
+        .bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(900px 700px at 72% 38%, rgba(224, 17, 43, .34), transparent 65%), radial-gradient(1200px 800px at 50% 120%, rgba(242, 193, 78, .14), transparent 60%), radial-gradient(ellipse at center, transparent 45%, #000 120%)
+        }
+        
+        .dots {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            opacity: .5;
+            background: radial-gradient(rgba(242, 193, 78, .22) 1px, transparent 1.5px) 0 0/34px 34px;
+            mask-image: radial-gradient(circle at 70% 40%, #000, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at 70% 40%, #000, transparent 70%)
+        }
+        
+        #elec {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none
+        }
+        
+        .scan {
+            position: fixed;
+            inset: 0;
+            z-index: 9;
+            pointer-events: none;
+            background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px)
+        }
+        
+        .sysbar {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 16px 22px;
+            font: 500 11px Orbitron, sans-serif;
+            letter-spacing: .16em;
+            color: var(--g2);
+            border-bottom: 1px solid rgba(242, 193, 78, .28)
+        }
+        
+        .sysbar b {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #35ff8a;
+            box-shadow: 0 0 10px #35ff8a;
+            margin-right: 8px;
+            animation: pl 1.6s infinite
+        }
+        
+        @keyframes pl {
+            50% {
+                opacity: .35
+            }
+        }
+        
+        main {
+            position: relative;
+            z-index: 2;
+            max-width: 1180px;
+            margin: 0 auto;
+            padding: 34px 22px 90px
+        }
+        
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: center
+        }
+        
+        .eyebrow {
+            font: 500 12px Orbitron, sans-serif;
+            letter-spacing: .2em;
+            color: var(--g2);
+            margin-bottom: 18px
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: clamp(42px, 6.6vw, 88px);
+            line-height: 1.06;
+            font-weight: 600;
+            letter-spacing: -.01em
+        }
+        
+        h1 span {
+            display: block
+        }
+        
+        h1 .g {
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 4px 26px rgba(242, 193, 78, .4))
+        }
+        
+        .lead {
+            color: var(--mute);
+            font-size: 18px;
+            line-height: 1.75;
+            max-width: 44ch;
+            margin: 24px 0 32px
+        }
+        
+        .cta {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap
+        }
+        
+        .btn {
+            --rx: 0deg;
+            --ry: 0deg;
+            position: relative;
+            display: inline-block;
+            font: 600 16px Prompt, sans-serif;
+            text-decoration: none;
+            color: var(--g1);
+            transform: perspective(600px) rotateX(var(--rx)) rotateY(var(--ry));
+            transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), filter .25s;
+            filter: drop-shadow(0 0 6px rgba(242, 193, 78, .25));
+            will-change: transform
+        }
+        
+        .btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, var(--g3), var(--g1), var(--g2), var(--g3));
+            background-size: 300% 100%;
+            clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+            animation: bd 4s linear infinite
+        }
+        
+        @keyframes bd {
+            to {
+                background-position: 300% 0
+            }
+        }
+        
+        .bt {
+            position: relative;
+            display: block;
+            overflow: hidden;
+            margin: 1.5px;
+            padding: 15px 28px;
+            background: rgba(43, 3, 11, .92);
+            clip-path: polygon(13px 0, 100% 0, 100% calc(100% - 13px), calc(100% - 13px) 100%, 0 100%, 0 13px);
+            transition: background .25s
+        }
+        
+        .bt::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -70%;
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255, 243, 196, .6), transparent);
+            transform: skewX(-20deg);
+            pointer-events: none
+        }
+        
+        .btn:hover .bt::after {
+            animation: sh .7s ease-out
+        }
+        
+        .bt .ar {
+            display: inline-block;
+            transition: transform .35s cubic-bezier(.34, 1.56, .64, 1)
+        }
+        
+        .btn:hover .ar {
+            transform: translateX(3px) rotate(-14deg) scale(1.3)
+        }
+        
+        .btn:hover .bt {
+            background: rgba(90, 6, 22, .95)
+        }
+        
+        .btn.pop {
+            animation: pop .5s cubic-bezier(.34, 1.56, .64, 1)
+        }
+        
+        @keyframes pop {
+            0% {
+                transform: scale(.88)
+            }
+            45% {
+                transform: scale(1.16) translateY(-10px)
+            }
+            100% {
+                transform: scale(1)
+            }
+        }
+        
+        .ring {
+            position: absolute;
+            inset: 0;
+            border: 2px solid var(--g2);
+            border-radius: 14px;
+            pointer-events: none;
+            animation: rg .7s ease-out both;
+            box-shadow: 0 0 14px var(--g2)
+        }
+        
+        @keyframes rg {
+            to {
+                transform: scale(1.6, 2.3);
+                opacity: 0
+            }
+        }
+        
+        .spark {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--g1);
+            box-shadow: 0 0 8px var(--g2), 0 0 14px var(--red2);
+            pointer-events: none;
+            animation: sk .75s ease-out forwards
+        }
+        
+        @keyframes sk {
+            from {
+                transform: translate(-50%, -50%) scale(1)
+            }
+            to {
+                transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0);
+                opacity: 0
+            }
+        }
+        
+        .btn:hover {
+            transform: perspective(600px) translateY(-7px) scale(1.07) rotateX(var(--rx)) rotateY(var(--ry));
+            filter: drop-shadow(0 14px 16px rgba(0, 0, 0, .6)) drop-shadow(0 0 22px rgba(242, 193, 78, .75))
+        }
+        
+        .btn:focus-visible {
+            outline: 2px solid var(--g1);
+            outline-offset: 3px
+        }
+        
+        .btn:active {
+            transform: perspective(600px) translateY(-1px) scale(.93);
+            transition-duration: .08s
+        }
+        
+        .btn.p {
+            color: #fff
+        }
+        
+        .btn.p .bt {
+            background: linear-gradient(135deg, var(--red2), var(--red) 55%, #79000f)
+        }
+        
+        .btn.p:hover .bt {
+            background: linear-gradient(135deg, #ff8794, var(--red2) 50%, var(--red))
+        }
+        
+        .btn.p .bt::after {
+            animation: sh 3.6s ease-in-out infinite
+        }
+        
+        .btn.p:hover .bt::after {
+            animation: sh .7s ease-out infinite
+        }
+        
+        .btn.p::after {
+            content: "";
+            position: absolute;
+            inset: -6px;
+            border-radius: 18px;
+            background: radial-gradient(closest-side, rgba(255, 75, 92, .6), transparent);
+            z-index: -1;
+            pointer-events: none;
+            animation: halo 2.4s ease-in-out infinite
+        }
+        
+        @keyframes halo {
+            50% {
+                opacity: .35;
+                transform: scale(1.14)
+            }
+        }
+        
+        @keyframes sh {
+            0%,
+            62% {
+                left: -60%
+            }
+            100% {
+                left: 130%
+            }
+        }
+        
+        .rip {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--g1), transparent 70%);
+            transform: scale(0);
+            opacity: .6;
+            animation: rp .6s ease-out forwards;
+            pointer-events: none
+        }
+        
+        @keyframes rp {
+            to {
+                transform: scale(1);
+                opacity: 0
+            }
+        }
+        /* reactor */
+        
+        .reactor {
+            position: relative;
+            width: min(100%, 470px);
+            margin: 0 auto;
+            aspect-ratio: 1;
+            transition: transform .15s ease-out
+        }
+        
+        .reactor svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible
+        }
+        
+        .r1 {
+            animation: sp 40s linear infinite
+        }
+        
+        .r2 {
+            animation: sp 24s linear infinite reverse
+        }
+        
+        .r3 {
+            animation: sp 14s linear infinite
+        }
+        
+        .r4 {
+            animation: sp 60s linear infinite reverse
+        }
+        
+        @keyframes sp {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+        
+        .rd {
+            position: absolute;
+            inset: 0;
+            display: grid;
+            place-content: center;
+            text-align: center;
+            pointer-events: none
+        }
+        
+        .rd .n {
+            font: 900 clamp(30px, 6.2vw, 54px) Orbitron, sans-serif;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 14px rgba(255, 75, 92, .7))
+        }
+        
+        .rd .u {
+            font: 500 11px Orbitron, sans-serif;
+            letter-spacing: .3em;
+            color: var(--g2);
+            margin-top: 4px
+        }
+        
+        .rd .e {
+            font: 400 11px Prompt, sans-serif;
+            color: var(--red2);
+            margin-top: 6px;
+            max-width: 16ch
+        }
+        /* panels */
+        
+        .panel {
+            position: relative;
+            padding: 22px;
+            background: linear-gradient(165deg, rgba(60, 5, 16, .72), rgba(12, 2, 5, .9));
+            border: 1px solid rgba(242, 193, 78, .3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 0 40px rgba(224, 17, 43, .12), 0 20px 50px rgba(0, 0, 0, .5)
+        }
+        
+        .panel i {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--g2);
+            filter: drop-shadow(0 0 5px var(--g2))
+        }
+        
+        .panel i:nth-child(1) {
+            top: -2px;
+            left: -2px;
+            border-right: 0;
+            border-bottom: 0
+        }
+        
+        .panel i:nth-child(2) {
+            top: -2px;
+            right: -2px;
+            border-left: 0;
+            border-bottom: 0
+        }
+        
+        .panel i:nth-child(3) {
+            bottom: -2px;
+            left: -2px;
+            border-right: 0;
+            border-top: 0
+        }
+        
+        .panel i:nth-child(4) {
+            bottom: -2px;
+            right: -2px;
+            border-left: 0;
+            border-top: 0
+        }
+        
+        .cap {
+            display: flex;
+            justify-content: space-between;
+            font: 500 11px Orbitron, sans-serif;
+            letter-spacing: .16em;
+            color: var(--g2);
+            margin-bottom: 14px
+        }
+        
+        .chips {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-top: 70px
+        }
+        
+        .chip em {
+            font: 900 38px Orbitron, sans-serif;
+            font-style: normal;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: block;
+            margin-bottom: 8px
+        }
+        
+        .chip span {
+            font-size: 18px;
+            font-weight: 400
+        }
+        
+        .chip {
+            transition: transform .25s, box-shadow .25s
+        }
+        
+        .chip:hover {
+            transform: translateY(-5px);
+            box-shadow: inset 0 0 40px rgba(224, 17, 43, .25), 0 0 30px rgba(242, 193, 78, .28)
+        }
+
+        .apps {
+            margin-top: 70px
+        }
+
+        .sec {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+            color: var(--g2);
+            font: 700 13px Orbitron, sans-serif;
+            letter-spacing: .2em
+        }
+
+        .sec::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(242, 193, 78, .6), transparent)
+        }
+
+        .sec-h {
+            margin: 0 0 24px;
+            font-size: clamp(26px, 3.4vw, 40px);
+            font-weight: 600
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+            gap: 20px
+        }
+
+        .tool {
+            display: flex;
+            min-height: 240px;
+            flex-direction: column;
+            gap: 8px;
+            color: var(--ink);
+            text-decoration: none;
+            animation: fade .7s both;
+            transition: transform .3s cubic-bezier(.34, 1.56, .64, 1), box-shadow .25s, border-color .25s
+        }
+
+        .tool .no {
+            color: var(--red2);
+            font: 900 13px Orbitron, sans-serif;
+            letter-spacing: .2em
+        }
+
+        .tool h3 {
+            margin: 0;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 23px;
+            font-weight: 600
+        }
+
+        .tool p {
+            flex: 1;
+            margin: 0;
+            color: var(--mute);
+            font-size: 15px;
+            line-height: 1.7
+        }
+
+        .tool .go {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(242, 193, 78, .25);
+            color: var(--g1);
+            font: 600 14px Prompt, sans-serif
+        }
+
+        .tool .go b {
+            display: inline-block;
+            font-weight: 600;
+            transition: transform .3s cubic-bezier(.34, 1.56, .64, 1)
+        }
+
+        .tool:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--g2);
+            box-shadow: inset 0 0 40px rgba(224, 17, 43, .28), 0 0 34px rgba(242, 193, 78, .35), 0 22px 44px rgba(0, 0, 0, .6)
+        }
+
+        .tool:hover .go b {
+            transform: translateX(6px)
+        }
+
+        .tool:focus-visible {
+            outline: 2px solid var(--g1);
+            outline-offset: 4px
+        }
+
+        @keyframes fade {
+            from { opacity: 0 }
+        }
+        
+        .duo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 70px
+        }
+        
+        #wave {
+            width: 100%;
+            height: 200px;
+            display: block
+        }
+        
+        .leg {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: var(--mute);
+            margin-top: 8px
+        }
+        
+        .leg b {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px
+        }
+        
+        label {
+            font-size: 13px;
+            color: var(--mute);
+            display: block
+        }
+        
+        input,
+        select {
+            width: 100%;
+            margin-top: 6px;
+            padding: 12px;
+            border: 1px solid rgba(242, 193, 78, .4);
+            background: rgba(0, 0, 0, .5);
+            color: var(--g1);
+            font: 500 16px Orbitron, Prompt, sans-serif;
+            border-radius: 0
+        }
+        
+        input:focus-visible,
+        select:focus-visible {
+            outline: 2px solid var(--g2)
+        }
+        
+        #res {
+            margin-top: 18px;
+            font: 900 34px Orbitron, sans-serif;
+            background: var(--gold);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent
+        }
+        
+        #res small {
+            font: 400 14px Prompt, sans-serif;
+            margin-left: 8px;
+            -webkit-text-fill-color: var(--mute)
+        }
+        
+        #res.bad {
+            background: none;
+            -webkit-text-fill-color: var(--red2);
+            font-size: 18px
+        }
+        
+        @media (max-width:860px) {
+            .hero,
+            .duo,
+            .chips,
+            .row {
+                grid-template-columns: 1fr
+            }
+
+            .apps {
+                margin-top: 48px
+            }
+
+            .tool {
+                min-height: 210px
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            * {
+                animation: none!important;
+                scroll-behavior: auto
+            }
+
+            .tool,
+            .tool:hover {
+                transform: none;
+                transition: none
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg"></div>
+    <div class="dots"></div><canvas id="elec" aria-hidden="true"></canvas>
+    <div class="scan"></div>
+    <div class="sysbar"><span><b></b>SYSTEM ONLINE</span><span>Electrical · Intelligence · Supply</span><span id="clk">--:--:--</span></div>
+    <main>
+        <section class="hero">
+            <div>
+                <div class="eyebrow">Electrical · Intelligence · Supply</div>
+                <h1><span>ศูนย์ควบคุม</span><span class="g">พลังงานไฟฟ้า</span></h1>
+                <p class="lead">เครื่องมือคำนวณงานไฟฟ้าในหน้าตาแบบห้องควบคุมยุคใหม่ พร้อมข้อมูลสรุปที่อ่านง่ายและใช้งานได้ทันที</p>
+                <div class="cta">
+                    <a class="btn p" href="#calc" data-nav="current_calc"><span class="bt"><span class="ar">⚡</span> คำนวณกระแส</span></a>
+                    <a class="btn" href="#tools" data-nav="transformer_calc"><span class="bt">คำนวณหม้อแปลง</span></a>
+                    <a class="btn" href="#tools" data-nav="transformer_details"><span class="bt">ดูหม้อแปลง 3 เฟส</span></a>
+                </div>
+            </div>
+            <div class="reactor" id="rx">
+                <svg viewBox="0 0 400 400" aria-hidden="true">
+        <defs>
+          <linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset=".5" stop-color="#f2c14e"/><stop offset="1" stop-color="#a97a14"/></linearGradient>
+          <radialGradient id="core"><stop offset="0" stop-color="#ff4b5c" stop-opacity=".95"/><stop offset=".55" stop-color="#8a0618" stop-opacity=".75"/><stop offset="1" stop-color="#2b030b" stop-opacity=".2"/></radialGradient>
+        </defs>
+        <circle cx="200" cy="200" r="190" fill="none" stroke="rgba(242,193,78,.2)"/>
+        <g class="r4"><circle cx="200" cy="200" r="186" fill="none" stroke="url(#gg)" stroke-width="2" stroke-dasharray="90 14 4 14"/></g>
+        <g class="r1" id="ticks"></g>
+        <g class="r2"><circle cx="200" cy="200" r="132" fill="none" stroke="#e0112b" stroke-width="7" stroke-dasharray="120 40" style="filter:drop-shadow(0 0 8px #e0112b)"/></g>
+        <g class="r3"><circle cx="200" cy="200" r="112" fill="none" stroke="url(#gg)" stroke-width="2.5" stroke-dasharray="3 9"/><circle cx="200" cy="200" r="104" fill="none" stroke="url(#gg)" stroke-width="1" stroke-dasharray="60 20"/></g>
+        <circle cx="200" cy="200" r="88" fill="url(#core)" stroke="url(#gg)" stroke-width="2.5"/>
+        <circle cx="200" cy="200" r="88" fill="none" stroke="rgba(255,75,92,.5)" stroke-width="10" style="filter:blur(8px)"/>
+      </svg>
+                <div class="rd">
+                    <div class="n" id="rn">0</div>
+                    <div class="u">AMPERE</div>
+                    <div class="e" id="re"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chips" id="tools">
+            <div class="panel chip"><i></i><i></i><i></i><i></i><em>01</em><span>1 เฟส / 3 เฟส</span></div>
+            <div class="panel chip"><i></i><i></i><i></i><i></i><em>02</em><span>kVA → แอมป์</span></div>
+            <div class="panel chip"><i></i><i></i><i></i><i></i><em>03</em><span>หม้อแปลง · เสาไฟ</span></div>
+        </section>
+
+        <section class="apps" id="apps" aria-labelledby="apps-title">
+            <div class="sec">TOOLS &amp; DATA</div>
+            <h2 class="sec-h" id="apps-title">เครื่องมือและข้อมูล</h2>
+            <div class="tools-grid">
+                <a class="panel tool" href="#apps" data-nav="current_calc" aria-label="เปิดหน้าคำนวณกระแส">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">01</span>
+                    <h3>คำนวณกระแส</h3>
+                    <p>คำนวณกระแสไฟฟ้าจากกำลังและแรงดัน</p>
+                    <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="transformer_calc" aria-label="เปิดหน้าคำนวณหม้อแปลง">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">02</span>
+                    <h3>คำนวณหม้อแปลง</h3>
+                    <p>คำนวณ kVA พร้อมดูรูปอุปกรณ์ไฟฟ้า</p>
+                    <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="transformer_3d" aria-label="เปิดโมเดลหม้อแปลง 3D">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">03</span>
+                    <h3>โมเดลหม้อแปลง 3D</h3>
+                    <p>ดูโมเดลเต็มหน้าจอพร้อมข้อมูลชิ้นส่วน</p>
+                    <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="transformer_info" aria-label="เปิดข้อมูลหม้อแปลง 3 เฟส">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">04</span>
+                    <h3>ข้อมูลหม้อแปลง 3 เฟส</h3>
+                    <p>100 / 160 / 250 kVA กระแส ค่าสูญเสีย และแหล่งอ้างอิง</p>
+                    <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="poles" aria-label="เปิดข้อมูลเสาไฟคอนกรีต">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">05</span>
+                    <h3>เสาไฟคอนกรีต</h3>
+                    <p>เสา 6–12 เมตร รูป 4 ขนาด พร้อมตารางขนาดและน้ำหนัก</p>
+                    <span class="go">ดูข้อมูลเสาไฟ <b aria-hidden="true">→</b></span>
+                </a>
+            </div>
+        </section>
+
+        <section class="duo">
+            <div class="panel" id="calc"><i></i><i></i><i></i><i></i>
+                <div class="cap"><span>kVA → แอมป์</span><span>LIVE</span></div>
+                <div class="row">
+                    <label>ขนาด (kVA)<input id="kva" type="number" min="0" step="any" value="100"></label>
+                    <label>แรงดัน (โวลต์)<input id="v" type="number" min="0" step="any" value="400"></label>
+                    <label>ระบบ<select id="ph"><option value="3">3 เฟส</option><option value="1">1 เฟส</option></select></label>
+                </div>
+                <div id="res">0<small>แอมป์</small></div>
+            </div>
+            <div class="panel"><i></i><i></i><i></i><i></i>
+                <div class="cap"><span>PHASE MONITOR</span><span>50 Hz</span></div>
+                <canvas id="wave"></canvas>
+                <div class="leg"><span><b style="background:#ff4b5c"></b>L1</span><span><b style="background:#f2c14e"></b>L2</span><span><b style="background:#fff3c4"></b>L3</span><span>เฟสห่างกัน 120°</span></div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const $ = s => document.querySelector(s);
+        /* ขีดสเกลรอบวงแหวน */
+        (function() {
+            const g = $('#ticks');
+            let h = '';
+            for (let i = 0; i < 120; i++) {
+                const a = i * 3 * Math.PI / 180,
+                    big = i % 10 === 0,
+                    r1 = big ? 150 : 156,
+                    r2 = 164;
+                h += `<line x1="${200+Math.cos(a)*r1}" y1="${200+Math.sin(a)*r1}" x2="${200+Math.cos(a)*r2}" y2="${200+Math.sin(a)*r2}" stroke="${big?'#f2c14e':'rgba(242,193,78,.5)'}" stroke-width="${big?2:1}"/>`
+            }
+            g.innerHTML = h
+        })();
+
+        /* คำนวณ kVA → แอมป์ แสดงที่แผงและกลางวงแหวน */
+        function calc() {
+            const kva = parseFloat($('#kva').value),
+                v = parseFloat($('#v').value),
+                ph = $('#ph').value,
+                r = $('#res');
+            if (!(kva > 0) || !(v > 0)) {
+                r.className = 'bad';
+                r.textContent = 'กรอกค่า kVA และแรงดันให้มากกว่า 0';
+                $('#rn').textContent = 'ERR';
+                $('#re').textContent = 'ตรวจสอบค่าที่กรอก';
+                return
+            }
+            const a = ph === '3' ? kva * 1000 / (Math.sqrt(3) * v) : kva * 1000 / v,
+                s = a.toFixed(2);
+            r.className = '';
+            r.innerHTML = s + '<small>แอมป์</small>';
+            $('#rn').textContent = a >= 1000 ? a.toFixed(0) : s;
+            $('#re').textContent = '';
+        }
+        ['kva', 'v', 'ph'].forEach(i => $('#' + i).addEventListener('input', calc));
+        calc();
+
+        /* นาฬิกา */
+        setInterval(() => {
+            $('#clk').textContent = new Date().toLocaleTimeString('en-GB')
+        }, 1000);
+
+        /* เอียงตามเมาส์ */
+        const rx = $('#rx');
+        addEventListener('pointermove', e => {
+            if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+            const x = (e.clientX / innerWidth - .5) * 14,
+                y = (e.clientY / innerHeight - .5) * 14;
+            rx.style.transform = `perspective(900px) rotateY(${x}deg) rotateX(${-y}deg)`
+        });
+
+        /* คลื่น 3 เฟส */
+        const cv = $('#wave'),
+            cx = cv.getContext('2d');
+        let t = 0;
+        const cols = ['#ff4b5c', '#f2c14e', '#fff3c4'];
+
+        function fit() {
+            const d = devicePixelRatio || 1;
+            cv.width = cv.clientWidth * d;
+            cv.height = cv.clientHeight * d
+        }
+        fit();
+        addEventListener('resize', fit);
+        const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+        function draw() {
+            const w = cv.width,
+                h = cv.height;
+            cx.clearRect(0, 0, w, h);
+            cx.strokeStyle = 'rgba(242,193,78,.14)';
+            cx.lineWidth = 1;
+            for (let i = 1; i < 6; i++) {
+                cx.beginPath();
+                cx.moveTo(0, h * i / 6);
+                cx.lineTo(w, h * i / 6);
+                cx.stroke()
+            }
+            cols.forEach((c, k) => {
+                cx.beginPath();
+                cx.strokeStyle = c;
+                cx.lineWidth = 2.5 * (devicePixelRatio || 1);
+                cx.shadowColor = c;
+                cx.shadowBlur = 12;
+                for (let x = 0; x <= w; x += 3) {
+                    const y = h / 2 + Math.sin(x / w * Math.PI * 4 - t + k * 2 * Math.PI / 3) * h * .36;
+                    x ? cx.lineTo(x, y) : cx.moveTo(x, y)
+                }
+                cx.stroke()
+            });
+            cx.shadowBlur = 0;
+            t += .05;
+            if (!still) requestAnimationFrame(draw);
+        }
+        draw();
+
+        /* ripple */
+        document.querySelectorAll('.btn').forEach(b => b.addEventListener('click', e => {
+            const r = b.getBoundingClientRect(),
+                s = Math.max(r.width, r.height) * 2,
+                d = document.createElement('span');
+            d.className = 'rip';
+            d.style.cssText = `width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;
+            (b.querySelector('.bt') || b).appendChild(d);
+            setTimeout(() => d.remove(), 600);
+            burst(b);
+        }));
+        const calm = () => matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+        function burst(b) {
+            if (calm()) return;
+            zap(b);
+            b.classList.remove('pop');
+            void b.offsetWidth;
+            b.classList.add('pop');
+            setTimeout(() => b.classList.remove('pop'), 520);
+            [0, 150].forEach(dl => {
+                const g = document.createElement('span');
+                g.className = 'ring';
+                g.style.animationDelay = dl + 'ms';
+                b.appendChild(g);
+                setTimeout(() => g.remove(), 900)
+            });
+            for (let i = 0; i < 14; i++) {
+                const s = document.createElement('span'),
+                    a = Math.random() * 6.283,
+                    d = 60 + Math.random() * 60;
+                s.className = 'spark';
+                s.style.setProperty('--dx', Math.cos(a) * d + 'px');
+                s.style.setProperty('--dy', Math.sin(a) * d + 'px');
+                b.appendChild(s);
+                setTimeout(() => s.remove(), 800)
+            }
+        }
+        document.querySelectorAll('.btn').forEach(b => {
+            b.addEventListener('pointermove', e => {
+                if (calm()) return;
+                const r = b.getBoundingClientRect();
+                b.style.setProperty('--ry', ((e.clientX - r.left) / r.width - .5) * 16 + 'deg');
+                b.style.setProperty('--rx', -((e.clientY - r.top) / r.height - .5) * 16 + 'deg')
+            });
+            b.addEventListener('pointerleave', () => {
+                b.style.setProperty('--rx', '0deg');
+                b.style.setProperty('--ry', '0deg')
+            });
+        });
+        /* ===== พื้นหลังไฟฟ้า: วงจร + กระแสไหล + ฟ้าผ่า ===== */
+        const ec = $('#elec'),
+            ex = ec.getContext('2d');
+        let EW = 0,
+            EH = 0,
+            traces = [],
+            bolts = [],
+            nextBolt = 1.2,
+            flash = 0,
+            lastT = 0;
+
+        function eInit() {
+            EW = ec.width = innerWidth;
+            EH = ec.height = innerHeight;
+            traces = [];
+            const G = 40,
+                n = Math.max(8, Math.round(EW * EH / 90000));
+            for (let i = 0; i < n; i++) {
+                let x = Math.round(Math.random() * EW / G) * G,
+                    y = Math.round(Math.random() * EH / G) * G;
+                const p = [
+                    [x, y]
+                ];
+                const steps = 4 + (Math.random() * 5 | 0);
+                let dir = Math.random() < .5 ? 0 : 1;
+                for (let s = 0; s < steps; s++) {
+                    const L = (1 + (Math.random() * 3 | 0)) * G,
+                        sg = Math.random() < .5 ? -1 : 1;
+                    if (dir === 0) x += L * sg;
+                    else y += L * sg;
+                    p.push([x, y]);
+                    if (Math.random() < .35) {
+                        const d = G * (1 + (Math.random() * 2 | 0));
+                        x += d * sg;
+                        y += d * (Math.random() < .5 ? -1 : 1);
+                        p.push([x, y])
+                    }
+                    dir = 1 - dir;
+                }
+                let len = 0;
+                const seg = [];
+                for (let k = 1; k < p.length; k++) {
+                    const l = Math.hypot(p[k][0] - p[k - 1][0], p[k][1] - p[k - 1][1]);
+                    seg.push(l);
+                    len += l
+                }
+                traces.push({
+                    p,
+                    seg,
+                    len,
+                    t: Math.random() * len,
+                    v: 90 + Math.random() * 130,
+                    c: Math.random() < .5 ? '#ff4b5c' : '#f2c14e'
+                });
+            }
+        }
+
+        function at(tr, d) {
+            d = ((d % tr.len) + tr.len) % tr.len;
+            let k = 0;
+            while (k < tr.seg.length - 1 && d > tr.seg[k]) {
+                d -= tr.seg[k];
+                k++
+            }
+            const a = tr.p[k],
+                b = tr.p[k + 1],
+                f = Math.min(d / tr.seg[k], 1);
+            return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+        }
+
+        function drawTraces() {
+            ex.lineWidth = 1;
+            ex.strokeStyle = 'rgba(242,193,78,.14)';
+            traces.forEach(tr => {
+                ex.beginPath();
+                tr.p.forEach((q, i) => i ? ex.lineTo(q[0], q[1]) : ex.moveTo(q[0], q[1]));
+                ex.stroke();
+                ex.fillStyle = 'rgba(242,193,78,.35)';
+                [tr.p[0], tr.p[tr.p.length - 1]].forEach(q => {
+                    ex.beginPath();
+                    ex.arc(q[0], q[1], 2.5, 0, 6.283);
+                    ex.fill()
+                });
+            });
+        }
+
+        function drawPulses() {
+            traces.forEach(tr => {
+                for (let k = 0; k < 5; k++) {
+                    const q = at(tr, tr.t - k * 7);
+                    ex.globalAlpha = 1 - k * .2;
+                    ex.fillStyle = k ? tr.c : '#fff3c4';
+                    if (!k) {
+                        ex.shadowColor = tr.c;
+                        ex.shadowBlur = 14
+                    } else ex.shadowBlur = 0;
+                    ex.beginPath();
+                    ex.arc(q[0], q[1], k ? 2.2 - k * .25 : 3, 0, 6.283);
+                    ex.fill();
+                }
+            });
+            ex.globalAlpha = 1;
+            ex.shadowBlur = 0;
+        }
+
+        function jag(x1, y1, x2, y2, d, out) {
+            if (d < 6) {
+                out.push([x1, y1, x2, y2]);
+                return
+            }
+            const mx = (x1 + x2) / 2 + (Math.random() - .5) * d,
+                my = (y1 + y2) / 2 + (Math.random() - .5) * d;
+            jag(x1, y1, mx, my, d / 2, out);
+            jag(mx, my, x2, y2, d / 2, out);
+        }
+
+        function mk(x1, y1, x2, y2) {
+            const main = [],
+                br = [];
+            jag(x1, y1, x2, y2, Math.hypot(x2 - x1, y2 - y1) * .35, main);
+            for (let i = 0; i < 4; i++) {
+                const s = main[Math.random() * main.length | 0],
+                    ang = Math.atan2(y2 - y1, x2 - x1) + (Math.random() - .5) * 1.6,
+                    l = 60 + Math.random() * 130;
+                jag(s[2], s[3], s[2] + Math.cos(ang) * l, s[3] + Math.sin(ang) * l, l * .4, br);
+            }
+            bolts.push({
+                main,
+                br,
+                life: .35,
+                max: .35
+            });
+            flash = .5;
+        }
+
+        function drawBolts() {
+            ex.shadowColor = '#ff2e44';
+            ex.shadowBlur = 18;
+            bolts.forEach(b => {
+                const a = Math.max(b.life / b.max, 0) * (.65 + Math.random() * .35);
+                [
+                    [b.main, 5, 'rgba(255,46,68,' + .35 * a + ')'],
+                    [b.br, 3, 'rgba(255,46,68,' + .3 * a + ')'],
+                    [b.main, 2, 'rgba(255,243,196,' + a + ')'],
+                    [b.br, 1.2, 'rgba(242,193,78,' + a + ')']
+                ].forEach(([s, w, c]) => {
+                    ex.strokeStyle = c;
+                    ex.lineWidth = w;
+                    ex.beginPath();
+                    s.forEach(g => {
+                        ex.moveTo(g[0], g[1]);
+                        ex.lineTo(g[2], g[3])
+                    });
+                    ex.stroke();
+                });
+            });
+            ex.shadowBlur = 0;
+        }
+
+        function spawn() {
+            const r = $('#rx').getBoundingClientRect(),
+                toR = Math.random() < .55 && r.bottom > 0 && r.top < EH;
+            const tx = toR ? r.left + r.width / 2 + (Math.random() - .5) * r.width * .5 : Math.random() * EW,
+                ty = toR ? r.top + r.height / 2 : EH * (.3 + Math.random() * .6);
+            mk(Math.random() * EW, -10, tx, ty);
+        }
+
+        function zap(el) {
+            if (calm()) return;
+            const r = el.getBoundingClientRect(),
+                x = r.left + r.width / 2,
+                y = r.top + r.height / 2;
+            mk(x, y, x + (Math.random() - .5) * 520, y - 150 - Math.random() * 260);
+            mk(x, y, x + (Math.random() - .5) * 520, y + 120 + Math.random() * 200);
+        }
+
+        function eLoop(ts) {
+            const dt = Math.min((ts - lastT) / 1000 || 0, .05);
+            lastT = ts;
+            ex.clearRect(0, 0, EW, EH);
+            if (flash > 0) {
+                ex.fillStyle = 'rgba(255,60,80,' + flash * .07 + ')';
+                ex.fillRect(0, 0, EW, EH);
+                flash -= dt * 2.5
+            }
+            drawTraces();
+            traces.forEach(tr => tr.t += tr.v * dt);
+            drawPulses();
+            nextBolt -= dt;
+            if (nextBolt <= 0) {
+                spawn();
+                nextBolt = 2 + Math.random() * 3.5
+            }
+            bolts = bolts.filter(b => (b.life -= dt) > 0);
+            drawBolts();
+            requestAnimationFrame(eLoop);
+        }
+        eInit();
+        addEventListener('resize', () => {
+            eInit();
+            if (calm()) {
+                ex.clearRect(0, 0, EW, EH);
+                drawTraces()
+            }
+        });
+        if (calm()) drawTraces();
+        else requestAnimationFrame(eLoop);
+        /* ใน Streamlit ปุ่ม data-nav ส่งคำสั่งให้หน้าแม่เปลี่ยน route */
+        document.querySelectorAll('[data-nav]').forEach(a => a.addEventListener('click', e => {
+            if (parent !== window) {
+                e.preventDefault();
+                parent.postMessage({
+                    type: 'ak-app-navigate',
+                    page: a.dataset.nav
+                }, '*')
+            }
+        }));
+    </script>
+</body>
+
+</html>

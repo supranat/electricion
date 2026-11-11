@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>หม้อแปลงไฟฟ้า | AK Electrical</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;800&display=swap">
+<style>
+:root{
+  color-scheme:dark;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bk:#050505;--bk2:#0d0d0b;--y:#ffd400;--y2:#ffb300;--ink:#f6f4ea;--mute:#bcb79f;--line:rgba(255,212,0,.38);
+  --glow:0 0 18px rgba(255,212,0,.45),0 0 44px rgba(255,180,0,.2);
+}
+@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:var(--bk);color:var(--ink);font-family:"Prompt","Noto Sans Thai",system-ui,sans-serif;line-height:1.7;overflow-x:hidden}
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 85% 20%,rgba(255,200,0,.16),transparent 70%),
+             radial-gradient(ellipse 50% 40% at 5% 90%,rgba(255,170,0,.1),transparent 70%)}
+.bg::after{content:"";position:absolute;inset:0;opacity:.3;
+  background-image:linear-gradient(rgba(255,212,0,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,212,0,.12) 1px,transparent 1px);
+  background-size:48px 48px;-webkit-mask-image:radial-gradient(ellipse at 70% 20%,#000,transparent 75%);mask-image:radial-gradient(ellipse at 70% 20%,#000,transparent 75%)}
+.scan{position:fixed;left:0;right:0;top:0;height:2px;z-index:0;pointer-events:none;background:linear-gradient(90deg,transparent,var(--y),transparent);opacity:.25;animation:sweep 9s linear infinite}
+@keyframes sweep{to{transform:translateY(100vh)}}
+.wrap{position:relative;z-index:1;width:100%;max-width:none;margin:0 auto;padding:0 clamp(16px,3vw,40px) 40px}
+
+/* hero */
+.hero{position:relative;isolation:isolate;overflow:hidden;display:grid;grid-template-columns:1fr;gap:10px;align-items:center;justify-items:center;min-height:100vh;min-height:100svh;padding:24px 0 36px;text-align:center}
+.hero .bg-layer{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+__HERO_BACKGROUND_CSS__
+.eyebrow{display:flex;align-items:center;gap:12px;font-size:12px;font-weight:600;letter-spacing:.22em;color:var(--y)}
+.hero .eyebrow{justify-content:center}
+.eyebrow::before{content:"";width:34px;height:2px;background:var(--y);box-shadow:var(--glow)}
+h1{margin:14px 0 14px;font-size:clamp(2.4rem,5.4vw,4.4rem);line-height:1.12;font-weight:800;color:#fff}
+h1 em{font-style:normal;background:linear-gradient(90deg,var(--y),var(--y2),#fff 55%,var(--y));background-size:220% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shine 6s linear infinite;filter:drop-shadow(0 0 16px rgba(255,200,0,.45))}
+@keyframes shine{to{background-position:-220% 0}}
+.lead{color:var(--mute);max-width:34em;margin:0 0 22px}
+.kva{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.kva b{font-size:clamp(2.4rem,5vw,3.6rem);font-weight:800;color:var(--y);text-shadow:var(--glow);line-height:1}
+.kva span{color:var(--mute)}
+.cta{position:relative;overflow:hidden;display:inline-flex;align-items:center;gap:10px;cursor:pointer;font:inherit;font-weight:700;color:#000;
+  background:linear-gradient(135deg,var(--y),var(--y2));border:0;border-radius:12px;padding:13px 26px;box-shadow:var(--glow);text-decoration:none;transition:transform .2s}
+.cta:hover{transform:translateY(-2px)}
+.cta::after{content:"";position:absolute;inset:0;transform:translateX(-120%);background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.65) 50%,transparent 65%);animation:sheen 3.6s ease-in-out infinite}
+@keyframes sheen{60%,100%{transform:translateX(120%)}}
+.stage{position:relative;width:min(88vw,700px);aspect-ratio:1/.78;display:grid;place-items:center;perspective:900px;margin:0 auto}
+.tilt{position:relative;width:min(78%,560px);transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .15s;animation:float 5s ease-in-out infinite alternate}
+@keyframes float{to{translate:0 -12px}}
+.tilt img{display:block;width:100%;height:auto}
+.tilt::before{content:"";position:absolute;inset:-4% -2%;pointer-events:none;opacity:.85;
+  background:linear-gradient(var(--y),var(--y)) 0 0/22px 2px no-repeat,linear-gradient(var(--y),var(--y)) 0 0/2px 22px no-repeat,
+  linear-gradient(var(--y),var(--y)) 100% 0/22px 2px no-repeat,linear-gradient(var(--y),var(--y)) 100% 0/2px 22px no-repeat,
+  linear-gradient(var(--y),var(--y)) 0 100%/22px 2px no-repeat,linear-gradient(var(--y),var(--y)) 0 100%/2px 22px no-repeat,
+  linear-gradient(var(--y),var(--y)) 100% 100%/22px 2px no-repeat,linear-gradient(var(--y),var(--y)) 100% 100%/2px 22px no-repeat}
+.tilt .sc{position:absolute;left:0;right:0;height:3px;top:0;background:linear-gradient(90deg,transparent,var(--y),transparent);box-shadow:0 0 14px var(--y);opacity:.8;animation:scimg 3.4s ease-in-out infinite}
+@keyframes scimg{0%{top:2%;opacity:0}15%,85%{opacity:.9}100%{top:96%;opacity:0}}
+.badge{position:absolute;right:2%;bottom:4%;background:var(--y);color:#000;font-size:11px;font-weight:800;letter-spacing:.06em;padding:7px 16px;border-radius:99px;box-shadow:var(--glow);z-index:3}
+/* sections */
+.sec{padding:34px 0 8px}
+.shead{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.shead .e{font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--y)}
+.shead h2{margin:4px 0 2px;font-size:clamp(1.7rem,3.4vw,2.4rem);font-weight:800}
+.shead p{margin:0;color:var(--mute)}
+.pill{font-size:13px;color:var(--y);border:1px solid var(--line);background:rgba(255,212,0,.07);padding:5px 16px;border-radius:99px}
+.caps{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.cap{position:relative;overflow:hidden;cursor:pointer;text-align:left;font:inherit;color:inherit;padding:22px;border-radius:18px;border:1px solid var(--line);
+  background:linear-gradient(160deg,#141410,#070707);transition:transform .25s,box-shadow .25s,border-color .25s}
+.cap::before{content:"";position:absolute;right:-40px;top:-40px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(255,212,0,.25),transparent 70%)}
+.cap:hover{transform:translateY(-6px);border-color:var(--y);box-shadow:var(--glow)}
+.cap .n{display:block;font-size:1.9rem;font-weight:800;color:var(--y);text-shadow:var(--glow)}
+.cap .n small{font-size:.9rem;color:var(--mute);font-weight:500}
+.cap b{display:block;margin-top:4px}
+.cap i{display:block;margin-top:14px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--y),transparent)}
+/* info */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin:6px 0 18px}
+.chips{display:flex;gap:10px;flex-wrap:wrap}
+.chip{cursor:pointer;font:inherit;color:var(--ink);padding:8px 20px;border-radius:99px;border:1px solid var(--line);background:#0b0b09;transition:.2s}
+.chip:hover{border-color:var(--y);color:var(--y)}
+.chip[aria-pressed=true]{background:var(--y);border-color:var(--y);color:#000;font-weight:700;box-shadow:var(--glow)}
+.count{color:var(--mute);font-size:14px}
+.acc{display:grid;gap:14px}
+.it{position:relative;border-radius:18px;overflow:hidden;border:1.5px solid var(--y);transition:transform .25s,box-shadow .25s}
+.it:hover{box-shadow:var(--glow)}
+.it.hide{display:none}
+.it.k{background:linear-gradient(160deg,#121210,#050505);color:var(--ink)}
+.it.y{background:linear-gradient(135deg,var(--y),var(--y2));color:#0a0a0a;border-color:#000;box-shadow:0 0 0 1px var(--y),var(--glow)}
+.it button{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:16px;padding:18px 22px;cursor:pointer}
+.it button:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+.it .no{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-weight:800;font-size:14px}
+.k .no{background:var(--y);color:#000;box-shadow:var(--glow)}
+.y .no{background:#000;color:var(--y)}
+.it .t{flex:1;font-weight:700;font-size:1.12rem}
+.k .t{color:var(--y)}
+.it .cv{flex:none;width:12px;height:12px;border-right:3px solid currentColor;border-bottom:3px solid currentColor;transform:rotate(45deg);transition:transform .3s}
+.k .cv{color:var(--y)}
+.it.open .cv{transform:rotate(-135deg)}
+.pn{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s ease}
+.it.open .pn{grid-template-rows:1fr}
+.pn>div{overflow:hidden}
+.pn p,.pn ul{margin:0;padding:0 22px 22px 80px}
+.pn ul{list-style:none}
+.pn li{position:relative;padding-left:22px;margin:4px 0}
+.pn li::before{content:"";position:absolute;left:0;top:.62em;width:9px;height:9px;transform:rotate(45deg);background:currentColor}
+.k .pn li::before{background:var(--y)}
+.k .pn p,.k .pn li{color:#d9d5c2}
+.meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--y);opacity:.85}
+.it button{cursor:grab}
+.gp{flex:none;width:14px;height:22px;margin-right:-4px;opacity:.7;touch-action:none;
+  background:radial-gradient(circle,currentColor 1.7px,transparent 2.2px) 0 0/7px 7.3px}
+.k .gp{color:var(--y)}
+.it.drag{z-index:5;transition:none;cursor:grabbing;box-shadow:0 22px 46px rgba(0,0,0,.75),0 0 0 2px #fff,var(--glow)}
+.it.drag button{cursor:grabbing}
+.acc.dragging{cursor:grabbing}
+.foot{margin-top:26px;padding:16px 20px;border-radius:14px;border:1px dashed var(--y);color:var(--mute);font-size:14px;background:rgba(255,212,0,.04)}
+.copy{margin:18px 0 0;text-align:center;color:var(--mute);font-size:13px}
+.copy b{color:var(--y)}
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}
+.rv.in{opacity:1;transform:none}
+@media(max-width:900px){.hero{min-height:100svh;gap:4px;padding-top:18px}.stage{width:min(96vw,620px);aspect-ratio:1/.88}.tilt{width:min(86%,520px)}.pn p,.pn ul{padding-left:22px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}.bg,.scan{display:none}.hero .bg-network{opacity:.45}}
+</style>
+</head>
+<body>
+<div class="bg" aria-hidden="true"></div><div class="scan" aria-hidden="true"></div>
+
+<div class="wrap">
+  <section class="hero">
+    <div class="bg-layer bg-glow" aria-hidden="true"></div>
+    <div class="bg-layer bg-grid" aria-hidden="true"></div>
+    <canvas class="bg-layer bg-network" aria-hidden="true"></canvas>
+    <div class="bg-layer bg-spotlight" aria-hidden="true"></div>
+    <div class="bg-layer bg-scanline" aria-hidden="true">
+      <div class="scan-line"></div>
+    </div>
+    <div class="bg-layer bg-vignette" aria-hidden="true"></div>
+    <div class="hero-content">
+      <div class="eyebrow">AK ELECTRICAL · POWER SOLUTIONS</div>
+      <h1>หม้อแปลงไฟฟ้า<br>ที่เหมาะกับ<em>ทุกโหลด</em></h1>
+      <p class="lead">เลือกชมข้อมูลช่วงกำลัง ข้อกำหนดแรงดัน และบริการที่เกี่ยวข้อง เพื่อประกอบการวางแผนระบบไฟฟ้าของคุณ</p>
+      <div class="kva"><b>50–3,000</b><span>kVA · มีให้เลือกหลายขนาด</span></div>
+      <a class="cta" href="#info">ดูรายละเอียดหม้อแปลง <span>→</span></a>
+    </div>
+    <div class="stage" id="stage">
+      <div class="halo"></div><div class="ring"></div><div class="ring r2"></div>
+      <div class="tilt" id="tilt"><img src="__TRANSFORMER_IMG__" alt="หม้อแปลงไฟฟ้า"><div class="sc"></div></div>
+      <div class="badge">TRANSFORMER SERIES</div>
+    </div>
+  </section>
+
+  <section class="sec rv">
+    <div class="shead"><div><div class="e">CAPACITY GUIDE</div><h2>เลือกขนาดให้เหมาะกับงาน</h2><p>ดูภาพรวมของช่วงกำลังไฟ แล้วเลือกช่วงที่ตรงกับลักษณะการใช้งาน</p></div><span class="pill">3 ช่วงกำลังไฟ</span></div>
+    <div class="caps">
+      <button class="cap" data-go="a"><span class="n">50–500 <small>kVA</small></span><b>อาคาร ร้านค้า โรงงานเล็ก</b><i></i></button>
+      <button class="cap" data-go="b"><span class="n">500–1,500 <small>kVA</small></span><b>โรงงาน อาคารสูง</b><i></i></button>
+      <button class="cap" data-go="c"><span class="n">1,500–3,000 <small>kVA</small></span><b>นิคม สถานีไฟฟ้าย่อย</b><i></i></button>
+    </div>
+  </section>
+
+  <section class="sec rv" id="info">
+    <div class="shead"><div><div class="e">SPECIFICATIONS</div><h2>ข้อมูลและข้อกำหนด</h2><p>กรองตามช่วงกำลังไฟ หรือเปิดหัวข้อเพื่ออ่านรายละเอียดเพิ่มเติม</p></div></div>
+    <div class="bar">
+      <div class="chips" id="chips">
+        <button class="chip" data-f="all" aria-pressed="true">ทั้งหมด</button><button class="chip" data-f="a" aria-pressed="false">50–500 kVA</button>
+        <button class="chip" data-f="b" aria-pressed="false">500–1,500 kVA</button><button class="chip" data-f="c" aria-pressed="false">1,500–3,000 kVA</button>
+      </div>
+      <div class="meta"><span class="hint">ลากหัวข้อขึ้น-ลงเพื่อเรียงลำดับ</span><span class="count" id="count">แสดง 7 รายการ</span></div>
+    </div>
+    <div class="acc" id="acc">
+      <div class="it" data-r="g"><button aria-expanded="false"><span class="no"></span><span class="t">กำลังไฟและขนาด</span><span class="cv"></span></button><div class="pn"><div><p>ผลิตตั้งแต่ 50 ถึง 3,000 kVA ทั้งแบบ 1 เฟสและ 3 เฟส เลือกขนาดตามโหลดที่ใช้จริงและเผื่อขยายในอนาคต</p></div></div></div>
+      <div class="it" data-r="a"><button aria-expanded="false"><span class="no"></span><span class="t">50–500 kVA · อาคาร ร้านค้า โรงงานเล็ก</span><span class="cv"></span></button><div class="pn"><div><p>เหมาะกับอาคารพาณิชย์ หมู่บ้าน และโรงงานขนาดเล็ก ติดตั้งบนเสาหรือลานได้ น้ำหนักเบา ขนย้ายสะดวก</p></div></div></div>
+      <div class="it" data-r="b"><button aria-expanded="false"><span class="no"></span><span class="t">500–1,500 kVA · โรงงาน อาคารสูง</span><span class="cv"></span></button><div class="pn"><div><p>เหมาะกับโรงงานอุตสาหกรรมและอาคารขนาดใหญ่ รองรับโหลดต่อเนื่อง ประสิทธิภาพสูง ลดการสูญเสียในตัวเครื่อง</p></div></div></div>
+      <div class="it" data-r="c"><button aria-expanded="false"><span class="no"></span><span class="t">1,500–3,000 kVA · นิคม สถานีไฟฟ้าย่อย</span><span class="cv"></span></button><div class="pn"><div><p>สำหรับนิคมอุตสาหกรรมและสถานีไฟฟ้าย่อย ออกแบบเฉพาะงาน พร้อมระบบป้องกันและตรวจวัดครบ</p></div></div></div>
+      <div class="it" data-r="g"><button aria-expanded="false"><span class="no"></span><span class="t">แรงดันไฟฟ้า</span><span class="cv"></span></button><div class="pn"><div><ul><li>แรงดันด้านสูง 12 / 22 / 24 kV</li><li>แรงดันด้านต่ำ 400/230 V</li><li>ปรับแท็ปได้ตามหน้างาน</li></ul></div></div></div>
+      <div class="it" data-r="g"><button aria-expanded="false"><span class="no"></span><span class="t">มาตรฐานและการทดสอบ</span><span class="cv"></span></button><div class="pn"><div><p>ผลิตตามมาตรฐาน มอก. และ IEC ทดสอบทุกเครื่องก่อนส่งมอบ พร้อมใบรายงานผลการทดสอบ</p></div></div></div>
+      <div class="it" data-r="g"><button aria-expanded="false"><span class="no"></span><span class="t">การรับประกันและบริการ</span><span class="cv"></span></button><div class="pn"><div><p>เงื่อนไขการรับประกันและบริการหลังการขายขึ้นอยู่กับรุ่นและโครงการ โปรดสอบถามทีมงานเพื่อรับรายละเอียดที่ถูกต้อง</p></div></div></div>
+    </div>
+    <div class="foot">ข้อมูลนี้เป็นแนวทางเบื้องต้น การเลือกขนาดและติดตั้งจริงควรพิจารณาจากโหลดและสภาพหน้างาน โดยวิศวกรไฟฟ้า</div>
+    <p class="copy"><b>AK Electrical</b> · ข้อมูลผลิตภัณฑ์หม้อแปลงไฟฟ้า</p>
+  </section>
+</div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+/* รายการ: สลับกรอบดำ/เหลืองตามลำดับที่มองเห็น */
+const items=$$('.it');
+function paint(){let k=0;$$('.it').filter(e=>!e.classList.contains('hide')).forEach(e=>{
+  e.classList.remove('k','y');e.classList.add(k%2?'y':'k');e.querySelector('.no').textContent=String(k+1).padStart(2,'0');k++});
+  $('#count').textContent='แสดง '+k+' รายการ'}
+items.forEach(e=>e.querySelector('button').addEventListener('click',()=>{
+  const o=!e.classList.contains('open');e.classList.toggle('open',o);e.querySelector('button').setAttribute('aria-expanded',o)}));
+function filt(f){
+  $$('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.f===f));
+  items.forEach(e=>e.classList.toggle('hide',!(f==='all'||e.dataset.r==='g'||e.dataset.r===f)));paint()}
+$$('.chip').forEach(c=>c.addEventListener('click',()=>filt(c.dataset.f)));
+$$('.cap').forEach(c=>c.addEventListener('click',()=>{filt(c.dataset.go);
+  const t=items.find(e=>e.dataset.r===c.dataset.go);t.classList.add('open');t.querySelector('button').setAttribute('aria-expanded',true);
+  $('#info').scrollIntoView({behavior:'smooth'})}));
+items[0].classList.add('open');items[0].querySelector('button').setAttribute('aria-expanded',true);paint();
+/* ลากหัวข้อเพื่อเรียงลำดับ: เมาส์ลากที่หัวข้อ / จอสัมผัสลากที่ไอคอนจุด / คีย์บอร์ด Alt+↑↓ */
+items.forEach(e=>{const g=document.createElement('span');g.className='gp';g.setAttribute('aria-hidden','true');e.querySelector('button').prepend(g)});
+const acc=$('#acc'),vis=()=>$$('.it').filter(e=>!e.classList.contains('hide'));
+function flip(fn,skip){
+  const v=vis().filter(x=>x!==skip),f=new Map(v.map(x=>[x,x.getBoundingClientRect().top]));fn();
+  v.forEach(x=>{const dy=f.get(x)-x.getBoundingClientRect().top;
+    if(dy)x.animate([{transform:'translateY('+dy+'px)'},{transform:'none'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'})})}
+let D=null,moved=false;
+acc.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('.it button');if(!b||e.button!==0)return;
+  if(e.pointerType!=='mouse'&&!e.target.closest('.gp'))return;
+  D={el:b.parentElement,b:b,id:e.pointerId,sy:e.clientY,my:e.clientY,on:false,ty:0,grab:0}});
+function upd(){
+  const el=D.el;el.style.transform='none';
+  const r=el.getBoundingClientRect(),want=D.my-D.grab,v=vis(),i=v.indexOf(el),prev=v[i-1],next=v[i+1],c=want+r.height/2;
+  const mid=x=>{const q=x.getBoundingClientRect();return q.top+q.height/2};
+  if(prev&&c<mid(prev))flip(()=>prev.before(el),el);
+  else if(next&&c>mid(next))flip(()=>next.after(el),el);
+  el.style.transform='none';
+  D.ty=want-el.getBoundingClientRect().top;
+  el.style.transform='translateY('+D.ty+'px)'}
+function auto(){
+  if(!D||!D.on)return;
+  if(D.my<70)scrollBy(0,-10);else if(D.my>innerHeight-70)scrollBy(0,10);
+  upd();requestAnimationFrame(auto)}
+addEventListener('pointermove',e=>{
+  if(!D||e.pointerId!==D.id)return;
+  D.my=e.clientY;
+  if(!D.on){
+    if(Math.abs(e.clientY-D.sy)<6)return;
+    D.on=true;moved=true;D.el.classList.add('drag');acc.classList.add('dragging');
+    document.body.style.userSelect='none';D.grab=D.sy-D.el.getBoundingClientRect().top;
+    try{D.b.setPointerCapture(D.id)}catch(_){}
+    auto()}
+  upd()});
+function end(e){
+  if(!D||(e&&e.pointerId!==D.id))return;
+  const d=D;D=null;
+  if(d.on){
+    document.body.style.userSelect='';acc.classList.remove('dragging');
+    d.el.animate([{transform:'translateY('+d.ty+'px)'},{transform:'none'}],{duration:240,easing:'cubic-bezier(.2,.8,.2,1)'});
+    d.el.style.transform='';d.el.classList.remove('drag');paint();
+    setTimeout(()=>{moved=false},60)}}
+addEventListener('pointerup',end);addEventListener('pointercancel',end);
+acc.addEventListener('click',e=>{if(moved){e.stopPropagation();e.preventDefault()}},true);
+acc.addEventListener('keydown',e=>{
+  if(!e.altKey||(e.key!=='ArrowUp'&&e.key!=='ArrowDown'))return;
+  const b=e.target.closest('.it button');if(!b)return;e.preventDefault();
+  const el=b.parentElement,v=vis(),j=v.indexOf(el)+(e.key==='ArrowUp'?-1:1);
+  if(j<0||j>=v.length)return;
+  flip(()=>{e.key==='ArrowUp'?v[j].before(el):v[j].after(el)});paint();b.focus()});
+/* เอียงรูปตามเมาส์ */
+const st=$('#stage'),tl=$('#tilt');
+st.addEventListener('pointermove',e=>{const r=st.getBoundingClientRect();
+  tl.style.setProperty('--ry',((e.clientX-r.left)/r.width-.5)*14+'deg');tl.style.setProperty('--rx',-((e.clientY-r.top)/r.height-.5)*10+'deg')});
+st.addEventListener('pointerleave',()=>{tl.style.setProperty('--rx','0deg');tl.style.setProperty('--ry','0deg')});
+/* เปิดทีละส่วนตอนเลื่อน */
+const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting){x.target.classList.add('in');io.unobserve(x.target)}}),{threshold:.08}):null;
+$$('.rv').forEach(e=>io?io.observe(e):e.classList.add('in'));
+__HERO_NETWORK_SCRIPT__
+</script>
+</body>
+</html>

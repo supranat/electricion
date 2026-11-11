@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>เสาไฟคอนกรีต 6–12 เมตร | AK Electrical</title>
+<style>
+:root{--navy:#160B0A;--main:#28110E;--hi:#FF4C24;--cy:#FFB36B;--mute:#b9c8dc;--line:rgba(255,76,36,.3);color-scheme:dark}
+@property --a{syntax:"<angle>";initial-value:0deg;inherits:false}
+@property --frame-angle{syntax:"<angle>";initial-value:0deg;inherits:false}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:#fff;background:#000;font-family:"Prompt","Noto Sans Thai",system-ui,sans-serif;line-height:1.7;min-height:100vh;overflow-x:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
+.bg{position:fixed;inset:0;z-index:0;overflow:hidden;background:#000;pointer-events:none}
+.bg i{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;animation:float 14s ease-in-out infinite alternate}
+.bg i:nth-child(1){width:520px;height:520px;background:#A92720;left:-120px;top:-100px}
+.bg i:nth-child(2){width:460px;height:460px;background:var(--main);right:-80px;top:30%;animation-delay:-5s}
+.bg i:nth-child(3){width:380px;height:380px;background:var(--hi);opacity:.22;left:35%;bottom:-160px;animation-delay:-9s}
+.bg::after{content:"";position:absolute;inset:0;opacity:.35;background-image:linear-gradient(rgba(255,76,36,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,76,36,.12) 1px,transparent 1px);background-size:44px 44px;-webkit-mask-image:radial-gradient(ellipse at 40% 30%,#000,transparent 75%);mask-image:radial-gradient(ellipse at 40% 30%,#000,transparent 75%)}
+@keyframes float{to{transform:translate(60px,40px) scale(1.15)}}
+.top{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 22px;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.logo{color:#fff;text-decoration:none;font-weight:700}.logo span{color:var(--hi)}
+.wrap{position:relative;z-index:1;width:100%;max-width:none;margin:0;padding:0 clamp(16px,3.2vw,64px) 40px}
+.glass{position:relative;border-radius:20px;border:1px solid transparent;background:linear-gradient(rgba(40,17,14,.88),rgba(22,11,10,.9)) padding-box,conic-gradient(from var(--frame-angle),rgba(255,76,36,.36),#FFB36B,rgba(255,76,36,.22),#FF4C24,rgba(255,76,36,.36)) border-box;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;animation:frame-flow 12s linear infinite}
+.glass::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(255,76,36,.24),transparent 60%)}
+.glass:hover::before{opacity:1}.glass>*{position:relative}
+@keyframes frame-flow{to{--frame-angle:360deg}}
+.glass.card{transition:transform .28s ease,box-shadow .28s ease}
+.glass.card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(255,76,36,.16)}
+.hero{padding:42px 0 18px}.eyebrow{color:var(--cy);font-size:13px;letter-spacing:3px;text-transform:uppercase}
+h1{margin:6px 0 8px;font-size:clamp(34px,6vw,76px);line-height:1.15;background:linear-gradient(90deg,#fff,var(--cy) 55%,var(--hi));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(255,76,36,.4))}
+.lead{color:var(--mute);max-width:960px;font-size:clamp(16px,1.3vw,20px);margin:0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-top:24px}
+.stat{padding:16px 20px}.stat b{display:block;font-size:clamp(30px,3vw,48px);line-height:1.2;text-shadow:0 0 18px rgba(255,76,36,.8)}.stat small{color:var(--mute)}
+.main{display:grid;grid-template-columns:minmax(320px,42%) 1fr;gap:clamp(18px,2.4vw,36px);align-items:start;margin-top:22px}
+.left{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow-y:auto;scrollbar-width:none}.left::-webkit-scrollbar{display:none}
+.gal{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.gi{margin:0;cursor:pointer;border-radius:18px;border:2px solid transparent;background:linear-gradient(var(--navy),var(--navy)) padding-box,linear-gradient(var(--line),var(--line)) border-box;overflow:hidden;transition:transform .25s cubic-bezier(.34,1.56,.64,1),box-shadow .25s}
+.gi:hover{transform:translateY(-5px);box-shadow:0 16px 34px rgba(255,76,36,.3)}
+.gi.on{background:linear-gradient(var(--navy),var(--navy)) padding-box,conic-gradient(from var(--a),var(--hi),transparent 35%,var(--cy) 60%,transparent 80%,var(--hi)) border-box;animation:spin 4s linear infinite;box-shadow:0 0 28px rgba(255,76,36,.45)}
+@keyframes spin{to{--a:360deg}}
+.gi img{display:block;width:100%;aspect-ratio:5/6;object-fit:contain;background:#190D0C}
+.gi .ph{display:none;aspect-ratio:5/6;place-items:center;text-align:center;color:var(--mute);font-size:13px;padding:10px;background:repeating-linear-gradient(45deg,#190D0C,#190D0C 10px,#321510 10px,#321510 20px)}
+.gi .ph b{display:block;font-size:32px;color:var(--hi)}
+.gi.noimg img{display:none}.gi.noimg .ph{display:grid}
+.gi figcaption{padding:8px 10px;font-size:14px;background:rgba(40,17,14,.92);display:flex;justify-content:space-between;gap:6px}
+.gi figcaption small{color:var(--cy)}
+.files{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;color:var(--mute);font-size:13px}
+.files code{padding:2px 10px;border-radius:99px;border:1px solid var(--line);background:rgba(255,76,36,.1);color:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tab{cursor:pointer;font:inherit;color:var(--mute);padding:8px 18px;border-radius:99px;border:1px solid var(--line);background:rgba(40,17,14,.72);transition:.2s}
+.tab:hover{color:#fff;border-color:var(--hi)}.tab.on{color:#000;background:var(--hi);border-color:var(--hi);box-shadow:0 0 20px rgba(255,76,36,.7);font-weight:600}
+.panel{padding:clamp(22px,2.4vw,40px)}.head{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
+.big{font-size:clamp(80px,12vw,170px);font-weight:800;line-height:1;background:linear-gradient(180deg,#fff,var(--hi));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px rgba(255,76,36,.5))}
+.head .u{font-size:26px;color:var(--cy);padding-bottom:10px}.head small{display:block;color:var(--mute)}
+.spec{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:18px}
+.sp{padding:14px 16px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.4);transition:transform .2s,border-color .2s,box-shadow .2s}
+.sp:hover{transform:translateY(-4px);border-color:var(--hi);box-shadow:0 12px 26px rgba(255,76,36,.28)}
+.sp small{display:block;color:var(--mute);font-size:13px}.sp b{font-size:18px;font-weight:600}
+.card{padding:22px 24px;margin-top:18px}.h3{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:19px}
+.h3::before{content:"";width:8px;height:22px;border-radius:4px;background:var(--hi);box-shadow:0 0 14px var(--hi)}
+.bars{display:grid;gap:12px}.bar{display:grid;grid-template-columns:64px 1fr 92px;gap:12px;align-items:center;font-size:15px}
+.bar .t{height:12px;border-radius:9px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar .t i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,#B52B1F,var(--cy));transition:width 1s cubic-bezier(.22,1,.36,1)}
+.bar.on{color:var(--cy);font-weight:600}.bar.on .t i{box-shadow:0 0 14px var(--cy)}.bar span:last-child{text-align:right}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px}
+.steps li{counter-increment:s;position:relative;padding:14px 16px 14px 62px;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.4);color:var(--mute);font-size:15px;transition:transform .2s,border-color .2s,box-shadow .2s}
+.steps li:hover{transform:translateY(-4px);border-color:var(--hi);box-shadow:0 12px 26px rgba(255,76,36,.22)}
+.steps li::before{content:counter(s);position:absolute;left:14px;top:14px;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--hi);color:#000;font-weight:800;box-shadow:0 0 16px rgba(255,76,36,.6)}
+.steps b{display:block;color:#fff;font-size:16px}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:22px}
+.v{padding:20px 22px;border-radius:18px;border:1.5px solid;transition:transform .2s,box-shadow .2s}.v:hover{transform:translateY(-4px)}
+.v h4{margin:0 0 8px;font-size:17px}.v ul{margin:0;padding-left:20px;color:var(--mute)}.v li{margin:4px 0}.v p{margin:8px 0 0;font-size:14px;color:var(--mute)}
+.ok{border-color:rgba(61,220,132,.55);background:linear-gradient(160deg,rgba(61,220,132,.1),rgba(0,0,0,.7))}
+.wn{border-color:rgba(255,176,32,.55);background:linear-gradient(160deg,rgba(255,176,32,.1),rgba(0,0,0,.7))}
+.note{margin-top:18px;padding:14px 18px;border-left:3px solid var(--hi);background:rgba(255,76,36,.08);border-radius:0 12px 12px 0;color:var(--mute);font-size:15px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;min-width:640px;background:rgba(0,0,0,.35)}
+th,td{padding:10px 14px;text-align:center;border-bottom:1px solid rgba(255,76,36,.15)}
+th{background:rgba(255,76,36,.16)}tbody tr:last-child td{border-bottom:0}
+tbody tr{transition:background .2s}tbody tr:hover td{background:rgba(255,76,36,.1)}
+tbody tr.on td{background:rgba(255,76,36,.26);color:#fff;font-weight:600}
+.cap{font-size:14px;color:var(--mute);margin:10px 0 0}
+.rv{opacity:0}.rv.in{opacity:1;animation:rise .7s cubic-bezier(.34,1.3,.64,1) backwards}
+@keyframes rise{from{opacity:0;transform:translateY(24px) scale(.98)}}
+.lb{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(0,0,0,.9);backdrop-filter:blur(8px);padding:20px}
+.lb.on{display:grid}.lb img{max-width:min(96vw,1200px);max-height:86vh;border-radius:14px;border:1px solid var(--hi);box-shadow:0 0 60px rgba(255,76,36,.5);background:#190D0C}
+.lb button{position:absolute;top:14px;right:18px;font:inherit;font-size:26px;color:#fff;background:rgba(255,76,36,.25);border:1px solid var(--hi);border-radius:12px;width:46px;height:46px;cursor:pointer}
+.lb p{position:absolute;bottom:12px;left:0;right:0;text-align:center;color:var(--mute);margin:0;padding:0 12px}
+@media(max-width:900px){.main{grid-template-columns:1fr}.left{position:static;max-height:none}.gal{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:600px){.gal{grid-template-columns:repeat(2,minmax(0,1fr))}.bar{grid-template-columns:52px 1fr 78px;font-size:13px}.panel{padding:20px 16px}.card{padding:18px 14px}.gi figcaption{font-size:12px;padding:7px}.steps{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.rv{opacity:1}}
+
+/* Refined electrical-product layout with a restrained plasma-flame accent. */
+:root {
+  --navy: #091422;
+  --main: #0e1b2b;
+  --hi: #ff6b45;
+  --cy: #f3cf86;
+  --mute: #a9bacb;
+  --line: rgba(190, 207, 225, .16);
+  --gold-line: rgba(243, 207, 134, .27);
+}
+body {
+  color: #f3f6fa;
+  background:
+    radial-gradient(ellipse at 82% 8%, rgba(32, 90, 139, .19), transparent 33%),
+    radial-gradient(ellipse at 8% 70%, rgba(165, 59, 38, .11), transparent 36%),
+    linear-gradient(145deg, #070e17, #0b1522 48%, #080f18);
+  font-family: "Prompt", "Noto Sans Thai", system-ui, sans-serif;
+}
+.bg { background: transparent; }
+.bg i { filter: blur(115px); opacity: .3; }
+.bg i:nth-child(1) { background: #245c82; }
+.bg i:nth-child(2) { background: #6b3828; opacity: .25; }
+.bg i:nth-child(3) { background: #c38643; opacity: .12; }
+.bg::after {
+  opacity: .12;
+  background-image:
+    linear-gradient(rgba(185, 207, 229, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(185, 207, 229, .12) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse at 55% 20%, #000, transparent 78%);
+  mask-image: radial-gradient(ellipse at 55% 20%, #000, transparent 78%);
+}
+.top {
+  width: min(100% - 32px, 1540px);
+  margin: 14px auto 0;
+  padding: 13px clamp(16px, 2.4vw, 32px);
+  border: 1px solid rgba(198, 218, 237, .12);
+  border-radius: 17px;
+  background: rgba(8, 17, 28, .76);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, .2);
+}
+.logo { font-size: 17px; letter-spacing: .03em; }
+.logo span { color: var(--cy); }
+.top > span { color: #9fb2c4; font-size: 12px; letter-spacing: .16em; }
+.wrap {
+  max-width: 1540px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 3.2vw, 54px) 48px;
+}
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin-top: 24px;
+  padding: clamp(30px, 5vw, 68px);
+  border: 1px solid rgba(243, 207, 134, .18);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 82% 90%, rgba(204, 100, 54, .12), transparent 36%),
+    linear-gradient(125deg, rgba(14, 28, 44, .96), rgba(9, 18, 30, .87));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, .25), inset 0 1px rgba(255, 255, 255, .035);
+}
+.hero > :not(.flame-aura) { position: relative; z-index: 1; }
+.eyebrow {
+  color: var(--cy);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .2em;
+}
+h1 {
+  max-width: 980px;
+  margin: 12px 0 15px;
+  background: linear-gradient(100deg, #fff 12%, #f6e3bc 62%, #e8a56c);
+  -webkit-background-clip: text;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(224, 159, 102, .16));
+}
+.lead { max-width: 820px; color: #b6c4d2; line-height: 1.9; }
+.flame-aura {
+  position: absolute;
+  z-index: 0;
+  top: -46%;
+  right: -2%;
+  width: clamp(330px, 42vw, 610px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(242, 165, 83, .34), transparent 22%),
+    radial-gradient(ellipse at 50% 55%, rgba(205, 83, 48, .24), transparent 48%),
+    radial-gradient(ellipse at 50% 38%, rgba(49, 114, 159, .19), transparent 70%);
+  filter: blur(12px);
+  pointer-events: none;
+  animation: flame-breathe 7s ease-in-out infinite alternate;
+}
+.flame-aura::before,
+.flame-aura::after {
+  content: "";
+  position: absolute;
+  inset: 12% 27%;
+  border-radius: 50% 50% 44% 56%;
+  background:
+    radial-gradient(ellipse at 48% 82%, rgba(255, 222, 151, .36), transparent 9%),
+    radial-gradient(ellipse at 40% 62%, rgba(237, 129, 70, .29), transparent 22%),
+    radial-gradient(ellipse at 58% 36%, rgba(171, 75, 58, .2), transparent 44%);
+  filter: blur(15px);
+  transform: rotate(-9deg) scaleY(.88);
+  animation: flame-flicker 3.8s ease-in-out infinite alternate;
+}
+.flame-aura::after {
+  inset: 4% 37% 18% 18%;
+  opacity: .7;
+  filter: blur(22px);
+  transform: rotate(12deg) scaleY(.94);
+  animation-delay: -1.7s;
+}
+@keyframes flame-breathe {
+  from { opacity: .58; transform: translateY(8px) scale(.96); }
+  to { opacity: 1; transform: translateY(-12px) scale(1.04); }
+}
+@keyframes flame-flicker {
+  from { opacity: .48; transform: rotate(-12deg) scaleY(.82) translateX(-6px); }
+  to { opacity: .86; transform: rotate(8deg) scaleY(1.04) translateX(7px); }
+}
+.ember {
+  position: absolute;
+  bottom: 34%;
+  left: 47%;
+  width: 3px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, transparent, #ffdc9b 40%, #d9865d 72%, transparent);
+  box-shadow: 0 0 10px rgba(255, 190, 112, .75);
+  opacity: 0;
+  animation: ember-rise 3.4s ease-out infinite;
+}
+.ember-two { left: 62%; height: 22px; animation-delay: -1.2s; animation-duration: 3.8s; }
+.ember-three { left: 36%; height: 27px; animation-delay: -2.3s; animation-duration: 4.1s; }
+@keyframes ember-rise {
+  0% { opacity: 0; transform: translate3d(0, 20px, 0) scale(.65); }
+  18% { opacity: .8; }
+  76% { opacity: .45; }
+  100% { opacity: 0; transform: translate3d(12px, -78px, 0) scale(.18); }
+}
+.stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 30px; }
+.glass {
+  border-radius: 17px;
+  background:
+    linear-gradient(145deg, rgba(18, 34, 51, .92), rgba(10, 21, 34, .94)) padding-box,
+    linear-gradient(135deg, rgba(243, 207, 134, .24), rgba(134, 174, 207, .1), rgba(243, 207, 134, .12)) border-box;
+  backdrop-filter: blur(16px);
+  animation-duration: 22s;
+}
+.glass::before { background: radial-gradient(360px circle at var(--mx,50%) var(--my,50%),rgba(243,207,134,.13),transparent 60%); }
+.glass.stat { padding: 16px 18px; }
+.stat b { color: #f4d28d; font-size: clamp(25px, 2.4vw, 40px); text-shadow: 0 0 22px rgba(243, 207, 134, .24); }
+.stat small { color: #a9bacb; font-size: 12px; }
+.main {
+  grid-template-columns: minmax(330px, .82fr) minmax(0, 1.5fr);
+  gap: clamp(18px, 2.5vw, 34px);
+  margin-top: 26px;
+}
+.left {
+  position: sticky;
+  top: 96px;
+  max-height: calc(100vh - 112px);
+  overflow-y: auto;
+  padding: 17px;
+  border: 1px solid rgba(190, 207, 225, .14);
+  border-radius: 22px;
+  background: rgba(10, 20, 32, .78);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(14px);
+}
+.gallery-heading { display: flex; justify-content: space-between; align-items: end; gap: 10px; margin: 0 0 14px; }
+.gallery-heading h2 { margin: 0; color: #f5f7fa; font-size: 18px; }
+.gallery-heading span { color: var(--cy); font: 700 10px ui-monospace, monospace; letter-spacing: .14em; }
+.gal { gap: 10px; }
+.gi {
+  border: 1px solid rgba(197, 216, 233, .14);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #f8f8f6, #e9edf0) padding-box, linear-gradient(var(--line),var(--line)) border-box;
+}
+.gi:hover { box-shadow: 0 14px 32px rgba(0, 0, 0, .32); }
+.gi.on {
+  background: linear-gradient(145deg, #f8f8f6, #e9edf0) padding-box,
+    conic-gradient(from var(--a), #f3cf86, #d78655, #6e9eba, #f3cf86) border-box;
+  box-shadow: 0 0 24px rgba(243, 207, 134, .2);
+}
+.gi img { background: #f1f2f1; }
+.gi figcaption { background: #101c29; color: #e8edf2; font-size: 12px; }
+.gi figcaption small { color: var(--cy); }
+.files { color: #a9bacb; font-size: 11px; }
+.files code { border-color: rgba(190, 207, 225, .16); background: rgba(255, 255, 255, .035); color: #cbd6e0; }
+.details-column { min-width: 0; }
+.section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 8px;
+  border: 1px solid rgba(190, 207, 225, .12);
+  border-radius: 15px;
+  background: rgba(10, 20, 32, .72);
+}
+.section-nav a {
+  padding: 7px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: #b7c5d2;
+  font-size: 12px;
+  text-decoration: none;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.section-nav a:hover { border-color: var(--gold-line); background: rgba(243, 207, 134, .08); color: #f5d992; }
+.tabs { margin: 0 0 12px; }
+.tab {
+  padding: 8px 15px;
+  border-color: rgba(190, 207, 225, .17);
+  background: rgba(12, 24, 37, .88);
+  color: #b7c5d2;
+  font-size: 13px;
+}
+.tab:hover { border-color: var(--cy); color: #fff; }
+.tab.on { border-color: var(--cy); background: linear-gradient(120deg, #f2d794, #d9a766); color: #17202a; box-shadow: 0 0 18px rgba(243, 207, 134, .2); }
+.panel { padding: clamp(20px, 2.4vw, 34px); }
+.head .big { background: linear-gradient(180deg, #fff, #f1ce86 78%, #d88963); filter: drop-shadow(0 0 22px rgba(243, 207, 134, .2)); }
+.head .u { color: var(--cy); }
+.head small { color: #9eafbf; }
+.spec { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.sp {
+  border-color: rgba(190, 207, 225, .13);
+  background: rgba(5, 14, 23, .42);
+}
+.sp:hover { border-color: rgba(243, 207, 134, .46); box-shadow: 0 12px 26px rgba(0, 0, 0, .2); }
+.sp small { color: #9eafbf; }
+.sp b { color: #edf2f6; }
+.card {
+  padding: clamp(18px, 2vw, 26px);
+  border-color: rgba(190, 207, 225, .14);
+  background: linear-gradient(145deg, rgba(16, 31, 47, .96), rgba(9, 19, 31, .96)) padding-box,
+    linear-gradient(135deg, rgba(243, 207, 134, .18), rgba(134, 174, 207, .08), rgba(243, 207, 134, .08)) border-box;
+}
+.h3 { color: #f2f5f8; font-size: 17px; }
+.h3::before { background: linear-gradient(180deg, #f3cf86, #bd7353); box-shadow: 0 0 14px rgba(243, 207, 134, .32); }
+.bar { color: #bcc9d5; }
+.bar .t { background: rgba(255, 255, 255, .08); }
+.bar .t i { background: linear-gradient(90deg, #a96452, #e2bd78); }
+.bar.on { color: #f3d491; }
+.bar.on .t i { box-shadow: 0 0 12px rgba(243, 207, 134, .44); }
+table { background: rgba(4, 12, 20, .58); }
+th, td { border-color: rgba(190, 207, 225, .1); }
+th { background: rgba(243, 207, 134, .1); color: #f3d491; }
+tbody tr:hover td { background: rgba(243, 207, 134, .055); }
+tbody tr.on td { background: rgba(243, 207, 134, .14); color: #fff; }
+.cap { color: #96a9ba; font-size: 12px; }
+.steps li { border-color: rgba(190, 207, 225, .13); background: rgba(5, 14, 23, .38); color: #aebdcb; }
+.steps li::before { background: linear-gradient(145deg, #f2d794, #ce9561); color: #15202a; box-shadow: 0 0 16px rgba(243, 207, 134, .2); }
+.steps b { color: #f1f4f7; }
+.vgrid { gap: 14px; }
+.v { border-radius: 16px; }
+.ok { border-color: rgba(83, 192, 151, .3); background: linear-gradient(145deg, rgba(36, 112, 87, .12), rgba(9, 19, 31, .9)); }
+.ok h4 { color: #8fd7b2; }
+.wn { border-color: rgba(243, 183, 92, .32); background: linear-gradient(145deg, rgba(135, 92, 40, .12), rgba(9, 19, 31, .9)); }
+.wn h4 { color: #f1cb83; }
+.note { border-left-color: #e3b976; background: rgba(243, 207, 134, .055); color: #acbbc9; }
+.lb { background: rgba(4, 9, 15, .92); }
+.lb img { border-color: rgba(243, 207, 134, .7); box-shadow: 0 0 55px rgba(243, 207, 134, .16); }
+.lb button { border-color: var(--cy); background: rgba(19, 31, 44, .92); }
+@media (max-width: 1000px) {
+  .main { grid-template-columns: 1fr; }
+  .left { position: static; max-height: none; }
+  .gal { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 700px) {
+  .top { width: calc(100% - 24px); margin-top: 10px; }
+  .top > span { font-size: 9px; letter-spacing: .1em; }
+  .wrap { padding: 0 12px 28px; }
+  .hero { margin-top: 14px; padding: 28px 20px; border-radius: 21px; }
+  .flame-aura { top: -5%; right: -25%; bottom: auto; width: 100vw; opacity: .78; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .glass.stat { padding: 12px; }
+  .stat small { font-size: 10px; }
+  .left { padding: 12px; }
+  .gal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .section-nav { gap: 5px; }
+  .section-nav a { padding: 6px 9px; font-size: 11px; }
+  .spec { grid-template-columns: 1fr 1fr; }
+  .bar { grid-template-columns: 50px minmax(0, 1fr) 74px; gap: 8px; font-size: 12px; }
+  .vgrid { grid-template-columns: 1fr; }
+}
+@media (max-width: 380px) {
+  .top { gap: 6px; padding: 10px 12px; }
+  .logo { font-size: 14px; }
+  .top > span { font-size: 8px; }
+  .spec { grid-template-columns: 1fr; }
+  .head .big { font-size: 74px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flame-aura, .flame-aura::before, .flame-aura::after { animation: none !important; }
+}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<header class="top"><a class="logo" href="#">⚡ AK <span>Electrical</span></a><span>ENGINEERING · CONCRETE POLES</span></header>
+<div class="wrap">
+  <section class="hero rv">
+    <div class="flame-aura" aria-hidden="true">
+      <span class="ember"></span><span class="ember ember-two"></span><span class="ember ember-three"></span>
+    </div>
+    <div class="eyebrow">AK Electrical · Concrete Poles</div>
+    <h1>เสาไฟคอนกรีต 6 – 12 เมตร</h1>
+    <p class="lead">สำรวจข้อมูลเสาคอนกรีตอัดแรง เลือกความยาวเพื่อดูสเปกเปรียบเทียบและภาพอ้างอิง ข้อมูลจากแคตตาล็อกควรยืนยันกับผู้ผลิตและวิศวกรก่อนนำไปใช้งาน</p>
+    <div class="stats">
+      <div class="glass stat"><b data-to="4">0</b><small>ขนาดที่แสดงในหน้านี้</small></div>
+      <div class="glass stat"><b data-to="7">0</b><small>ขนาดในตารางตัวอย่างผู้ผลิต</small></div>
+      <div class="glass stat"><b>6–12 ม.</b><small>ช่วงความยาวของรูปที่แสดง</small></div>
+      <div class="glass stat"><b data-to="1283">0</b><small>กก. น้ำหนักสูงสุดใน 4 รูป*</small></div>
+    </div>
+  </section>
+  <div class="main">
+    <aside class="left rv">
+      <div class="gallery-heading"><h2>ภาพอ้างอิงสินค้า</h2><span>01 — 04</span></div>
+      <div class="gal" id="gal"></div>
+      <div class="files">เลือกภาพเพื่อขยาย · เลือกความยาวเพื่อดูรายละเอียด</div>
+    </aside>
+    <section class="details-column" aria-label="ข้อมูลและเปรียบเทียบเสาไฟ">
+      <nav class="section-nav" aria-label="สารบัญข้อมูลเสาไฟ">
+        <a href="#detail">รายละเอียด</a><a href="#weights">เปรียบเทียบน้ำหนัก</a>
+        <a href="#spec-table">ตารางสเปก</a><a href="#guide">ข้อควรรู้</a>
+      </nav>
+      <div class="tabs rv" id="tabs"></div>
+      <div class="glass panel rv" id="detail"></div>
+      <div class="glass card rv" id="weights"><h3 class="h3">เปรียบเทียบน้ำหนัก · 4 ขนาดในภาพ</h3><div class="bars" id="bars"></div></div>
+      <div class="glass card rv" id="spec-table"><h3 class="h3">ตารางขนาดตัวอย่างจากผู้ผลิต · 7 ขนาด</h3><div class="scroll"><table id="tb"></table></div><p class="cap">ขนาดหน้าตัดเป็นเซนติเมตร และน้ำหนักเป็นกิโลกรัม อ่านจากตารางในภาพแคตตาล็อกที่ได้รับ แถวไฮไลต์คือขนาดที่เลือก ข้อมูลนี้ไม่ใช่เอกสารรับรองจาก PEA</p></div>
+      <div class="glass card rv" id="guide"><h3 class="h3">แนวทางอ่านข้อมูลและความปลอดภัย</h3>
+        <ol class="steps">
+          <li><b>เสาคืออะไร</b>เสาคอนกรีตอัดแรงสำหรับรองรับอุปกรณ์และสายไฟในระบบจำหน่าย ต้องเลือกตามแบบและข้อกำหนดของโครงการ</li>
+          <li><b>ความยาวที่มี</b>ภาพข้อมูลผู้ผลิตระบุความยาว 6, 8, 9, 12, 12.20, 14 และ 14.30 เมตร</li>
+          <li><b>เลือกขนาดตามงาน</b>ตัวอย่างข้อมูลผู้ผลิตระบุเสาแรงสูงขนาด 12–14.30 เมตร ส่วนขนาด 6–9 เมตรมักใช้กับงานประเภทอื่น ต้องยืนยันกับแบบและผู้รับผิดชอบ</li>
+          <li><b>ภาพรวมการติดตั้ง</b>สำรวจและขออนุญาต ตรวจสอบแบบและสาธารณูปโภค ประสานผู้รับเหมาที่มีคุณสมบัติเหมาะสม ติดตั้งตามมาตรฐาน และตรวจรับก่อนใช้งาน (ไม่ใช่ขั้นตอนสำหรับทำเอง)</li>
+          <li><b>ตรวจรับเสา</b>ตรวจว่าไม่มีรอยร้าวหรือคอนกรีตกะเทาะจนเห็นเหล็ก ตรวจเครื่องหมายผู้ผลิต และขอเอกสารรับรองจากผู้ขาย</li>
+          <li><b>ความปลอดภัย</b>อย่าเข้าใกล้สายไฟหรือขนย้ายและติดตั้งเสาเอง ให้ประสานการไฟฟ้าหรือผู้รับเหมาที่มีสิทธิ์</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+  <div class="vgrid rv">
+    <div class="v ok"><h4>✓ ข้อมูลจากภาพที่ได้รับ</h4><ul><li>ความยาวตัวอย่าง: 6, 8, 9, 12, 12.20, 14 และ 14.30 เมตร</li><li>เสาแรงสูงที่ผู้ผลิตระบุ: 12, 12.20, 14 และ 14.30 เมตร</li><li>*ขนาดหน้าตัดและน้ำหนักเป็นค่าที่อ่านจากภาพแคตตาล็อก ไม่ใช่การยืนยันจากมาตรฐาน</li></ul><p>ข้อมูลจากผู้ผลิตรายหนึ่ง ไม่ใช่เอกสารของ PEA</p></div>
+    <div class="v wn"><h4>! ควรตรวจสอบก่อนนำไปใช้</h4><ul><li>ชนิดและความยาวเสาตามมาตรฐานฉบับล่าสุด</li><li>น้ำหนักและหน้าตัดกับผู้ผลิต</li><li>แรงที่เสารับได้ ความลึกฝัง และวิธียึดโคนเสา</li><li>มาตรฐานผลิตภัณฑ์ที่เกี่ยวข้องและข้อกำหนด PEA</li></ul></div>
+  </div>
+  <div class="note rv"><b>หมายเหตุ:</b> ข้อมูลนี้มีไว้เพื่อการศึกษา ไม่ใช่แบบวิศวกรรมหรือคำแนะนำสำหรับก่อสร้าง โปรดตรวจสอบสเปกจริงกับผู้ผลิต PEA และวิศวกรผู้รับผิดชอบทุกครั้ง</div>
+</div>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="ภาพเสาไฟขยาย"><button type="button" aria-label="ปิด">×</button><img id="lbi" alt=""><p id="lbp"></p></div>
+<script>
+var POLE_IMAGES=__POLE_IMAGES__;
+var P=[
+ {f:"front",m:6,w:240,h:"12 × 12",b:"15 × 15",n:"เสาต้นที่ 1",use:"กลุ่มงานที่ไม่ใช่แรงสูง (โดยทั่วไป)"},
+ {f:"back",m:9,w:603,h:"12 × 12",b:"21 × 21",n:"เสาต้นที่ 2",use:"กลุ่มงานที่ไม่ใช่แรงสูง (โดยทั่วไป)"},
+ {f:"top",m:8,w:502,h:"12 × 12",b:"20 × 20",n:"เสาต้นที่ 3",use:"กลุ่มงานที่ไม่ใช่แรงสูง (โดยทั่วไป)"},
+ {f:"bottom",m:12,w:1283,h:"15 × 18",b:"24 × 27",n:"เสาต้นที่ 4",use:"ผู้ผลิตระบุว่าใช้กับสายแรงสูงได้"}
+];
+var cur=0,$=function(s){return document.querySelector(s)};
+function fmt(n){return n.toLocaleString("en-US")}
+var gal=$("#gal");
+P.forEach(function(p,i){
+ var el=document.createElement("figure");el.className="gi";
+ el.innerHTML='<img src="'+(POLE_IMAGES[p.f]||"")+'" alt="'+p.n+' ขนาด '+p.m+' เมตร"><div class="ph"><div><b>'+p.m+' ม.</b>ไม่พบรูปภาพ</div></div><figcaption><span>'+p.n+' · '+p.m+' ม.</span><small>ขยาย ⤢</small></figcaption>';
+ el.querySelector("img").addEventListener("error",function(){el.classList.add("noimg")});
+ el.addEventListener("click",function(){if(POLE_IMAGES[p.f]){sel(i);openLb(i)}});
+ gal.appendChild(el);
+});
+var tabs=$("#tabs");
+P.map(function(p,i){return i}).sort(function(a,b){return P[a].m-P[b].m}).forEach(function(i){
+ var b=document.createElement("button");b.className="tab";b.textContent=P[i].m+" เมตร";b.dataset.i=i;
+ b.addEventListener("click",function(){sel(i)});tabs.appendChild(b);
+});
+function sel(i){
+ cur=i;var p=P[i],min=Math.min.apply(null,P.map(function(x){return x.w}));
+ document.querySelectorAll(".gi").forEach(function(g,k){g.classList.toggle("on",k===i)});
+ document.querySelectorAll(".tab").forEach(function(t){t.classList.toggle("on",+t.dataset.i===i)});
+ $("#detail").innerHTML='<div class="head"><span class="big">'+p.m+'</span><span class="u">เมตร</span><div><b>'+p.n+'</b><small>เสาคอนกรีตอัดแรง · '+p.m+' เมตร</small></div></div>'
+ +'<div class="spec"><div class="sp"><small>ความยาว</small><b>'+p.m+' เมตร</b></div><div class="sp"><small>น้ำหนักโดยประมาณ (ตามภาพผู้ผลิต)</small><b>≈ '+fmt(p.w)+' กก.</b></div><div class="sp"><small>หน้าตัดด้านหัว (ซม.)</small><b>'+p.h+'</b></div><div class="sp"><small>หน้าตัดด้านท้าย (ซม.)</small><b>'+p.b+'</b></div><div class="sp"><small>เทียบกับต้นที่เบาที่สุด</small><b>'+(p.w/min).toFixed(1)+' เท่า</b></div><div class="sp"><small>การใช้งานโดยทั่วไป</small><b style="font-size:15px">'+p.use+'</b></div></div>';
+ document.querySelectorAll(".bar").forEach(function(b){b.classList.toggle("on",+b.dataset.i===i)});
+ document.querySelectorAll("#tb tbody tr").forEach(function(tr){tr.classList.toggle("on",+tr.dataset.m===p.m)});
+}
+var bars=$("#bars"),mx=Math.max.apply(null,P.map(function(x){return x.w}));
+P.map(function(p,i){return i}).sort(function(a,b){return P[a].w-P[b].w}).forEach(function(i){
+ var d=document.createElement("div");d.className="bar";d.dataset.i=i;
+ d.innerHTML='<span>'+P[i].m+' ม.</span><div class="t"><i data-w="'+Math.round(P[i].w/mx*100)+'"></i></div><span>≈ '+fmt(P[i].w)+' กก.</span>';
+ bars.appendChild(d);
+});
+var ALL=[[6,12,12,15,15,240],[8,12,12,20,20,502],[9,12,12,21,21,603],[12,15,18,24,27,1283],[12.2,18,18,34,34,2042],[14,16,20,20,30.5,1992],[14.3,22,22,38,38,3162]];
+$("#tb").innerHTML="<thead><tr><th rowspan=2>ความยาว (ม.)</th><th colspan=2>ด้านหัว (ซม.)</th><th colspan=2>ด้านท้าย (ซม.)</th><th rowspan=2>น้ำหนัก (กก.)</th></tr><tr><th>X</th><th>Y</th><th>X</th><th>Y</th></tr></thead><tbody>"+ALL.map(function(r){return "<tr data-m=\""+r[0]+"\"><td>"+r[0].toFixed(2)+"</td><td>"+r[1]+"</td><td>"+r[2]+"</td><td>"+r[3]+"</td><td>"+r[4]+"</td><td>"+fmt(r[5])+"</td></tr>"}).join("")+"</tbody>";
+var lb=$("#lb");
+function closeLb(){lb.classList.remove("on")}
+function openLb(i){var p=P[i];$("#lbi").src=POLE_IMAGES[p.f];$("#lbi").alt=p.n;$("#lbp").textContent=p.n+" · "+p.m+" เมตร (กด Esc หรือคลิกเพื่อปิด · ลูกศรซ้าย/ขวาเพื่อเปลี่ยนภาพ)";lb.classList.add("on")}
+lb.addEventListener("click",function(e){if(e.target===lb||e.target.tagName==="BUTTON")closeLb()});
+document.addEventListener("keydown",function(e){
+ if(!lb.classList.contains("on"))return;
+ if(e.key==="Escape")closeLb();
+ if(e.key==="ArrowRight"){sel((cur+1)%P.length);openLb(cur)}
+ if(e.key==="ArrowLeft"){sel((cur+P.length-1)%P.length);openLb(cur)}
+});
+document.querySelectorAll(".glass").forEach(function(g){
+ g.addEventListener("pointermove",function(e){var r=g.getBoundingClientRect();g.style.setProperty("--mx",(e.clientX-r.left)+"px");g.style.setProperty("--my",(e.clientY-r.top)+"px")});
+});
+function count(el){var to=+el.dataset.to,t0=performance.now();(function s(t){var k=Math.min(1,(t-t0)/1200);el.textContent=fmt(Math.round(to*(1-Math.pow(1-k,3))));if(k<1)requestAnimationFrame(s)})(t0)}
+sel(0);
+var els=document.querySelectorAll(".rv");
+function show(e){e.classList.add("in");if(e.contains($("#bars")))document.querySelectorAll(".bar .t i").forEach(function(i){i.style.width=i.dataset.w+"%"});e.querySelectorAll("[data-to]").forEach(count)}
+if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){show(x.target);io.unobserve(x.target)}})},{threshold:.08});els.forEach(function(e){io.observe(e)})}else{els.forEach(show)}
+</script>
+</body>
+</html>
