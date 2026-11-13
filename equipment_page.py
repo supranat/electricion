@@ -78,7 +78,7 @@ def _render_category_card(column, key, item, go):
             unsafe_allow_html=True,
         )
         button_label = (
-            "เปิดคู่มือและคำนวณขนาดราง" if key == "tray"
+            "ดูข้อมูลรางทั้งหมด" if key == "tray"
             else "ดูข้อมูลเสาไฟ" if key == "poles"
             else "เปิดหน้าข้อมูลเบรกเกอร์" if key == "breakers"
             else "เปิดตารางขนาดสายไฟ" if key == "cables"
