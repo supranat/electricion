@@ -562,6 +562,13 @@
             gap: 20px
         }
 
+        .tool-group + .tool-group { margin-top: 38px }
+        .tool-group-title {
+            margin: 0 0 16px;
+            color: var(--g1);
+            font: 600 20px Prompt, sans-serif;
+        }
+
         .tool {
             display: flex;
             min-height: 240px;
@@ -742,6 +749,132 @@
                 transition: none
             }
         }
+
+        /* AK Electrical refresh: calm, responsive business interface */
+        :root {
+            color-scheme: light;
+            --bg: #f3f7fc;
+            --wine: #e8f0fa;
+            --red: #1468c5;
+            --red2: #2783e5;
+            --g1: #0c315a;
+            --g2: #1c6fc4;
+            --g3: #4b9ce4;
+            --ink: #17324f;
+            --mute: #59718b;
+            --gold: linear-gradient(120deg, #0c315a, #1c6fc4);
+        }
+        html { color-scheme: light; background: var(--bg); }
+        body { background: #f3f7fc; color: var(--ink); font-weight: 400; }
+        .bg, .dots, #elec, .scan { display: none !important; }
+        .sysbar {
+            max-width: 1200px;
+            padding: 14px 24px;
+            color: #496782;
+            border-bottom: 1px solid #dce6f1;
+            font: 600 12px Prompt, sans-serif;
+            letter-spacing: .04em;
+        }
+        .sysbar b { background: #1b9b70; box-shadow: none; animation: none; }
+        main { max-width: 1200px; padding: 26px 24px 72px; }
+        .hero {
+            display: block;
+            padding: clamp(28px, 5vw, 58px);
+            overflow: hidden;
+            border: 1px solid #d8e5f3;
+            border-radius: 26px;
+            background: linear-gradient(120deg, #fff 0%, #f4f9ff 65%, #eaf4ff 100%);
+            box-shadow: 0 16px 44px rgba(28, 72, 117, .08);
+        }
+        .reactor { display: none; }
+        .eyebrow { margin-bottom: 12px; color: #1c6fc4; font: 700 12px Prompt, sans-serif; letter-spacing: .12em; }
+        h1 { max-width: 16ch; color: #102f50; font-size: clamp(38px, 6vw, 66px); font-weight: 700; letter-spacing: -.035em; }
+        h1 .g { background: none; color: #1c6fc4; filter: none; }
+        .lead { max-width: 58ch; margin: 18px 0 26px; color: #536b84; font-size: clamp(16px, 2vw, 19px); line-height: 1.75; }
+        .cta { gap: 10px; }
+        .btn { color: #173e68; filter: none; transform: none; }
+        .btn::before { display: none; }
+        .bt, .btn.p .bt {
+            min-height: 48px;
+            padding: 12px 18px;
+            border: 1px solid #c7d9ed;
+            border-radius: 12px;
+            background: #fff;
+            color: #173e68;
+            clip-path: none;
+            box-shadow: 0 2px 8px rgba(25, 68, 111, .05);
+        }
+        .btn.p .bt { border-color: #176fc5; background: #176fc5; color: #fff; }
+        .btn:hover .bt, .btn.p:hover .bt { background: #eaf4ff; color: #12395f; }
+        .btn.p:hover .bt { background: #0d5eae; color: #fff; }
+        .chips { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 26px; }
+        .panel {
+            padding: 20px;
+            border: 1px solid #dce6f1;
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(25, 68, 111, .055);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+        .panel i { display: none; }
+        .chip { color: #17324f; transition: box-shadow .2s ease, border-color .2s ease; }
+        .chip:hover { transform: none; border-color: #b9d1eb; box-shadow: 0 10px 28px rgba(25, 68, 111, .1); }
+        .chip em { margin-bottom: 4px; background: none; color: #1c6fc4; font: 700 13px Prompt, sans-serif; letter-spacing: .08em; }
+        .chip span { color: #294865; font-size: 16px; font-weight: 600; }
+        .apps { margin-top: 48px; }
+        .sec { color: #1c6fc4; font: 700 12px Prompt, sans-serif; letter-spacing: .12em; }
+        .sec::after { background: linear-gradient(90deg, #c7d9ed, transparent); }
+        .sec-h { margin-bottom: 26px; color: #102f50; font-size: clamp(26px, 3vw, 36px); font-weight: 700; }
+        .tool-group-title { margin-bottom: 14px; color: #284765; font-size: 19px; font-weight: 700; }
+        .tool-group + .tool-group { margin-top: 32px; }
+        .tools-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 14px; }
+        .tool { min-height: 205px; gap: 7px; border-color: #dce6f1; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+        .tool:hover { transform: translateY(-3px); border-color: #a9c9eb; box-shadow: 0 14px 30px rgba(25, 68, 111, .11); }
+        .tool .no { color: #1c6fc4; font: 700 12px Prompt, sans-serif; letter-spacing: .08em; }
+        .tool h3 { background: none; color: #173e68; font-size: 20px; font-weight: 700; }
+        .tool p { color: #5b7188; font-size: 15px; }
+        .tool .go { border-color: #e5edf6; color: #176fc5; font: 600 14px Prompt, sans-serif; }
+        .duo { gap: 16px; margin-top: 42px; }
+        .cap { color: #1c6fc4; font: 700 12px Prompt, sans-serif; letter-spacing: .08em; }
+        .row { gap: 12px; }
+        label { color: #47617b; font-size: 14px; font-weight: 600; }
+        input, select {
+            border: 1px solid #cad9e8;
+            border-radius: 10px;
+            background: #fff;
+            color: #17324f;
+            font: 500 16px Prompt, sans-serif;
+        }
+        input:focus-visible, select:focus-visible { outline: 3px solid rgba(28, 111, 196, .2); border-color: #1c6fc4; }
+        #res { background: none; color: #176fc5; -webkit-text-fill-color: #176fc5; font: 700 32px Prompt, sans-serif; }
+        #res small { color: #5b7188; -webkit-text-fill-color: #5b7188; }
+        @media (max-width: 760px) {
+            .sysbar { padding: 12px 16px; font-size: 11px; }
+            .sysbar span:nth-child(2) { display: none; }
+            main { padding: 18px 16px 44px; }
+            .hero { padding: 26px 22px; border-radius: 20px; }
+            .cta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .btn, .bt { width: 100%; text-align: center; }
+            .bt { display: flex; align-items: center; justify-content: center; padding: 12px 10px; }
+            .chips { grid-template-columns: 1fr; gap: 10px; margin-top: 18px; }
+            .chip { padding: 14px 18px; }
+            .chip em { display: inline-block; margin: 0 10px 0 0; }
+            .apps { margin-top: 36px; }
+            .tools-grid { grid-template-columns: 1fr; gap: 10px; }
+            .tool { min-height: 0; padding: 18px; }
+            .duo { grid-template-columns: 1fr; gap: 12px; margin-top: 28px; }
+            .row { grid-template-columns: 1fr; gap: 8px; }
+        }
+        @media (max-width: 420px) {
+            .cta { grid-template-columns: 1fr; }
+            .hero { padding: 22px 18px; }
+            .tool .go { margin-top: 8px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .chip, .tool, .btn, .bt { transition: none !important; }
+            .chip:hover, .tool:hover, .btn:hover { transform: none !important; }
+        }
     </style>
 </head>
 
@@ -794,7 +927,9 @@
         <section class="apps" id="apps" aria-labelledby="apps-title">
             <div class="sec">TOOLS &amp; DATA</div>
             <h2 class="sec-h" id="apps-title">เครื่องมือและข้อมูล</h2>
-            <div class="tools-grid">
+            <div class="tool-group" aria-labelledby="calculator-tools-title">
+                <h3 class="tool-group-title" id="calculator-tools-title">เครื่องคำนวณ</h3>
+                <div class="tools-grid">
                 <a class="panel tool" href="#apps" data-nav="current_calc" aria-label="เปิดหน้าคำนวณกระแส">
                     <i></i><i></i><i></i><i></i>
                     <span class="no">01</span>
@@ -809,34 +944,75 @@
                     <p>คำนวณ kVA พร้อมดูรูปอุปกรณ์ไฟฟ้า</p>
                     <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
                 </a>
-                <a class="panel tool" href="#apps" data-nav="transformer_3d" aria-label="เปิดโมเดลหม้อแปลง 3D">
+                <a class="panel tool" href="#apps" data-nav="equipment_calc" aria-label="เปิดหน้ารวมอุปกรณ์">
                     <i></i><i></i><i></i><i></i>
                     <span class="no">03</span>
+                    <h3>อุปกรณ์ประกอบ</h3>
+                    <p>รวมเครื่องมือและข้อมูลอุปกรณ์สำหรับงานไฟฟ้า</p>
+                    <span class="go">เปิดหน้ารวม <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="cable_calculator" aria-label="เปิดหน้าเครื่องคิดเลขสายไฟ">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">04</span>
+                    <h3>เครื่องคิดเลขสายไฟ</h3>
+                    <p>ค้นหาข้อมูลสาย THW, IEC 01, VAF, NYY และ CV</p>
+                    <span class="go">เปิดหน้าสายไฟ <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="cable_table" aria-label="เปิดตารางขนาดสายไฟ">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">05</span>
+                    <h3>ตารางขนาดสายไฟ</h3>
+                    <p>เปิดดูตารางอ้างอิงขนาดสายไฟที่มีในระบบ</p>
+                    <span class="go">ดูตาราง <b aria-hidden="true">→</b></span>
+                </a>
+                </div>
+            </div>
+            <div class="tool-group" aria-labelledby="equipment-data-title">
+                <h3 class="tool-group-title" id="equipment-data-title">ข้อมูลอุปกรณ์</h3>
+                <div class="tools-grid">
+                <a class="panel tool" href="#apps" data-nav="transformer_3d" aria-label="เปิดโมเดลหม้อแปลง 3D">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">06</span>
                     <h3>โมเดลหม้อแปลง 3D</h3>
                     <p>ดูโมเดลเต็มหน้าจอพร้อมข้อมูลชิ้นส่วน</p>
                     <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
                 </a>
                 <a class="panel tool" href="#apps" data-nav="transformer_info" aria-label="เปิดข้อมูลหม้อแปลง 3 เฟส">
                     <i></i><i></i><i></i><i></i>
-                    <span class="no">04</span>
+                    <span class="no">07</span>
                     <h3>ข้อมูลหม้อแปลง 3 เฟส</h3>
                     <p>100 / 160 / 250 kVA กระแส ค่าสูญเสีย และแหล่งอ้างอิง</p>
                     <span class="go">เปิดหน้า <b aria-hidden="true">→</b></span>
                 </a>
+                <a class="panel tool" href="#apps" data-nav="transformer_details" aria-label="เปิดข้อมูลหม้อแปลงสามเฟส">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">08</span>
+                    <h3>หม้อแปลง 3 เฟส</h3>
+                    <p>ดูหน้ารายละเอียดหม้อแปลงสามเฟส</p>
+                    <span class="go">ดูรายละเอียด <b aria-hidden="true">→</b></span>
+                </a>
+                <a class="panel tool" href="#apps" data-nav="transformer" aria-label="ดูรายการหม้อแปลง">
+                    <i></i><i></i><i></i><i></i>
+                    <span class="no">09</span>
+                    <h3>รายการหม้อแปลง</h3>
+                    <p>ดูรายการรุ่นหม้อแปลงที่แสดงในเว็บไซต์</p>
+                    <span class="go">ดูรายการ <b aria-hidden="true">→</b></span>
+                </a>
                 <a class="panel tool" href="#apps" data-nav="poles" aria-label="เปิดข้อมูลเสาไฟคอนกรีต">
                     <i></i><i></i><i></i><i></i>
-                    <span class="no">05</span>
+                    <span class="no">10</span>
                     <h3>เสาไฟคอนกรีต</h3>
                     <p>เสา 6–12 เมตร รูป 4 ขนาด พร้อมตารางขนาดและน้ำหนัก</p>
                     <span class="go">ดูข้อมูลเสาไฟ <b aria-hidden="true">→</b></span>
                 </a>
-                <a class="panel tool" href="#apps" data-nav="cable_calculator" aria-label="เปิดหน้าเครื่องคิดเลขสายไฟ">
+                <a class="panel tool" href="#apps" data-nav="breakers" aria-label="เปิดข้อมูลเบรกเกอร์">
                     <i></i><i></i><i></i><i></i>
-                    <span class="no">06</span>
-                    <h3>เครื่องคิดเลขสายไฟ</h3>
-                    <p>ดูข้อมูล THW, IEC 01, VAF, NYY และ CV พร้อมตารางขนาดสาย</p>
-                    <span class="go">เปิดหน้าสายไฟ <b aria-hidden="true">→</b></span>
+                    <span class="no">11</span>
+                    <h3>เบรกเกอร์</h3>
+                    <p>ดูรายการและข้อมูลเบรกเกอร์ที่มีในเว็บไซต์</p>
+                    <span class="go">ดูข้อมูล <b aria-hidden="true">→</b></span>
                 </a>
+                </div>
             </div>
         </section>
 
@@ -916,45 +1092,75 @@
             cx = cv.getContext('2d');
         let t = 0;
         const cols = ['#ff4b5c', '#f2c14e', '#fff3c4'];
+        const waveMotion = matchMedia('(prefers-reduced-motion:reduce)');
+        const waveLowPower = matchMedia('(max-width:760px)');
+        let waveWidth = 0,
+            waveHeight = 0,
+            waveFrame = 0,
+            lastWaveFrame = 0;
 
         function fit() {
-            const d = devicePixelRatio || 1;
-            cv.width = cv.clientWidth * d;
-            cv.height = cv.clientHeight * d
+            const d = Math.min(devicePixelRatio || 1, waveLowPower.matches ? 1.25 : 1.75);
+            waveWidth = cv.clientWidth;
+            waveHeight = cv.clientHeight;
+            cv.width = Math.max(1, Math.round(waveWidth * d));
+            cv.height = Math.max(1, Math.round(waveHeight * d));
+            cx.setTransform(d, 0, 0, d, 0, 0);
         }
-        fit();
-        addEventListener('resize', fit);
-        const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
 
-        function draw() {
-            const w = cv.width,
-                h = cv.height;
-            cx.clearRect(0, 0, w, h);
+        function draw(ts = performance.now()) {
+            waveFrame = 0;
+            if (document.hidden || waveWidth <= 0 || waveHeight <= 0) return;
+            const frameInterval = waveLowPower.matches ? 1000 / 30 : 1000 / 60;
+            if (!waveMotion.matches && ts - lastWaveFrame < frameInterval) {
+                waveFrame = requestAnimationFrame(draw);
+                return;
+            }
+            lastWaveFrame = ts;
+            cx.clearRect(0, 0, waveWidth, waveHeight);
             cx.strokeStyle = 'rgba(242,193,78,.14)';
             cx.lineWidth = 1;
             for (let i = 1; i < 6; i++) {
                 cx.beginPath();
-                cx.moveTo(0, h * i / 6);
-                cx.lineTo(w, h * i / 6);
+                cx.moveTo(0, waveHeight * i / 6);
+                cx.lineTo(waveWidth, waveHeight * i / 6);
                 cx.stroke()
             }
             cols.forEach((c, k) => {
                 cx.beginPath();
                 cx.strokeStyle = c;
-                cx.lineWidth = 2.5 * (devicePixelRatio || 1);
+                cx.lineWidth = 2.5;
                 cx.shadowColor = c;
-                cx.shadowBlur = 12;
-                for (let x = 0; x <= w; x += 3) {
-                    const y = h / 2 + Math.sin(x / w * Math.PI * 4 - t + k * 2 * Math.PI / 3) * h * .36;
+                cx.shadowBlur = waveLowPower.matches ? 0 : 8;
+                const step = waveLowPower.matches ? 6 : 3;
+                for (let x = 0; x <= waveWidth; x += step) {
+                    const y = waveHeight / 2 + Math.sin(x / waveWidth * Math.PI * 4 - t + k * 2 * Math.PI / 3) * waveHeight * .36;
                     x ? cx.lineTo(x, y) : cx.moveTo(x, y)
                 }
                 cx.stroke()
             });
             cx.shadowBlur = 0;
             t += .05;
-            if (!still) requestAnimationFrame(draw);
+            if (!waveMotion.matches) waveFrame = requestAnimationFrame(draw);
         }
+        function stopWave() {
+            if (waveFrame) cancelAnimationFrame(waveFrame);
+            waveFrame = 0;
+        }
+        function refreshWave() {
+            stopWave();
+            lastWaveFrame = 0;
+            fit();
+            draw();
+        }
+        fit();
         draw();
+        addEventListener('resize', refreshWave, { passive: true });
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopWave();
+            else refreshWave();
+        });
+        waveMotion.addEventListener('change', refreshWave);
 
         /* ripple */
         document.querySelectorAll('.btn').forEach(b => b.addEventListener('click', e => {
@@ -1007,17 +1213,23 @@
             });
         });
         /* ===== พื้นหลังไฟฟ้า: วงจร + กระแสไหล + ฟ้าผ่า ===== */
-        const ec = $('#elec'),
-            ex = ec.getContext('2d');
+        const ec = $('#elec');
+        const ex = ec && getComputedStyle(ec).display !== 'none' ? ec.getContext('2d') : null;
         let EW = 0,
             EH = 0,
             traces = [],
             bolts = [],
             nextBolt = 1.2,
             flash = 0,
-            lastT = 0;
+            lastT = 0,
+            electricalFrame = 0;
+
+        const electricalFxVisible = () => Boolean(ex) &&
+            getComputedStyle(ec).display !== 'none' &&
+            !matchMedia('(max-width:760px)').matches;
 
         function eInit() {
+            if (!ex) return;
             EW = ec.width = innerWidth;
             EH = ec.height = innerHeight;
             traces = [];
@@ -1183,6 +1395,8 @@
         }
 
         function eLoop(ts) {
+            electricalFrame = 0;
+            if (!electricalFxVisible() || document.hidden || calm()) return;
             const dt = Math.min((ts - lastT) / 1000 || 0, .05);
             lastT = ts;
             ex.clearRect(0, 0, EW, EH);
@@ -1201,18 +1415,27 @@
             }
             bolts = bolts.filter(b => (b.life -= dt) > 0);
             drawBolts();
-            requestAnimationFrame(eLoop);
+            electricalFrame = requestAnimationFrame(eLoop);
         }
-        eInit();
-        addEventListener('resize', () => {
+        function stopElectricalFx() {
+            if (electricalFrame) cancelAnimationFrame(electricalFrame);
+            electricalFrame = 0;
+            lastT = 0;
+            bolts = [];
+            flash = 0;
+            if (ex) ex.clearRect(0, 0, EW, EH);
+        }
+        function syncElectricalFx() {
+            stopElectricalFx();
+            if (!ex || document.hidden || getComputedStyle(ec).display === 'none') return;
             eInit();
-            if (calm()) {
-                ex.clearRect(0, 0, EW, EH);
-                drawTraces()
-            }
-        });
-        if (calm()) drawTraces();
-        else requestAnimationFrame(eLoop);
+            if (calm() || !electricalFxVisible()) drawTraces();
+            else electricalFrame = requestAnimationFrame(eLoop);
+        }
+        addEventListener('resize', syncElectricalFx, { passive: true });
+        document.addEventListener('visibilitychange', syncElectricalFx);
+        waveMotion.addEventListener('change', syncElectricalFx);
+        syncElectricalFx();
         /* ใน Streamlit ปุ่ม data-nav ส่งคำสั่งให้หน้าแม่เปลี่ยน route */
         document.querySelectorAll('[data-nav]').forEach(a => a.addEventListener('click', e => {
             if (parent !== window) {

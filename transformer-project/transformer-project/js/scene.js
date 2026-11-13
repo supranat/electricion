@@ -81,16 +81,17 @@ const stage = document.getElementById("stage");
 if (!stage) fail("ไม่พบพื้นที่แสดงฉาก 3D (id=stage)");
 
 let renderer;
+const lowPowerRender = matchMedia("(max-width: 760px)");
 try {
-  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+  renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !lowPowerRender.matches });
 } catch (error) {
   showError("สร้างฉาก 3D ไม่ได้ เบราว์เซอร์หรืออุปกรณ์อาจไม่รองรับ WebGL");
   throw error;
 }
 
-renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, lowPowerRender.matches ? 1.25 : 1.5));
 renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.type = lowPowerRender.matches ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
 renderer.outputEncoding = THREE.sRGBEncoding;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 0.88;
@@ -104,7 +105,7 @@ scene.add(new THREE.HemisphereLight(0xffe6d3, 0x55403a, 0.78));
 const sun = new THREE.DirectionalLight(0xffedcf, 1.55);
 sun.position.set(-12, 22, 10);
 sun.castShadow = true;
-sun.shadow.mapSize.set(2048, 2048);
+sun.shadow.mapSize.set(lowPowerRender.matches ? 1024 : 2048, lowPowerRender.matches ? 1024 : 2048);
 sun.shadow.camera.left = -18;
 sun.shadow.camera.right = 18;
 sun.shadow.camera.top = 20;
@@ -574,6 +575,17 @@ buildParts();
 function resize() {
   const rect = stage.getBoundingClientRect();
   if (rect.width <= 0 || rect.height <= 0) return;
+  const isLowPower = matchMedia("(max-width: 760px)").matches;
+  const targetPixelRatio = Math.min(window.devicePixelRatio || 1, isLowPower ? 1.25 : 1.5);
+  if (Math.abs(renderer.getPixelRatio() - targetPixelRatio) > 0.01) {
+    renderer.setPixelRatio(targetPixelRatio);
+  }
+  renderer.shadowMap.type = isLowPower ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
+  const shadowSize = isLowPower ? 1024 : 2048;
+  if (sun.shadow.mapSize.x !== shadowSize || sun.shadow.mapSize.y !== shadowSize) {
+    sun.shadow.mapSize.set(shadowSize, shadowSize);
+    sun.shadow.needsUpdate = true;
+  }
   renderer.setSize(rect.width, rect.height, false);
   camera.aspect = rect.width / rect.height;
   camera.updateProjectionMatrix();

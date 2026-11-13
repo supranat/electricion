@@ -7,9 +7,9 @@ import streamlit as st
 
 THEMES = {
     "blue": (
-        "--panel:rgba(8,18,34,.92);--core:#06101e;--ink:#eaf4ff;--mute:#9db6d4;"
-        "--line:rgba(22,139,255,.32);--hi:#168bff;--cy:#6fd0ff;--deep:#0a4fb0;"
-        "--onacc:#fff;--glow:rgba(22,139,255,.38);"
+        "--panel:#ffffff;--core:#f3f7fc;--ink:#17324f;--mute:#5b7188;"
+        "--line:#d7e2ee;--hi:#176fc5;--cy:#65a7e5;--deep:#104f8c;"
+        "--onacc:#fff;--glow:rgba(23,111,197,.12);"
     ),
     "fire": (
         "--panel:rgba(35,21,17,.94);--core:#1a0a05;--ink:#fff1e4;--mute:#e7c9b4;"
@@ -20,13 +20,13 @@ THEMES = {
 
 CSS = r"""
 .st-key-ak_header {
-  --panel:rgba(35,21,17,.94);--core:#1a0a05;--ink:#fff1e4;--mute:#e7c9b4;
-  --line:rgba(255,100,30,.35);--hi:#ff5a14;--cy:#ffb070;--deep:#b91c1c;
-  --onacc:#fff;--glow:rgba(255,80,0,.4);
+  --panel:#ffffff;--core:#f3f7fc;--ink:#17324f;--mute:#5b7188;
+  --line:#d7e2ee;--hi:#176fc5;--cy:#65a7e5;--deep:#104f8c;
+  --onacc:#fff;--glow:rgba(23,111,197,.12);
   position:relative;isolation:isolate;overflow:hidden;
   border:1px solid var(--line);border-radius:22px;
   padding:18px clamp(16px,2.4vw,28px) 14px;
-  background:radial-gradient(ellipse 50% 160% at 0% 0%,rgba(255,90,20,.16),transparent 70%),var(--panel);
+  background:radial-gradient(ellipse 50% 160% at 0% 0%,rgba(23,111,197,.08),transparent 70%),var(--panel);
   -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   box-shadow:0 0 0 1px rgba(255,255,255,.03) inset,0 18px 50px -18px var(--glow)
 }
@@ -42,23 +42,22 @@ CSS = r"""
 .ak-logo{position:relative;display:grid;width:64px;height:58px;flex:none;place-items:center;
   border:1px solid transparent;border-radius:13px;font-size:1.4rem;font-weight:800;letter-spacing:.04em;
   background:linear-gradient(var(--core),var(--core)) padding-box,
-    conic-gradient(from 0deg,var(--hi),#ffb070 22%,transparent 42%,var(--cy) 60%,transparent 78%,var(--hi)) border-box;
-  box-shadow:0 0 22px -4px var(--glow),inset 0 0 18px rgba(255,90,20,.12);
-  animation:akpulse 3s ease-in-out infinite
+    conic-gradient(from 0deg,var(--hi),#65a7e5 22%,transparent 42%,var(--cy) 60%,transparent 78%,var(--hi)) border-box;
+  box-shadow:0 0 22px -4px var(--glow),inset 0 0 18px rgba(23,111,197,.08);
 }
-.ak-logo::before{position:absolute;inset:5px;border:1px solid rgba(255,176,112,.48);border-radius:8px;content:""}
-.ak-logo span{position:relative;background:linear-gradient(135deg,#fff2df,#ffb070 55%,var(--hi));
+.ak-logo::before{position:absolute;inset:5px;border:1px solid rgba(23,111,197,.22);border-radius:8px;content:""}
+.ak-logo span{position:relative;background:linear-gradient(135deg,#17324f,#176fc5 55%,#65a7e5);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .ak-brand-copy{min-width:0}
-.ak-ttl{display:block;color:#fff3e9;font-size:clamp(1.25rem,2.2vw,1.8rem);font-weight:700;line-height:1.2}
+.ak-ttl{display:block;color:#17324f;font-size:clamp(1.25rem,2.2vw,1.8rem);font-weight:700;line-height:1.2}
 .ak-sub{display:block;margin-top:3px;color:var(--mute);font-size:.68rem;letter-spacing:.16em}
 .st-key-ak_auth{display:flex;justify-content:flex-end;align-items:center;gap:10px}
 .ak-user{color:var(--mute);font-size:.9rem}
 .stApp .st-key-header_login div.stButton>button,.stApp .st-key-header_register div.stButton>button{
   min-height:44px!important;border-radius:12px!important
 }
-.stApp .st-key-header_login div.stButton>button{border:1px solid rgba(255,175,112,.65)!important;
-  background:linear-gradient(135deg,var(--deep),var(--hi) 60%,#ff9b45)!important}
+.stApp .st-key-header_login div.stButton>button{border:1px solid var(--hi)!important;
+  background:linear-gradient(135deg,var(--deep),var(--hi) 60%,#4a9be0)!important}
 .stApp .st-key-header_login div.stButton>button p{color:#fff!important;font-weight:700!important}
 .stApp .st-key-header_register div.stButton>button{
   border:1px solid var(--line)!important;background:rgba(255,255,255,.04)!important

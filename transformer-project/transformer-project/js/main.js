@@ -7,6 +7,9 @@ let goalTheta = theta, goalPhi = phi, goalRadius = radius;
 let selected = null;
 let autoRotate = false;
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const lowPowerViewport = window.matchMedia("(max-width: 760px)");
+let renderFrame = 0;
+let renderTimer = 0;
 const target = new THREE.Vector3(0, DEFAULT_VIEW.y, 0);
 const goalTarget = target.clone();
 const modelCallout = document.getElementById("model-callout");
@@ -416,8 +419,9 @@ cv.addEventListener("wheel", function (e) {
 }, { passive: false });
 
 function loop() {
-  requestAnimationFrame(loop);
-  const ease = 0.16;
+  renderFrame = 0;
+  if (document.hidden) return;
+  const ease = lowPowerViewport.matches ? 0.28 : 0.16;
   if (autoRotate && !reducedMotion.matches) goalTheta += 0.0025;
   const cameraEase = reducedMotion.matches ? 1 : ease;
   theta += (goalTheta - theta) * cameraEase;
@@ -427,5 +431,27 @@ function loop() {
   placeCamera();
   renderer.render(scene, camera);
   updateModelCallout();
+  scheduleRender();
 }
-loop();
+
+function scheduleRender() {
+  if (document.hidden || renderFrame || renderTimer) return;
+  const delay = lowPowerViewport.matches ? 16 : 0;
+  renderTimer = window.setTimeout(function () {
+    renderTimer = 0;
+    if (!document.hidden) renderFrame = requestAnimationFrame(loop);
+  }, delay);
+}
+
+function stopRenderLoop() {
+  if (renderTimer) window.clearTimeout(renderTimer);
+  if (renderFrame) cancelAnimationFrame(renderFrame);
+  renderTimer = 0;
+  renderFrame = 0;
+}
+
+document.addEventListener("visibilitychange", function () {
+  if (document.hidden) stopRenderLoop();
+  else scheduleRender();
+});
+scheduleRender();

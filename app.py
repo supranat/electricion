@@ -16,6 +16,7 @@ import header as app_header
 import tranformers8
 import transformer_3d_page
 import transformer_info_page
+from site_theme import apply_embedded_theme
 
 
 LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.jpg")  # โลโก้จริงของบริษัท วางไว้ข้าง app.py
@@ -531,7 +532,7 @@ if (
 ) or st.session_state.page == "poles":
     app_header.render_header(
         on_navigate=go,
-        theme="fire",
+        theme="blue",
         user=st.session_state.user,
     )
 
@@ -684,7 +685,7 @@ def page_poles():
         <style>
         .block-container { max-width:none!important; padding:0!important; }
         [data-testid="stHeader"] { display:none; }
-        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#000!important; }
+        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#F3F7FC!important; }
         iframe[title="ข้อมูลเสาไฟ"] { display:block; width:100%!important; border:0; }
         </style>
         """,
@@ -698,7 +699,7 @@ def page_poles():
         **WIDE,
     )
     st.iframe(
-        build_pole_page_html(),
+        apply_embedded_theme(build_pole_page_html()),
         width="stretch",
         height=2200,
         alt="ข้อมูลเสาไฟ",
@@ -711,7 +712,7 @@ def page_dashboard():
         <style>
         .block-container { max-width:none!important; padding:0!important; }
         [data-testid="stHeader"] { display:none; }
-        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#000!important; }
+        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#F3F7FC!important; }
         iframe[title="ศูนย์ควบคุมพลังงานไฟฟ้า"] { display:block; width:100%!important; border:0; }
         .st-key-dashboard_nav_bridge { display:none!important; }
         </style>
@@ -841,7 +842,7 @@ def page_cable_screen(page_key):
         <style>
         .block-container { max-width:none!important; padding:0!important; }
         [data-testid="stHeader"] { display:none; }
-        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#000!important; }
+        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#F3F7FC!important; }
         .st-key-cable_nav_bridge { display:none!important; }
         iframe[title="เครื่องคิดเลขสายไฟ"],iframe[title="ตารางขนาดสายไฟ"],iframe[title="รายละเอียดสายไฟ"] { display:block;width:100%!important;border:0; }
         </style>
@@ -883,6 +884,7 @@ def page_cable_screen(page_key):
         unsafe_allow_javascript=True,
     )
 
+    page_html = apply_embedded_theme(page_html)
     iframe_height = 1000 if page_key == CABLE_DETAIL_PAGE else "content"
     st.iframe(page_html, width="stretch", height=iframe_height, alt=page_titles[page_key])
 
@@ -1100,7 +1102,7 @@ def page_breakers():
         .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"],
         .stApp:has(.breaker-theme) [data-testid="stMain"] {
             color: #edf5ff !important;
-            background: #071426 !important;
+            background: #F3F7FC !important;
         }
         .stApp:has(.breaker-theme) { position: relative; isolation: isolate; min-height: 100vh; --breaker-background-image: __BREAKER_BACKGROUND_IMAGE__; }
         .stApp:has(.breaker-theme)::before,
@@ -1415,7 +1417,7 @@ def page_transformer_details():
         .stApp,
         [data-testid="stAppViewContainer"],
         [data-testid="stMain"] {
-            background: #071426 !important;
+            background: #F3F7FC !important;
         }
         iframe[title="หน้าหม้อแปลงสามเฟส"] {
             display: block;
@@ -1440,6 +1442,7 @@ def page_transformer_details():
         ".site{display:none!important}.wrap{width:100%;max-width:none;padding:0 clamp(16px,3vw,48px) 60px}</style>",
         1,
     )
+    page_html = apply_embedded_theme(page_html)
     st.iframe(page_html, width="stretch", height=900, alt="หน้าหม้อแปลงสามเฟส")
 
 
@@ -1901,6 +1904,149 @@ if page in SAMPLE_PRODUCTS:
     page_products(page)
 else:
     ROUTES.get(page, page_dashboard)()
+
+# Shared visual polish for Streamlit pages. The dashboard and standalone
+# product/calculator documents keep their own layouts, while controls stay
+# consistent across the app.
+st.markdown(
+    """
+    <style>
+    :root {
+      --ak-ink: #17324f;
+      --ak-muted: #5b7188;
+      --ak-blue: #176fc5;
+      --ak-blue-dark: #104f8c;
+      --ak-line: #d7e2ee;
+      --ak-surface: #ffffff;
+      --ak-soft: #f3f7fc;
+    }
+    .stApp [data-testid="stMarkdownContainer"],
+    .stApp [data-testid="stWidgetLabel"],
+    .stApp [data-testid="stCaptionContainer"] {
+      font-family: 'Sarabun', 'Noto Sans Thai', Tahoma, sans-serif !important;
+    }
+    .stApp [data-testid="stMarkdownContainer"] p,
+    .stApp [data-testid="stMarkdownContainer"] li,
+    .stApp [data-testid="stWidgetLabel"] p {
+      color: var(--ak-ink) !important;
+      line-height: 1.65;
+    }
+    .stApp [data-testid="stCaptionContainer"] p {
+      color: var(--ak-muted) !important;
+    }
+    .stApp div.stButton > button,
+    .stApp div[data-testid="stFormSubmitButton"] > button {
+      min-height: 46px;
+      border: 1px solid #bfd2e6 !important;
+      border-radius: 12px !important;
+      background: var(--ak-surface) !important;
+      box-shadow: 0 2px 7px rgba(23, 50, 79, .05);
+      transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+    .stApp div.stButton > button p,
+    .stApp div[data-testid="stFormSubmitButton"] > button p {
+      color: var(--ak-blue-dark) !important;
+      font-weight: 700 !important;
+    }
+    .stApp div.stButton > button:hover:not(:disabled),
+    .stApp div[data-testid="stFormSubmitButton"] > button:hover:not(:disabled) {
+      border-color: var(--ak-blue) !important;
+      background: #f0f7ff !important;
+      box-shadow: 0 5px 14px rgba(23, 50, 79, .1);
+      transform: translateY(-1px);
+    }
+    .stApp div.stButton > button:focus-visible,
+    .stApp div[data-testid="stFormSubmitButton"] > button:focus-visible {
+      outline: 3px solid rgba(23, 111, 197, .24) !important;
+      outline-offset: 2px;
+    }
+    .stApp input, .stApp textarea {
+      border-radius: 10px !important;
+      color: var(--ak-ink) !important;
+    }
+    .stApp [data-baseweb="input"],
+    .stApp [data-baseweb="select"] > div {
+      border-color: #c7d7e7 !important;
+      border-radius: 10px !important;
+      background: #fff !important;
+    }
+    .stApp [data-testid="stForm"] {
+      border: 1px solid var(--ak-line) !important;
+      border-radius: 16px !important;
+      box-shadow: 0 8px 24px rgba(23, 50, 79, .05);
+    }
+    .stApp [data-testid="stAlert"] {
+      border-width: 1px !important;
+      border-radius: 12px !important;
+      box-shadow: none !important;
+    }
+    .stApp [data-testid="stExpander"], .stApp details {
+      border: 1px solid var(--ak-line) !important;
+      border-radius: 14px !important;
+      box-shadow: none !important;
+      background: #fff;
+    }
+    .stApp [data-testid="stDataFrame"] {
+      border: 1px solid var(--ak-line) !important;
+      border-radius: 12px !important;
+      overflow: hidden;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) {
+      color: var(--ak-ink) !important;
+      background: #f3f7fc !important;
+      background-image: none !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) [data-testid="stMain"],
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) [data-testid="stMainBlockContainer"] {
+      color: var(--ak-ink) !important;
+      background: transparent !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-fx,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme)::before,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme)::after {
+      display: none !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-hero,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-card,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-term-body {
+      color: var(--ak-ink) !important;
+      background: #fff !important;
+      border-color: var(--ak-line) !important;
+      box-shadow: 0 8px 24px rgba(23, 50, 79, .06) !important;
+      text-shadow: none !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-title,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-hero p,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-card p,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-term-body,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-term-body .k,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-term-msg {
+      color: var(--ak-ink) !important;
+      text-shadow: none !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-kicker,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-cyan,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-amber,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-term-body .v {
+      color: var(--ak-blue) !important;
+      text-shadow: none !important;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-sub,
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-legend {
+      color: var(--ak-muted) !important;
+    }
+    @media (max-width: 640px) {
+      .stApp div.stButton > button,
+      .stApp div[data-testid="stFormSubmitButton"] > button { min-height: 48px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .stApp div.stButton > button,
+      .stApp div[data-testid="stFormSubmitButton"] > button { transition: none !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 if st.session_state.user:
     with st.container(key="logout_footer"):
         _, logout_column = st.columns([5, 1])

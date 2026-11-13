@@ -7,6 +7,7 @@ import streamlit as st
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 import calculator_page
+from site_theme import apply_embedded_theme
 from hero_background import HERO_BACKGROUND_CSS, HERO_NETWORK_SCRIPT
 
 
@@ -123,7 +124,7 @@ def render_transformer_info_page(go) -> None:
         html, body, .stApp, [data-testid="stApp"],
         [data-testid="stAppViewContainer"], [data-testid="stMain"],
         [data-testid="stMainBlockContainer"], .main, .block-container {
-            background: #050505 !important;
+            background: #F3F7FC !important;
             background-image: none !important;
         }
         .stApp::before, .stApp::after,
@@ -145,30 +146,29 @@ def render_transformer_info_page(go) -> None:
             position: relative;
             overflow: hidden;
             width: 100%;
-            border: 1px solid rgba(255, 212, 0, .45) !important;
+            border: 1px solid #bfd2e6 !important;
             border-radius: 14px !important;
-            background: linear-gradient(160deg, rgba(255, 212, 0, .1),
-                rgba(255, 212, 0, .02)), #0a0a08 !important;
+            background: #ffffff !important;
             transition: transform .2s, box-shadow .2s, background .2s;
         }
         .stApp div.st-key-transformer_info_home div.stButton > button p,
         .stApp div.st-key-transformer_info_open_3d div.stButton > button p,
         .stApp div.st-key-transformer_info_open_calculator div.stButton > button p {
-            color: #ffd400 !important;
+            color: #104f8c !important;
             font-weight: 700;
         }
         .stApp div.st-key-transformer_info_home div.stButton > button:hover,
         .stApp div.st-key-transformer_info_open_3d div.stButton > button:hover,
         .stApp div.st-key-transformer_info_open_calculator div.stButton > button:hover {
-            border-color: #ffd400 !important;
-            background: linear-gradient(135deg, #ffd400, #ffb300) !important;
-            box-shadow: 0 0 22px rgba(255, 212, 0, .4);
+            border-color: #176fc5 !important;
+            background: #edf6ff !important;
+            box-shadow: 0 6px 18px rgba(23, 111, 197, .12);
             transform: translateY(-2px);
         }
         .stApp div.st-key-transformer_info_home div.stButton > button:hover p,
         .stApp div.st-key-transformer_info_open_3d div.stButton > button:hover p,
         .stApp div.st-key-transformer_info_open_calculator div.stButton > button:hover p {
-            color: #050505 !important;
+            color: #104f8c !important;
         }
         iframe[title="ข้อมูลหม้อแปลงไฟฟ้า"] {
             display: block;
@@ -176,7 +176,7 @@ def render_transformer_info_page(go) -> None:
             height: calc(100vh - 82px) !important;
             min-height: 480px;
             border: 0;
-            background: #050505 !important;
+            background: #F3F7FC !important;
         }
         @media (prefers-reduced-motion: reduce) {
             .stApp div.st-key-transformer_info_home div.stButton > button,
@@ -217,7 +217,7 @@ def render_transformer_info_page(go) -> None:
         )
 
     st.iframe(
-        page_html,
+        apply_embedded_theme(page_html),
         width="stretch",
         height=900,
         alt="ข้อมูลหม้อแปลงไฟฟ้า",

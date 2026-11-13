@@ -4,6 +4,7 @@ import inspect
 import streamlit as st
 
 import calculator_page
+from site_theme import apply_embedded_theme
 
 
 BUTTON_WIDTH = (
@@ -41,7 +42,7 @@ def _build_transformer_html():
             '<script src="js/%s.js"></script>' % name,
             "<script>" + read("js/%s.js" % name) + "</script>",
         )
-    return page_html
+    return apply_embedded_theme(page_html)
 
 
 def show_transformer_3d():
@@ -73,7 +74,7 @@ def show_transformer_3d_fullscreen(go):
         .stApp,
         [data-testid="stAppViewContainer"],
         [data-testid="stMain"] {
-            background: #10090c !important;
+            background: #F3F7FC !important;
         }
         iframe[title="โมเดลหม้อแปลงไฟฟ้า 3D เต็มหน้าจอ"] {
             display: block;
