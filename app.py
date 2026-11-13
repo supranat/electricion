@@ -25,6 +25,7 @@ TRANSFORMER_DETAILS_PAGE = "transformer_details"
 CABLE_CALCULATOR_PAGE = "cable_calculator"
 CABLE_TABLE_PAGE = "cable_table"
 CABLE_DETAIL_PAGE = "cable_detail"
+TRAY_GUIDE_PAGE = "tray_guide"
 CABLE_HTML_DIR = os.path.join("cables")
 FULL_SCREEN_PAGES = {
     TRANSFORMER_DETAILS_PAGE,
@@ -33,6 +34,7 @@ FULL_SCREEN_PAGES = {
     CABLE_CALCULATOR_PAGE,
     CABLE_TABLE_PAGE,
     CABLE_DETAIL_PAGE,
+    TRAY_GUIDE_PAGE,
     "poles",
     "breakers",
     "dashboard",
@@ -704,6 +706,31 @@ def page_poles():
         height=2200,
         alt="ข้อมูลเสาไฟ",
     )
+
+
+def page_tray_guide():
+    """Render the interactive cable-tray guide and sizing helper."""
+    st.markdown(
+        """
+        <style>
+        .block-container { max-width:none!important; padding:0!important; }
+        [data-testid="stHeader"] { display:none; }
+        iframe[title="คู่มือรางเดินสายไฟ"] { display:block; width:100%!important; border:0; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.button(
+        "← กลับหน้ารวมอุปกรณ์",
+        on_click=go,
+        args=(calculator_page.PAGE_EQUIPMENT,),
+        key="tray_guide_back",
+        **WIDE,
+    )
+    template_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tray_guide.html")
+    with open(template_path, encoding="utf-8") as template_file:
+        page_html = template_file.read()
+    st.iframe(page_html, width="stretch", height="content", alt="คู่มือรางเดินสายไฟ")
 
 
 def page_dashboard():
@@ -1899,6 +1926,7 @@ ROUTES = {
     CABLE_CALCULATOR_PAGE: lambda: page_cable_screen(CABLE_CALCULATOR_PAGE),
     CABLE_TABLE_PAGE: lambda: page_cable_screen(CABLE_TABLE_PAGE),
     CABLE_DETAIL_PAGE: lambda: page_cable_screen(CABLE_DETAIL_PAGE),
+    TRAY_GUIDE_PAGE: page_tray_guide,
     calculator_page.PAGE_CURRENT: lambda: calculator_page.render_current_calc_page(go),
     calculator_page.PAGE_EQUIPMENT: lambda: calculator_page.render_calculator_page(go),
     calculator_page.PAGE_TRANSFORMER_CALC: lambda: calculator_page.render_transformer_calc_page(go),

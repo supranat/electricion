@@ -34,7 +34,7 @@ CATEGORIES = {
     "tray": {
         "title": "ราง",
         "icon": "▤",
-        "description": "ตัวอย่างรูปแบบรางไฟฟ้า 4 แบบ",
+        "description": "คู่มือรางเดินสายไฟ 5 ชนิด พร้อมตัวช่วยคำนวณขนาด",
         "image": "tray/overview.jpg",
     },
     "breakers": {
@@ -78,7 +78,7 @@ def _render_category_card(column, key, item, go):
             unsafe_allow_html=True,
         )
         button_label = (
-            "ดูรูปตัวอย่าง" if key == "tray"
+            "เปิดคู่มือและคำนวณขนาดราง" if key == "tray"
             else "ดูข้อมูลเสาไฟ" if key == "poles"
             else "เปิดหน้าข้อมูลเบรกเกอร์" if key == "breakers"
             else "เปิดตารางขนาดสายไฟ" if key == "cables"
@@ -116,10 +116,18 @@ def _render_category_card(column, key, item, go):
                 args=("cable_table",),
                 **BUTTON_WIDTH,
             )
+        elif key == "tray":
+            clicked = st.button(
+                button_label,
+                key=f"equipment_{key}",
+                on_click=go,
+                args=("tray_guide",),
+                **BUTTON_WIDTH,
+            )
         else:
             clicked = st.button(button_label, key=f"equipment_{key}", **BUTTON_WIDTH)
 
-    if clicked and key not in ("transformer", "poles", "breakers", "cables"):
+    if clicked and key not in ("transformer", "poles", "breakers", "cables", "tray"):
         _show_category(key)
 
 
