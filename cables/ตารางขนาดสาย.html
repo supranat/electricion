@@ -47,8 +47,7 @@ tbody tr:last-child td{border-bottom:0}
 .type{display:flex;align-items:center;gap:10px;font-weight:700}
 .thumb-button{display:block;width:72px;height:58px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#f5f5f5;cursor:zoom-in;overflow:hidden;transition:transform .2s,border-color .2s}
 .thumb-button:hover{transform:scale(1.06);border-color:var(--orange)}
-.thumb-button img{width:100%;height:100%;object-fit:cover;border-radius:7px}
-.no-thumb{color:rgba(197,165,151,.45);text-align:center}
+.thumb-button img{width:100%;height:100%;object-fit:contain;border-radius:7px;background:#fff}
 .swatch{width:10px;height:34px;border-radius:9px;background:var(--tone);box-shadow:0 0 14px color-mix(in srgb,var(--tone),transparent 45%)}
 .pill{display:inline-flex;padding:4px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--tone),transparent 55%);color:var(--tone);background:color-mix(in srgb,var(--tone),transparent 92%);font-size:13px}
 .size{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
@@ -101,7 +100,7 @@ dialog::backdrop{background:rgba(8,4,3,.78);backdrop-filter:blur(5px)}
       <tbody id="rows"></tbody>
     </table>
   </div>
-  <p class="foot">ข้อมูลในตารางนี้ดึงจากชุดข้อมูลตัวอย่างเดียวกับหน้าเครื่องคิดเลข ไม่ใช่รายการยี่ห้อผู้ผลิตหรือข้อมูลรับรองการติดตั้งจริง โปรดตรวจสอบมาตรฐานและตารางผู้ผลิตก่อนนำไปใช้งาน</p>
+  <p class="foot">รูปเป็นภาพตัวอย่างของชนิดสาย ไม่ได้รับประกันว่าเป็นยี่ห้อหรือขนาดเดียวกับแต่ละแถว ส่วนค่ากระแสเป็นชุดข้อมูลตัวอย่าง โปรดตรวจสอบมาตรฐานและตารางผู้ผลิตก่อนเลือกใช้งานจริง</p>
 </main>
 <dialog id="photos" aria-labelledby="photo-title">
   <div class="modalhead"><div><h2 id="photo-title">รูปตัวอย่าง</h2><p id="photo-sub"></p></div><button class="close" id="close-photos" type="button">ปิด ✕</button></div>
@@ -117,10 +116,24 @@ const source=[
 ];
 const search=document.querySelector('#search'),filter=document.querySelector('#filter'),rows=document.querySelector('#rows'),count=document.querySelector('#count');
 const photos=document.querySelector('#photos');
-function openGallery(){
-  document.querySelector('#photo-title').textContent='THW · 1.5 ตร.มม. · สีฟ้า';
-  document.querySelector('#photo-sub').textContent='รูปตัวอย่างสินค้าสำหรับแถว THW ขนาด 1.5 ตร.มม.';
-  document.querySelector('#gallery').innerHTML='<figure class="photo"><img src="images/thw-blue.jpg" alt="สาย THW สีฟ้า ขนาด 1.5 ตารางมิลลิเมตร" loading="lazy"><figcaption>THW / IEC 01 · สีฟ้า · รูปที่ส่งมา</figcaption></figure>';
+const images={
+  'THW':{src:'images/thw-blue.jpg',alt:'ตัวอย่างสาย THW / IEC 01 สีฟ้า ม้วนสายตัวนำเดี่ยวหุ้ม PVC',credit:'HomePro · Thai Union',source:'https://www.homepro.co.th/p/1286339'},
+  'VAF':{src:'images/vaf-sample.jpg',alt:'ตัวอย่างสาย VAF สีขาวแบบแบน สองแกน',credit:'HomePro · BCC',source:'https://www.homepro.co.th/p/228937?lang=en'},
+  'NYY':{src:'images/nyy-sample.png',alt:'ภาพแสดงโครงสร้างสาย NYY เปลือก PVC สีดำและตัวนำทองแดง',credit:'Thai Union Wire · STS Thonburi',source:'https://www.ststhonburi.com/en/product/341287/nyy-single-core-thai-union'},
+  'CV':{src:'images/cv-sample.jpg',alt:'ตัวอย่างสาย CV แกนเดี่ยว ฉนวน XLPE เปลือก PVC',credit:'Solar-Thailand · SUPER Cable',source:'https://www.solar-thailand.co.th/TH/Product.asp?Data1=CV-600V-1000V-XPLE-1Cx6sq'}
+};
+images['IEC 01']=images.THW;
+for(const photo of new Set(Object.values(images))){
+  if(!photo.src.startsWith('data:'))continue;
+  const [meta,encoded]=photo.src.split(','),type=meta.slice(5,meta.indexOf(';'));
+  const binary=atob(encoded),bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
+  photo.src=URL.createObjectURL(new Blob([bytes],{type}));
+}
+function openGallery(cable){
+  const photo=images[cable.c.id];
+  document.querySelector('#photo-title').textContent=`${cable.c.id} · ${cable.size} ตร.มม.`;
+  document.querySelector('#photo-sub').textContent='ภาพอ้างอิงของชนิดสายนี้ ขนาดและยี่ห้อในภาพอาจต่างจากแถวที่เลือก';
+  document.querySelector('#gallery').innerHTML=`<figure class="photo"><img src="${photo.src}" alt="${photo.alt}" loading="lazy"><figcaption><a href="${photo.source}" target="_blank" rel="noopener noreferrer">ที่มาภาพ: ${photo.credit} · เปิดหน้าสินค้า ↗</a></figcaption></figure>`;
   photos.showModal();
 }
 function render(){
@@ -130,14 +143,14 @@ function render(){
   count.textContent=`แสดง ${shown.length} ขนาด จาก ${source.length} ชนิดสาย`;
   rows.innerHTML=shown.length?shown.map(x=>`<tr style="--tone:${x.c.tone}">
     <td><span class="type"><i class="swatch" aria-hidden="true"></i>${x.c.id}</span></td>
-    <td>${x.c.id==='THW'&&x.size===1.5?'<button class="thumb-button" type="button" aria-label="ขยายรูป THW 1.5 ตร.มม."><img src="images/thw-blue.jpg" alt="THW สีฟ้า 1.5 ตร.มม." loading="lazy"></button>':'<span class="no-thumb">—</span>'}</td>
+    <td><button class="thumb-button" type="button" aria-label="ดูภาพตัวอย่าง ${x.c.id} ขนาด ${x.size} ตร.มม."><img src="${images[x.c.id].src}" alt="${images[x.c.id].alt}" loading="lazy"></button></td>
     <td><span class="pill">${x.size} ตร.มม.</span></td>
     <td class="num">${x.amp}</td><td class="num">${x.ohm}</td><td>${x.c.ins}</td>
     <td><a class="detail-link" href="สายไฟ · AK Electrical Calculator.html?cable=${encodeURIComponent(x.c.id)}">รายละเอียด ↗</a></td>
   </tr>`).join(''):`<tr><td class="empty" colspan="7">ไม่พบข้อมูลที่ตรงกับคำค้น</td></tr>`;
 }
 search.addEventListener('input',render);filter.addEventListener('change',render);render();
-rows.addEventListener('click',e=>{if(e.target.closest('.thumb-button'))openGallery()});
+rows.addEventListener('click',e=>{const button=e.target.closest('.thumb-button');if(!button)return;const tr=button.closest('tr'),id=tr.querySelector('.type').textContent.trim(),size=Number(tr.querySelector('.pill').textContent.replace('ตร.มม.','').trim());openGallery({c:{id},size})});
 document.querySelector('#close-photos').addEventListener('click',()=>photos.close());
 photos.addEventListener('click',e=>{if(e.target===photos)photos.close()});
 </script>

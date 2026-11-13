@@ -782,10 +782,19 @@ def page_cable_screen(page_key):
         page_html = page_file.read()
 
     if page_key == CABLE_TABLE_PAGE:
-        image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), CABLE_HTML_DIR, "images", "thw-blue.jpg")
-        with open(image_path, "rb") as image_file:
-            image_data = base64.b64encode(image_file.read()).decode("ascii")
-        page_html = page_html.replace("images/thw-blue.jpg", f"data:image/jpeg;base64,{image_data}")
+        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), CABLE_HTML_DIR, "images")
+        for image_name, image_type in (
+            ("thw-blue.jpg", "image/jpeg"),
+            ("vaf-sample.jpg", "image/jpeg"),
+            ("nyy-sample.png", "image/png"),
+            ("cv-sample.jpg", "image/jpeg"),
+        ):
+            image_path = os.path.join(image_dir, image_name)
+            with open(image_path, "rb") as image_file:
+                image_data = base64.b64encode(image_file.read()).decode("ascii")
+            page_html = page_html.replace(
+                f"images/{image_name}", f"data:{image_type};base64,{image_data}"
+            )
 
     cable_id = None
     if page_key in (CABLE_CALCULATOR_PAGE, CABLE_DETAIL_PAGE):
