@@ -81,6 +81,7 @@ def _render_category_card(column, key, item, go):
             "ดูรูปตัวอย่าง" if key == "tray"
             else "ดูข้อมูลเสาไฟ" if key == "poles"
             else "เปิดหน้าข้อมูลเบรกเกอร์" if key == "breakers"
+            else "เปิดตารางขนาดสายไฟ" if key == "cables"
             else "ดูรายละเอียด"
         )
         if key == "transformer":
@@ -107,10 +108,18 @@ def _render_category_card(column, key, item, go):
                 args=("breakers",),
                 **BUTTON_WIDTH,
             )
+        elif key == "cables":
+            clicked = st.button(
+                button_label,
+                key=f"equipment_{key}",
+                on_click=go,
+                args=("cable_table",),
+                **BUTTON_WIDTH,
+            )
         else:
             clicked = st.button(button_label, key=f"equipment_{key}", **BUTTON_WIDTH)
 
-    if clicked and key not in ("transformer", "poles", "breakers"):
+    if clicked and key not in ("transformer", "poles", "breakers", "cables"):
         _show_category(key)
 
 
