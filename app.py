@@ -2038,10 +2038,29 @@ st.markdown(
       color: var(--ak-ink) !important;
       background: transparent !important;
     }
+    /* Keep the calculator page in a normal vertical scroll flow, including touch devices. */
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) [data-testid="stMain"] {
+      min-height: 100dvh !important;
+      overflow-x: hidden !important;
+      overflow-y: auto !important;
+      overscroll-behavior-y: contain;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+    }
+    .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) [data-testid="stMainBlockContainer"] {
+      overflow: visible !important;
+      touch-action: pan-y;
+    }
     .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-fx,
     .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme)::before,
     .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme)::after {
       display: none !important;
+    }
+    @media (max-width: 760px) {
+      .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme),
+      .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) [data-testid="stMain"] {
+        background-attachment: scroll !important;
+      }
     }
     .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-hero,
     .stApp [data-testid="stAppViewContainer"]:has(.transformer-calc-theme) .tc-card,
