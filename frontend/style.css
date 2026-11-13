@@ -1,0 +1,225 @@
+:root {
+    --navy: #0b3a75;
+    --blue: #1e6fd9;
+    --blue-light: #dcebff;
+    --background: #edf3fa;
+    --line: #b9d3f2;
+    --ink: #0b2a4a;
+    --muted: #3f5b7d;
+    --orange: #ff7030;
+    --orange-dark: #c2410c;
+    --surface: #ffffff;
+    --radius: 14px;
+    --shadow: 0 8px 24px rgba(11, 58, 117, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    color: var(--ink);
+    font-family: "Sarabun", "Noto Sans Thai", Tahoma, sans-serif;
+    line-height: 1.7;
+    background: radial-gradient(ellipse at 8% 8%, rgba(255, 112, 48, 0.1), transparent 30%), radial-gradient(ellipse at 92% 18%, rgba(22, 139, 255, 0.1), transparent 34%), radial-gradient(ellipse at 58% 100%, rgba(255, 172, 92, 0.09), transparent 36%), linear-gradient(rgba(22, 92, 170, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(22, 92, 170, 0.035) 1px, transparent 1px), linear-gradient(135deg, #f2f7fd 0%, #eaf1f9 52%, #f8f1eb 100%);
+    background-size: auto, auto, auto, 34px 34px, 34px 34px, auto;
+    background-attachment: fixed;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+/* ส่วนหัวและเมนู */
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px max(5%, calc((100% - 1200px) / 2));
+    background: rgba(255, 255, 255, 0.96);
+    border-bottom: 2px solid var(--line);
+    box-shadow: 0 4px 16px rgba(11, 58, 117, 0.08);
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    color: var(--navy);
+    font-size: 1.25rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
+nav a {
+    padding: 8px 12px;
+    border-radius: 9px;
+    color: var(--navy);
+    font-weight: 700;
+    transition: 0.2s ease;
+}
+
+nav a:hover,
+nav a:focus-visible {
+    color: var(--orange-dark);
+    background: #fff1ea;
+}
+
+
+/* เนื้อหาหลัก */
+
+main {
+    width: min(1120px, 90%);
+    margin: 32px auto 64px;
+}
+
+section {
+    margin: 24px 0;
+    padding: 32px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    scroll-margin-top: 100px;
+}
+
+section h2 {
+    margin: 0 0 16px;
+    color: var(--navy);
+    font-size: 1.6rem;
+}
+
+#home {
+    min-height: 310px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 0;
+    border-left: 6px solid var(--orange);
+    color: #ffffff;
+    background: radial-gradient(ellipse at 90% 10%, rgba(255, 112, 48, 0.32), transparent 35%), linear-gradient(120deg, #2169ce, #1a5cbf);
+}
+
+#home h1 {
+    max-width: 760px;
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.25;
+}
+
+#home p {
+    max-width: 680px;
+    margin: 0;
+    color: #f2f7fd;
+    font-size: 1.1rem;
+}
+
+
+/* การ์ดสินค้าและเครื่องมือ */
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.card {
+    padding: 22px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-top: 4px solid var(--orange);
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.card h3 {
+    margin-top: 0;
+    color: var(--navy);
+}
+
+
+/* ปุ่ม */
+
+.button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 11px 18px;
+    border: 0;
+    border-radius: 9px;
+    background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+    color: #ffffff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 14px rgba(194, 65, 12, 0.2);
+}
+
+.button:hover {
+    filter: brightness(0.95);
+}
+
+
+/* ท้ายเว็บ */
+
+footer {
+    padding: 24px 5%;
+    color: #ffffff;
+    background: var(--navy);
+    border-top: 4px solid var(--orange);
+    text-align: center;
+}
+
+
+/* มือถือและแท็บเล็ต */
+
+@media (max-width: 760px) {
+    header {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+        padding: 16px 5%;
+    }
+    nav {
+        justify-content: flex-start;
+        gap: 4px;
+    }
+    nav a {
+        padding: 7px 9px;
+        font-size: 0.95rem;
+    }
+    main {
+        width: 92%;
+        margin-top: 20px;
+    }
+    section {
+        padding: 22px;
+    }
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ตารางขนาดสายไฟ · AK Electrical Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#150b09;--panel:#24120e;--card:#1d0f0c;--line:rgba(255,140,70,.22);--tx:#ffeadf;--mut:#c5a597;--orange:#ff8f45;--glow:rgba(255,120,50,.16)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;overflow-x:hidden;background:radial-gradient(800px 400px at 80% 0%,var(--glow),transparent 70%),var(--bg);color:var(--tx);font-family:"Prompt",system-ui,sans-serif;line-height:1.55}
+.ambient{position:fixed;inset:0;z-index:0;overflow:hidden;contain:strict;pointer-events:none;isolation:isolate}
+.ambient::after{content:"";position:absolute;inset:22% -10% -28%;opacity:.12;background-image:linear-gradient(rgba(255,143,69,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(255,143,69,.28) 1px,transparent 1px);background-size:54px 54px;mask-image:linear-gradient(to bottom,transparent,#000 35%,transparent 90%);transform:perspective(520px) rotateX(58deg);transform-origin:50% 100%;will-change:transform;animation:grid-drift 32s linear infinite}
+.glow{position:absolute;width:clamp(180px,30vw,360px);aspect-ratio:1;border-radius:50%;filter:blur(42px);opacity:.18;will-change:transform}
+.glow.one{left:-9%;top:-18%;background:#ff6238;animation:glow-one 25s ease-in-out infinite alternate}
+.glow.two{right:-12%;top:25%;background:#735cff;opacity:.14;animation:glow-two 29s ease-in-out infinite alternate}
+.glow.three{left:32%;bottom:-32%;background:#f07540;opacity:.12;animation:glow-three 34s ease-in-out infinite alternate}
+@keyframes glow-one{to{transform:translate3d(12vw,10vh,0) scale(1.12)}}
+@keyframes glow-two{to{transform:translate3d(-10vw,8vh,0) scale(.9)}}
+@keyframes glow-three{to{transform:translate3d(8vw,-12vh,0) scale(1.08)}}
+@keyframes grid-drift{to{transform:perspective(520px) rotateX(58deg) translateY(54px)}}
+.wrap{position:relative;z-index:1;width:min(1120px,100% - 32px);margin:auto;padding:22px 0 56px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+a{color:inherit;text-decoration:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:1px solid var(--line);border-radius:999px;color:var(--mut);background:rgba(36,18,14,.72);transition:.2s}
+.btn:hover{color:var(--tx);border-color:var(--orange);transform:translateY(-2px)}
+header{margin:34px 0 24px}
+.eyebrow{color:var(--orange);font-weight:600;letter-spacing:.04em}
+h1{font-size:clamp(32px,6vw,52px);line-height:1.1;margin:6px 0 10px}
+.intro{color:var(--mut);margin:0;max-width:760px}
+.jump{display:inline-flex;align-items:center;gap:9px;margin-top:18px;padding:10px 16px;border:1px solid rgba(255,143,69,.4);border-radius:999px;color:#ffd3b5;background:linear-gradient(100deg,rgba(192,57,43,.22),rgba(255,143,69,.12));box-shadow:0 8px 25px rgba(255,120,50,.1);transition:transform .2s,box-shadow .2s}
+.jump:hover{transform:translateY(3px);box-shadow:0 12px 28px var(--glow)}
+.down{font-size:20px;line-height:1;animation:bob 1.3s ease-in-out infinite}@keyframes bob{50%{transform:translateY(4px)}}
+.tools{display:grid;grid-template-columns:minmax(220px,1fr) 220px;gap:12px;margin:24px 0 14px}
+input,select{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--tx);font:inherit;outline:none}
+input:focus,select:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--glow)}
+.count{color:var(--mut);font-size:14px;margin:0 0 12px}
+.tablebox{overflow:auto;border:1px solid var(--line);border-radius:18px;background:rgba(29,15,12,.9);box-shadow:0 22px 60px rgba(0,0,0,.25)}
+table{width:100%;min-width:700px;border-collapse:separate;border-spacing:0}
+thead th{position:sticky;top:0;background:#2b1711;color:var(--mut);font-size:13px;font-weight:500;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:13px 16px;border-bottom:1px solid rgba(255,140,70,.12)}
+tbody tr{transition:background .18s,transform .18s}
+tbody tr:hover{background:rgba(255,140,70,.06)}
+tbody tr:last-child td{border-bottom:0}
+.type{display:flex;align-items:center;gap:10px;font-weight:700}
+.thumb-button{display:block;width:72px;height:58px;padding:3px;border:1px solid var(--line);border-radius:10px;background:#f5f5f5;cursor:zoom-in;overflow:hidden;transition:transform .2s,border-color .2s}
+.thumb-button:hover{transform:scale(1.06);border-color:var(--orange)}
+.thumb-button img{width:100%;height:100%;object-fit:cover;border-radius:7px}
+.no-thumb{color:rgba(197,165,151,.45);text-align:center}
+.swatch{width:10px;height:34px;border-radius:9px;background:var(--tone);box-shadow:0 0 14px color-mix(in srgb,var(--tone),transparent 45%)}
+.pill{display:inline-flex;padding:4px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--tone),transparent 55%);color:var(--tone);background:color-mix(in srgb,var(--tone),transparent 92%);font-size:13px}
+.size{font-size:17px;font-weight:600;font-variant-numeric:tabular-nums}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.detail-link{display:inline-flex;padding:6px 10px;border:1px solid var(--line);border-radius:999px;color:#ffd0ad;white-space:nowrap;transition:.2s}
+.detail-link:hover{border-color:var(--orange);background:rgba(255,143,69,.1);transform:translateY(-2px)}
+.foot{margin-top:18px;padding:13px 15px;border-left:3px solid var(--orange);color:var(--mut);font-size:13px;background:rgba(36,18,14,.55);border-radius:0 12px 12px 0}
+.empty{padding:36px;text-align:center;color:var(--mut)}
+dialog{width:min(900px,calc(100% - 24px));max-height:90vh;max-height:90dvh;overflow:auto;border:1px solid var(--line);border-radius:22px;padding:0;background:#24120e;color:var(--tx);box-shadow:0 28px 80px rgba(0,0,0,.6)}
+dialog::backdrop{background:rgba(8,4,3,.78);backdrop-filter:blur(5px)}
+.modalhead{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:14px;padding:16px 20px;background:#24120e;border-bottom:1px solid var(--line)}
+.modalhead h2{margin:0;font-size:23px}.modalhead p{margin:2px 0 0;color:var(--mut);font-size:13px}
+.close{border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--tx);padding:8px 12px;cursor:pointer;font:inherit}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;padding:18px}
+.photo{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#160c09;margin:0;animation:rise-in .3s both}
+.photo img{display:block;width:100%;aspect-ratio:1/1;object-fit:contain;background:#f6f6f6}
+.photo figcaption{padding:11px 13px;color:var(--mut);font-size:14px}
+.no-photo{grid-column:1/-1;display:grid;place-items:center;min-height:180px;padding:20px;border:1px dashed var(--line);border-radius:16px;text-align:center;color:var(--mut)}
+@keyframes rise-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:620px){.wrap{width:calc(100% - 22px);padding-top:14px}.tools{grid-template-columns:1fr}.tablebox{border-radius:14px}thead th,tbody td{padding:11px 12px}}
+@media(max-width:620px){.modalhead{padding:13px 14px}.modalhead h2{font-size:19px}.gallery{grid-template-columns:1fr;padding:12px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="ambient" aria-hidden="true"><i class="glow one"></i><i class="glow two"></i><i class="glow three"></i></div>
+<main class="wrap">
+  <nav class="top" aria-label="นำทาง">
+    <a class="btn" href="สายไฟ · AK Electrical Calculator.html">⌂ หน้าแรก · เครื่องคิดเลข</a>
+    <span class="btn" aria-current="page">ตารางขนาดสาย</span>
+  </nav>
+  <header>
+    <div class="eyebrow">AK ELECTRICAL · CABLE GUIDE</div>
+    <h1>ตารางขนาดสายไฟ</h1>
+    <p class="intro">รวมชนิดสายและขนาดตัวนำที่มีในหน้าเครื่องคำนวณ เรียงตามชนิดสาย พร้อมค่ากระแสและความต้านทานสำหรับดูเปรียบเทียบ</p>
+    <a class="jump" href="#cable-table">เลื่อนลงไปดูตาราง <span class="down" aria-hidden="true">↓</span></a>
+  </header>
+  <section class="tools" aria-label="ค้นหาและกรองตาราง">
+    <input id="search" type="search" placeholder="ค้นหาชนิดสายหรือขนาด เช่น VAF, NYY, 2.5" autocomplete="off">
+    <select id="filter" aria-label="เลือกชนิดสาย">
+      <option value="all">แสดงทุกชนิดสาย</option>
+      <option value="THW">THW</option><option value="IEC 01">IEC 01</option>
+      <option value="VAF">VAF</option><option value="NYY">NYY</option><option value="CV">CV</option>
+    </select>
+  </section>
+  <p class="count" id="count" aria-live="polite"></p>
+  <div class="tablebox" id="cable-table">
+    <table>
+      <thead><tr><th>ชนิดสาย</th><th>รูปสินค้า</th><th>ขนาดตัวนำ (ตร.มม.)</th><th>กระแสในตาราง (A)</th><th>ความต้านทาน (Ω/กม.)</th><th>ฉนวน / อุณหภูมิ</th><th>หน้า</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <p class="foot">ข้อมูลในตารางนี้ดึงจากชุดข้อมูลตัวอย่างเดียวกับหน้าเครื่องคิดเลข ไม่ใช่รายการยี่ห้อผู้ผลิตหรือข้อมูลรับรองการติดตั้งจริง โปรดตรวจสอบมาตรฐานและตารางผู้ผลิตก่อนนำไปใช้งาน</p>
+</main>
+<dialog id="photos" aria-labelledby="photo-title">
+  <div class="modalhead"><div><h2 id="photo-title">รูปตัวอย่าง</h2><p id="photo-sub"></p></div><button class="close" id="close-photos" type="button">ปิด ✕</button></div>
+  <div class="gallery" id="gallery"></div>
+</dialog>
+<script>
+const source=[
+  {id:'THW',tone:'#ff8f45',ins:'PVC · 70°C',sizes:[[1.5,15.5,12.1],[2.5,21,7.41],[4,28,4.61],[6,36,3.08],[10,50,1.83],[16,68,1.15],[25,89,.727],[35,110,.524],[50,134,.387]]},
+  {id:'IEC 01',tone:'#ffcf5a',ins:'PVC · 70°C',sizes:[[1.5,15.5,12.1],[2.5,21,7.41],[4,28,4.61],[6,36,3.08],[10,50,1.83],[16,68,1.15],[25,89,.727],[35,110,.524],[50,134,.387]]},
+  {id:'VAF',tone:'#f06fa9',ins:'PVC · 70°C',sizes:[[1.5,19.5,12.1],[2.5,27,7.41],[4,36,4.61],[6,46,3.08],[10,63,1.83]]},
+  {id:'NYY',tone:'#65d7c2',ins:'PVC · 70°C',sizes:[[4,38,4.61],[6,47,3.08],[10,63,1.83],[16,81,1.15],[25,104,.727],[35,125,.524],[50,148,.387]]},
+  {id:'CV',tone:'#9c8aff',ins:'XLPE · 90°C',sizes:[[4,45,4.61],[6,58,3.08],[10,80,1.83],[16,107,1.15],[25,138,.727],[35,169,.524],[50,207,.387]]}
+];
+const search=document.querySelector('#search'),filter=document.querySelector('#filter'),rows=document.querySelector('#rows'),count=document.querySelector('#count');
+const photos=document.querySelector('#photos');
+function openGallery(){
+  document.querySelector('#photo-title').textContent='THW · 1.5 ตร.มม. · สีฟ้า';
+  document.querySelector('#photo-sub').textContent='รูปตัวอย่างสินค้าสำหรับแถว THW ขนาด 1.5 ตร.มม.';
+  document.querySelector('#gallery').innerHTML='<figure class="photo"><img src="images/thw-blue.jpg" alt="สาย THW สีฟ้า ขนาด 1.5 ตารางมิลลิเมตร" loading="lazy"><figcaption>THW / IEC 01 · สีฟ้า · รูปที่ส่งมา</figcaption></figure>';
+  photos.showModal();
+}
+function render(){
+  const q=search.value.trim().toLowerCase();
+  const shown=source.flatMap(c=>c.sizes.map(([size,amp,ohm])=>({c,size,amp,ohm})))
+    .filter(x=>(filter.value==='all'||x.c.id===filter.value)&&(!q||`${x.c.id} ${x.size} ${x.amp} ${x.ohm} ${x.c.ins}`.toLowerCase().includes(q)));
+  count.textContent=`แสดง ${shown.length} ขนาด จาก ${source.length} ชนิดสาย`;
+  rows.innerHTML=shown.length?shown.map(x=>`<tr style="--tone:${x.c.tone}">
+    <td><span class="type"><i class="swatch" aria-hidden="true"></i>${x.c.id}</span></td>
+    <td>${x.c.id==='THW'&&x.size===1.5?'<button class="thumb-button" type="button" aria-label="ขยายรูป THW 1.5 ตร.มม."><img src="images/thw-blue.jpg" alt="THW สีฟ้า 1.5 ตร.มม." loading="lazy"></button>':'<span class="no-thumb">—</span>'}</td>
+    <td><span class="pill">${x.size} ตร.มม.</span></td>
+    <td class="num">${x.amp}</td><td class="num">${x.ohm}</td><td>${x.c.ins}</td>
+    <td><a class="detail-link" href="สายไฟ · AK Electrical Calculator.html?cable=${encodeURIComponent(x.c.id)}">รายละเอียด ↗</a></td>
+  </tr>`).join(''):`<tr><td class="empty" colspan="7">ไม่พบข้อมูลที่ตรงกับคำค้น</td></tr>`;
+}
+search.addEventListener('input',render);filter.addEventListener('change',render);render();
+rows.addEventListener('click',e=>{if(e.target.closest('.thumb-button'))openGallery()});
+document.querySelector('#close-photos').addEventListener('click',()=>photos.close());
+photos.addEventListener('click',e=>{if(e.target===photos)photos.close()});
+</script>
+</body>
+</html>

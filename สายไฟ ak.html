@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>สายไฟ · AK Electrical Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #150b09;
+            --bg2: #24120e;
+            --card: #1d0f0c;
+            --line: rgba(255, 140, 70, .22);
+            --line2: rgba(255, 140, 70, .45);
+            --tx: #ffeadf;
+            --mut: #c5a597;
+            --ember1: #c0392b;
+            --ember2: #ff8f45;
+            --vio: #8b6cf0;
+            --ok: #4fd18b;
+            --bad: #ff6b57;
+            --glow: rgba(255, 120, 50, .18);
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+            color-scheme: dark;
+        }
+        
+        @media (prefers-color-scheme:light) {
+             :root:not([data-theme="dark"]) {
+                --bg: #fbf1ea;
+                --bg2: #fff8f3;
+                --card: #fff;
+                --line: rgba(190, 80, 30, .22);
+                --line2: rgba(190, 80, 30, .5);
+                --tx: #2b140e;
+                --mut: #7d5a4d;
+                --vio: #6a4bd6;
+                --ok: #17894f;
+                --bad: #c4301f;
+                --glow: rgba(220, 90, 30, .14);
+                color-scheme: light
+            }
+        }
+        
+         :root[data-theme="light"] {
+            --bg: #fbf1ea;
+            --bg2: #fff8f3;
+            --card: #fff;
+            --line: rgba(190, 80, 30, .22);
+            --line2: rgba(190, 80, 30, .5);
+            --tx: #2b140e;
+            --mut: #7d5a4d;
+            --vio: #6a4bd6;
+            --ok: #17894f;
+            --bad: #c4301f;
+            --glow: rgba(220, 90, 30, .14);
+            color-scheme: light
+        }
+        
+         :root[data-theme="dark"] {
+            color-scheme: dark
+        }
+        
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px)
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--tx);
+            font-family: "Prompt", "Noto Sans Thai", system-ui, sans-serif;
+            line-height: 1.55;
+            min-height: 100vh;
+            background-image: radial-gradient(900px 420px at 80% -10%, var(--glow), transparent 70%), repeating-linear-gradient(115deg, transparent 0 11px, rgba(255, 140, 70, .035) 11px 12px)
+        }
+        
+        button,
+        input,
+        select {
+            font: inherit;
+            color: inherit
+        }
+        
+         :focus-visible {
+            outline: 2px solid var(--ember2);
+            outline-offset: 2px
+        }
+        
+        .wrap {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 18px 18px 56px
+        }
+        
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px
+        }
+        
+        .ghost {
+            background: transparent;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 8px 14px;
+            cursor: pointer;
+            color: var(--mut);
+            transition: border-color .2s, color .2s
+        }
+        
+        .ghost:hover {
+            border-color: var(--line2);
+            color: var(--tx)
+        }
+        
+        .head {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin: 26px 0 6px
+        }
+        
+        .badge {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            border: 1px solid var(--line2);
+            display: grid;
+            place-items: center;
+            background: linear-gradient(160deg, var(--bg2), var(--card));
+            box-shadow: 0 0 34px var(--glow)
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: clamp(30px, 6vw, 44px);
+            font-weight: 700;
+            line-height: 1.15
+        }
+        
+        .sub {
+            margin: 0;
+            color: var(--mut)
+        }
+        
+        .tools {
+            display: grid;
+            gap: 12px;
+            margin: 22px 0 18px
+        }
+        
+        .search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 0 14px;
+            transition: border-color .2s, box-shadow .2s
+        }
+        
+        .search:focus-within {
+            border-color: var(--ember2);
+            box-shadow: 0 0 0 3px var(--glow)
+        }
+        
+        .search input {
+            flex: 1;
+            background: none;
+            border: 0;
+            padding: 13px 0;
+            outline: 0;
+            min-width: 0
+        }
+        
+        .chips {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none
+        }
+        
+        .chip {
+            flex: none;
+            border: 1px solid var(--line);
+            background: transparent;
+            border-radius: 999px;
+            padding: 7px 15px;
+            cursor: pointer;
+            color: var(--mut);
+            transition: all .2s
+        }
+        
+        .chip[aria-pressed="true"] {
+            background: linear-gradient(90deg, var(--ember1), var(--ember2));
+            border-color: transparent;
+            color: #fff;
+            font-weight: 600
+        }
+        
+        .count {
+            color: var(--mut);
+            font-size: 14px;
+            margin: 0 0 12px
+        }
+        
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr))
+        }
+        
+        .card {
+            position: relative;
+            background: radial-gradient(420px 220px at var(--mx, 30%) var(--my, 0%), var(--glow), transparent 70%), var(--card);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            transition: border-color .25s, transform .25s
+        }
+        
+        .card:hover {
+            border-color: var(--line2);
+            transform: translateY(-2px)
+        }
+        
+        .card h2 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700
+        }
+        
+        .card .th {
+            margin: 0;
+            color: var(--mut);
+            font-size: 14px
+        }
+        
+        .row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap
+        }
+        
+        .tag {
+            font-size: 12.5px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 3px 9px;
+            color: var(--mut)
+        }
+        
+        .tag.hot {
+            border-color: var(--vio);
+            color: var(--vio)
+        }
+        
+        .range {
+            font-size: 13px;
+            color: var(--mut)
+        }
+        
+        .bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 34px
+        }
+        
+        .bars i {
+            flex: 1;
+            background: linear-gradient(to top, var(--ember1), var(--ember2));
+            border-radius: 3px 3px 0 0;
+            opacity: .85
+        }
+        
+        .cta {
+            margin-top: auto;
+            border: 0;
+            border-radius: 14px;
+            padding: 13px 18px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 17px;
+            color: #fff;
+            background: linear-gradient(90deg, var(--ember1), var(--ember2));
+            box-shadow: 0 8px 24px var(--glow);
+            transition: filter .2s, transform .15s
+        }
+        
+        .cta:hover {
+            filter: brightness(1.1)
+        }
+        
+        .cta:active {
+            transform: scale(.98)
+        }
+        
+        .empty {
+            grid-column: 1/-1;
+            text-align: center;
+            border: 1px dashed var(--line2);
+            border-radius: 18px;
+            padding: 40px 18px;
+            color: var(--mut)
+        }
+        
+        .empty button {
+            margin-top: 12px
+        }
+        
+        .note {
+            margin-top: 30px;
+            font-size: 13px;
+            color: var(--mut);
+            border-left: 3px solid var(--ember2);
+            padding: 4px 0 4px 12px
+        }
+        /* background fx */
+        
+        .bg {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: .5;
+            will-change: transform
+        }
+        
+        .o1 {
+            width: 46vmax;
+            height: 46vmax;
+            left: -12vmax;
+            top: -14vmax;
+            background: radial-gradient(circle, #ff6a2b, transparent 65%);
+            animation: d1 22s ease-in-out infinite alternate
+        }
+        
+        .o2 {
+            width: 40vmax;
+            height: 40vmax;
+            right: -14vmax;
+            top: 20%;
+            background: radial-gradient(circle, #7c4dff, transparent 65%);
+            opacity: .38;
+            animation: d2 27s ease-in-out infinite alternate
+        }
+        
+        .o3 {
+            width: 36vmax;
+            height: 36vmax;
+            left: 25%;
+            bottom: -18vmax;
+            background: radial-gradient(circle, #c0392b, transparent 65%);
+            animation: d3 31s ease-in-out infinite alternate
+        }
+        
+        @keyframes d1 {
+            to {
+                transform: translate(18vmax, 12vmax) scale(1.25)
+            }
+        }
+        
+        @keyframes d2 {
+            to {
+                transform: translate(-20vmax, -8vmax) scale(.8)
+            }
+        }
+        
+        @keyframes d3 {
+            to {
+                transform: translate(-16vmax, -10vmax) scale(1.3)
+            }
+        }
+        
+        .floor {
+            position: absolute;
+            left: -50%;
+            right: -50%;
+            bottom: -8%;
+            height: 62%;
+            background-image: linear-gradient(rgba(255, 140, 70, .3) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 140, 70, .3) 1px, transparent 1px);
+            background-size: 56px 56px;
+            transform: perspective(480px) rotateX(64deg);
+            transform-origin: 50% 100%;
+            -webkit-mask-image: linear-gradient(to top, #000, transparent 88%);
+            mask-image: linear-gradient(to top, #000, transparent 88%);
+            animation: fl2 3.5s linear infinite
+        }
+        
+        @keyframes fl2 {
+            to {
+                background-position: 0 56px
+            }
+        }
+        
+        .wires {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%
+        }
+        
+        .w {
+            fill: none;
+            stroke: rgba(255, 150, 80, .55);
+            stroke-width: 1.6;
+            stroke-dasharray: 6 20;
+            vector-effect: non-scaling-stroke;
+            filter: drop-shadow(0 0 4px rgba(255, 120, 50, .9));
+            animation: flow 3.2s linear infinite
+        }
+        
+        .w.v {
+            stroke: rgba(150, 120, 255, .6);
+            filter: drop-shadow(0 0 4px rgba(139, 108, 240, .9));
+            animation-duration: 4.4s;
+            animation-direction: reverse
+        }
+        
+        @keyframes flow {
+            to {
+                stroke-dashoffset: -104
+            }
+        }
+        
+        .node {
+            fill: #ffb07a;
+            filter: drop-shadow(0 0 6px #ff7a30);
+            animation: pulse 2.4s ease-in-out infinite;
+            transform-box: fill-box;
+            transform-origin: center
+        }
+        
+        .node:nth-of-type(2n) {
+            animation-delay: -.9s;
+            fill: #b6a2ff;
+            filter: drop-shadow(0 0 6px #8b6cf0)
+        }
+        
+        @keyframes pulse {
+            50% {
+                transform: scale(1.9);
+                opacity: .45
+            }
+        }
+        
+        .scan {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to bottom, transparent, rgba(255, 140, 70, .11), transparent);
+            animation: sc 9s linear infinite
+        }
+        
+        @keyframes sc {
+            from {
+                transform: translateY(-180px)
+            }
+            to {
+                transform: translateY(105vh)
+            }
+        }
+        
+        #fx {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%
+        }
+        
+        .wrap {
+            position: relative;
+            z-index: 1
+        }
+        
+        @media (prefers-color-scheme:light) {
+             :root:not([data-theme="dark"]) .bg {
+                opacity: .5
+            }
+        }
+        
+         :root[data-theme="light"] .bg {
+            opacity: .5
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            .bg * {
+                animation: none!important
+            }
+        }
+        
+        .fire {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 44vh;
+            max-height: 400px;
+            overflow: hidden;
+            -webkit-mask-image: linear-gradient(to top, #000 45%, transparent);
+            mask-image: linear-gradient(to top, #000 45%, transparent)
+        }
+        
+        .fire::after {
+            content: "";
+            position: absolute;
+            inset: auto 0 0 0;
+            height: 75%;
+            background: linear-gradient(to top, rgba(255, 90, 30, .6), rgba(40, 120, 255, .22) 55%, transparent)
+        }
+        
+        .fl {
+            position: absolute;
+            bottom: -34px;
+            left: var(--x);
+            width: var(--w);
+            height: var(--h);
+            margin-left: calc(var(--w)/-2);
+            background: radial-gradient(ellipse 50% 70% at 50% 85%, #fff3c4 0, #ffb347 28%, #ff5a1f 58%, transparent 76%);
+            border-radius: 50% 50% 50% 50%/70% 70% 30% 30%;
+            filter: blur(6px);
+            opacity: 1;
+            transform-origin: 50% 100%;
+            animation: fk var(--d) ease-in-out infinite;
+            animation-delay: var(--dl);
+            will-change: transform
+        }
+        
+        .fl.vi {
+            background: radial-gradient(ellipse 50% 70% at 50% 85%, #e8f6ff 0, #5cc8ff 28%, #1f6bff 58%, transparent 76%);
+            opacity: .92
+        }
+        
+        @keyframes fk {
+            0%,
+            100% {
+                transform: scale(1, .78) translateX(-10px) rotate(-5deg)
+            }
+            25% {
+                transform: scale(.88, 1.16) translateX(7px) rotate(4deg)
+            }
+            50% {
+                transform: scale(1.1, .92) translateX(-6px) rotate(-2deg)
+            }
+            75% {
+                transform: scale(.86, 1.25) translateX(10px) rotate(5deg)
+            }
+        }
+        
+        .em {
+            position: absolute;
+            bottom: 0;
+            left: var(--x);
+            width: var(--s);
+            height: var(--s);
+            border-radius: 50%;
+            background: #ffc489;
+            box-shadow: 0 0 8px 2px rgba(255, 130, 50, .9);
+            opacity: 0;
+            animation: rise var(--d) linear infinite;
+            animation-delay: var(--dl);
+            will-change: transform
+        }
+        
+        @keyframes rise {
+            0% {
+                transform: translate(0, 0);
+                opacity: 0
+            }
+            15% {
+                opacity: 1
+            }
+            100% {
+                transform: translate(var(--dx), -40vh);
+                opacity: 0
+            }
+        }
+        
+        .em.bl {
+            background: #9fdcff;
+            box-shadow: 0 0 8px 2px rgba(60, 150, 255, .95)
+        }
+        /* drawer */
+        
+        dialog {
+            border: 1px solid var(--line2);
+            background: var(--bg2);
+            color: var(--tx);
+            border-radius: 22px;
+            padding: 0;
+            width: min(760px, calc(100% - 20px));
+            max-height: calc(100% - 28px);
+            overflow: auto;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, .5)
+        }
+        
+        dialog::backdrop {
+            background: rgba(10, 4, 3, .68);
+            backdrop-filter: blur(4px)
+        }
+        
+        dialog[open] {
+            animation: up .28s ease-out
+        }
+        
+        @keyframes up {
+            from {
+                opacity: 0;
+                transform: translateY(24px)
+            }
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+        
+        @media (prefers-reduced-motion:reduce) {
+            dialog[open] {
+                animation: none
+            }
+            .card,
+            .cta {
+                transition: none
+            }
+        }
+        
+        .dh {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 20px 22px 14px;
+            background: var(--bg2);
+            border-bottom: 1px solid var(--line)
+        }
+        
+        .dh h3 {
+            margin: 0;
+            font-size: 28px
+        }
+        
+        .db {
+            padding: 18px 22px 24px;
+            display: grid;
+            gap: 22px
+        }
+        
+        .specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px
+        }
+        
+        .spec {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px 13px;
+            background: var(--card)
+        }
+        
+        .spec b {
+            display: block;
+            font-size: 12.5px;
+            color: var(--mut);
+            font-weight: 400
+        }
+        
+        .sec h4 {
+            margin: 0 0 4px;
+            font-size: 18px
+        }
+        
+        .sec p {
+            margin: 0 0 12px;
+            color: var(--mut);
+            font-size: 14px
+        }
+        
+        .form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 14px
+        }
+        
+        .form label {
+            display: grid;
+            gap: 4px;
+            font-size: 13px;
+            color: var(--mut)
+        }
+        
+        .form input,
+        .form select {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 10px 12px;
+            color: var(--tx);
+            min-width: 0
+        }
+        
+        .form input:focus,
+        .form select:focus {
+            border-color: var(--ember2);
+            outline: 0
+        }
+        
+        .tbl {
+            overflow-x: auto;
+            border: 1px solid var(--line);
+            border-radius: 14px
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 520px;
+            font-size: 14px
+        }
+        
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap
+        }
+        
+        th:first-child,
+        td:first-child {
+            text-align: left
+        }
+        
+        th {
+            color: var(--mut);
+            font-weight: 500;
+            font-size: 12.5px;
+            background: var(--card)
+        }
+        
+        tr:last-child td {
+            border-bottom: 0
+        }
+        
+        tr.best {
+            background: var(--glow)
+        }
+        
+        .amp {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: flex-end
+        }
+        
+        .amp i {
+            display: block;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(90deg, var(--ember1), var(--ember2));
+            min-width: 4px
+        }
+        
+        .st {
+            display: inline-block;
+            border-radius: 999px;
+            padding: 2px 10px;
+            font-size: 12.5px;
+            border: 1px solid
+        }
+        
+        .st.ok {
+            color: var(--ok);
+            border-color: var(--ok)
+        }
+        
+        .st.no {
+            color: var(--bad);
+            border-color: var(--bad)
+        }
+        
+        .st.rec {
+            background: var(--ok);
+            color: #06210f;
+            border-color: var(--ok);
+            font-weight: 600
+        }
+        
+        .verdict {
+            border: 1px solid var(--line2);
+            border-radius: 14px;
+            padding: 12px 14px;
+            background: var(--card);
+            font-size: 15px
+        }
+        
+        .dfoot {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+        
+        .dfoot .cta {
+            margin: 0
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg" aria-hidden="true">
+        <i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i>
+        <div class="floor"></div>
+        <svg class="wires" viewBox="0 0 1000 1000" preserveAspectRatio="none">
+    <path class="w" d="M0 160H140V300H320V380H470"/>
+    <path class="w v" d="M1000 120H820V260H700V420H560"/>
+    <path class="w" d="M0 640H90V760H260V860H430"/>
+    <path class="w v" d="M1000 700H880V820H730V930H600"/>
+    <path class="w" d="M330 0V90H520V210"/>
+    <circle class="node" cx="470" cy="380" r="4"/><circle class="node" cx="560" cy="420" r="4"/>
+    <circle class="node" cx="430" cy="860" r="4"/><circle class="node" cx="600" cy="930" r="4"/><circle class="node" cx="520" cy="210" r="4"/>
+  </svg>
+        <div class="fire" id="fire"></div>
+        <div class="scan"></div>
+        <canvas id="fx"></canvas>
+    </div>
+    <div class="wrap">
+        <div class="top">
+            <button class="ghost" id="back">‹ หมวดหมู่ทั้งหมด</button>
+            <button class="ghost" id="theme" aria-label="สลับโหมดสว่าง/มืด">โหมดสี</button>
+        </div>
+
+        <header class="head">
+            <div class="badge" aria-hidden="true">
+                <svg width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M4 22c4-8 8-8 12 0s8 8 12 0 6-6 8-4" stroke="#8b6cf0" stroke-width="4.5" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+                <h1>สายไฟ</h1>
+                <p class="sub">เลือกชนิดสาย ดูขนาดที่ใช้ได้ และเช็กแรงดันตกก่อนสั่งซื้อ</p>
+            </div>
+        </header>
+
+        <section class="tools" aria-label="ค้นหาและกรอง">
+            <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="ค้นหาชนิดสาย เช่น THW, ฝังดิน, สายแบน" autocomplete="off"></label>
+            <div class="chips" id="chips" role="group" aria-label="กรองตามประเภท"></div>
+        </section>
+
+        <p class="count" id="count" aria-live="polite"></p>
+        <main class="grid" id="grid"></main>
+
+        <p class="note">ตัวเลขในหน้านี้เป็นข้อมูลตัวอย่างสำหรับออกแบบหน้าจอ อ้างอิงค่าทั่วไปของ IEC (ตัวนำทองแดง) ก่อนใช้งานจริงต้องตรวจกับตารางของ วสท. และข้อมูลจากผู้ผลิต</p>
+    </div>
+
+    <dialog id="dlg" aria-labelledby="dt">
+        <div class="dh">
+            <div>
+                <h3 id="dt"></h3>
+                <p class="sub" id="dsub"></p>
+            </div>
+            <button class="ghost" id="close" aria-label="ปิด">ปิด ✕</button>
+        </div>
+        <div class="db">
+            <div class="specs" id="specs"></div>
+            <div class="sec">
+                <h4>เช็กขนาดสายสำหรับโหลดของคุณ</h4>
+                <p>กรอกกระแสและระยะทาง ระบบจะบอกว่าขนาดไหนผ่านทั้งกระแสที่สายทนได้และแรงดันตก</p>
+                <div class="form">
+                    <label>กระแสโหลด (A)<input id="fi" type="number" min="0.1" step="0.1" value="20" inputmode="decimal"></label>
+                    <label>ระยะสาย (เมตร)<input id="fl" type="number" min="1" step="1" value="30" inputmode="decimal"></label>
+                    <label>ระบบไฟ<select id="fs"><option value="1">1 เฟส 230 V</option><option value="3">3 เฟส 400 V</option></select></label>
+                    <label>แรงดันตกที่ยอมรับ (%)<input id="fd" type="number" min="0.5" max="10" step="0.5" value="3" inputmode="decimal"></label>
+                </div>
+                <div class="verdict" id="verdict" aria-live="polite"></div>
+            </div>
+            <div class="tbl">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ขนาด (ตร.มม.)</th>
+                            <th>กระแสที่ทนได้ (A)</th>
+                            <th>ความต้านทาน (Ω/กม.)</th>
+                            <th>แรงดันตก (%)</th>
+                            <th>ผล</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rows"></tbody>
+                </table>
+            </div>
+            <div class="dfoot"><button class="cta" id="use">ส่งขนาดที่แนะนำไปเครื่องคิดเลข</button><button class="ghost" id="close2">กลับไปรายการสาย</button></div>
+        </div>
+    </dialog>
+
+    <script>
+        const S1 = [
+            [1.5, 15.5, 12.1],
+            [2.5, 21, 7.41],
+            [4, 28, 4.61],
+            [6, 36, 3.08],
+            [10, 50, 1.83],
+            [16, 68, 1.15],
+            [25, 89, .727],
+            [35, 110, .524],
+            [50, 134, .387]
+        ];
+        const CABLES = [{
+            id: 'THW',
+            th: 'สายเดี่ยว ฉนวน PVC สำหรับร้อยท่อ',
+            tags: ['แกนเดี่ยว'],
+            volt: '450/750 V',
+            temp: 70,
+            cond: 'ทองแดง 1 แกน',
+            ins: 'PVC',
+            inst: 'ร้อยท่อในอาคาร',
+            std: 'IEC 60227',
+            use: 'วงจรแสงสว่าง เต้ารับ และตู้ควบคุม',
+            sz: S1
+        }, {
+            id: 'IEC 01',
+            th: 'สายเดี่ยวแข็ง ใช้เดินในท่อ',
+            tags: ['แกนเดี่ยว'],
+            volt: '450/750 V',
+            temp: 70,
+            cond: 'ทองแดงตีเกลียว',
+            ins: 'PVC',
+            inst: 'ร้อยท่อในอาคาร',
+            std: 'IEC 60227',
+            use: 'เดินสายในท่อ ต่อเข้าตู้และอุปกรณ์',
+            sz: S1
+        }, {
+            id: 'VAF',
+            th: 'สายแบน 2 แกน มีกราวด์',
+            tags: ['หลายแกน'],
+            volt: '300/500 V',
+            temp: 70,
+            cond: 'ทองแดง 2 แกน + กราวด์',
+            ins: 'PVC',
+            inst: 'ตีกิ๊บเดินลอยหรือในผนัง',
+            std: 'IEC 60227',
+            use: 'บ้านพักอาศัย ไฟแสงสว่างและเต้ารับ',
+            sz: [
+                [1.5, 19.5, 12.1],
+                [2.5, 27, 7.41],
+                [4, 36, 4.61],
+                [6, 46, 3.08],
+                [10, 63, 1.83]
+            ]
+        }, {
+            id: 'NYY',
+            th: 'สายฝังดิน หุ้มเปลือกนอกหนา',
+            tags: ['หลายแกน', 'ฝังดิน'],
+            volt: '0.6/1 kV',
+            temp: 70,
+            cond: 'ทองแดงหลายแกน',
+            ins: 'PVC 2 ชั้น',
+            inst: 'ฝังดิน ร้อยท่อใต้ดิน',
+            std: 'IEC 60502-1',
+            use: 'เมนเข้าอาคาร ไฟนอกอาคาร เสาไฟสวน',
+            sz: [
+                [4, 38, 4.61],
+                [6, 47, 3.08],
+                [10, 63, 1.83],
+                [16, 81, 1.15],
+                [25, 104, .727],
+                [35, 125, .524],
+                [50, 148, .387]
+            ]
+        }, {
+            id: 'CV',
+            th: 'สายทนความร้อนสูง ฉนวน XLPE',
+            tags: ['ทน 90°C', 'แกนเดี่ยว'],
+            volt: '0.6/1 kV',
+            temp: 90,
+            cond: 'ทองแดง 1 แกน',
+            ins: 'XLPE',
+            inst: 'ราง ถาดสาย เดินในอากาศ',
+            std: 'IEC 60502-1',
+            use: 'โรงงาน ตู้ MDB โหลดสูงต่อเนื่อง',
+            sz: [
+                [4, 45, 4.61],
+                [6, 58, 3.08],
+                [10, 80, 1.83],
+                [16, 107, 1.15],
+                [25, 138, .727],
+                [35, 169, .524],
+                [50, 207, .387]
+            ]
+        }];
+        const $ = s => document.querySelector(s);
+        const FILTERS = ['ทั้งหมด', 'แกนเดี่ยว', 'หลายแกน', 'ฝังดิน', 'ทน 90°C'];
+        let f = 'ทั้งหมด',
+            cur = null,
+            pick = null;
+
+        function chips() {
+            $('#chips').innerHTML = FILTERS.map(x => `<button class="chip" aria-pressed="${x===f}" data-f="${x}">${x}</button>`).join('');
+        }
+
+        function list() {
+            const q = $('#q').value.trim().toLowerCase();
+            const r = CABLES.filter(c => (f === 'ทั้งหมด' || c.tags.includes(f)) && (!q || (c.id + c.th + c.inst + c.use + c.tags.join('')).toLowerCase().includes(q)));
+            $('#count').textContent = `พบ ${r.length} ชนิดจาก ${CABLES.length}`;
+            $('#grid').innerHTML = r.length ? r.map(c => {
+                        const mx = Math.max(...c.sz.map(s => s[1]));
+                        return `<article class="card">
+      <div><h2>${c.id}</h2><p class="th">${c.th}</p></div>
+      <div class="row"><span class="tag hot">${c.temp}°C</span><span class="tag">${c.volt}</span>${c.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div><div class="bars" aria-hidden="true">${c.sz.map(s=>`<i style="height:${Math.max(12,s[1]/mx*100)}%"></i>`).join('')}</div>
+      <div class="range">${c.sz[0][0]}–${c.sz[c.sz.length-1][0]} ตร.มม. · ${c.sz.length} ขนาด</div></div>
+      <button class="cta" data-id="${c.id}">ดูรายละเอียด</button></article>`}).join('')
+    :`<div class="empty"><b>ไม่พบสายที่ตรงกับคำค้น</b><br>ลองลบคำค้นหรือเปลี่ยนตัวกรอง<br><button class="ghost" id="reset">ล้างตัวกรอง</button></div>`;
+}
+function calc(){
+  const c=cur,I=+$('#fi').value||0,L=+$('#fl').value||0,ph=+$('#fs').value,lim=+$('#fd').value||3;
+  const V=ph===1?230:400,k=ph===1?2:Math.sqrt(3),tf=1+0.00393*(c.temp-20);
+  let best=null;
+  const rows=c.sz.map(([a,amp,r])=>{
+    const vd=k*I*L*r*tf/1000/V*100,okA=I<=amp,okV=vd<=lim,ok=okA&&okV;
+    if(ok&&!best)best=a;
+    return {a,amp,r,vd,okA,okV,ok};
+  });
+  const mx=Math.max(...rows.map(x=>x.amp));
+  $('#rows').innerHTML=rows.map(x=>`<tr class="${x.a===best?'best':''}">
+    <td><b>${x.a}</b></td>
+    <td><div class="amp"><i style="width:${x.amp/mx*70}px"></i>${x.amp}</div></td>
+    <td>${x.r}</td><td style="color:var(--${x.okV?'tx':'bad'})">${x.vd.toFixed(2)}</td>
+    <td><span class="st ${x.a===best?'rec':x.ok?'ok':'no'}">${x.a===best?'แนะนำ':x.ok?'ผ่าน':!x.okA?'กระแสเกิน':'แรงดันตกเกิน'}</span></td></tr>`).join('');
+  pick=best;
+  $('#verdict').innerHTML=best?`สาย <b>${c.id}</b> ขนาด <b>${best} ตร.มม.</b> เล็กที่สุดที่ผ่านทั้งกระแสและแรงดันตก สำหรับ ${I} A ระยะ ${L} เมตร`
+    :`ไม่มีขนาดใดใน ${c.id} ที่ผ่านเงื่อนไขนี้ ลองลดระยะสาย เพิ่มเกณฑ์แรงดันตก หรือเลือกสายชนิดอื่น`;
+  $('#use').disabled=!best;$('#use').style.opacity=best?1:.45;
+}
+function open(id){
+  cur=CABLES.find(c=>c.id===id);
+  $('#dt').textContent=cur.id;$('#dsub').textContent=cur.th;
+  const sp=[['แรงดันใช้งาน',cur.volt],['อุณหภูมิตัวนำ',cur.temp+'°C'],['ตัวนำ',cur.cond],['ฉนวน',cur.ins],['การติดตั้ง',cur.inst],['มาตรฐานอ้างอิง',cur.std],['เหมาะกับงาน',cur.use]];
+  $('#specs').innerHTML=sp.map(([k,v])=>`<div class="spec"><b>${k}</b>${v}</div>`).join('');
+  calc();$('#dlg').showModal();
+}
+document.addEventListener('click',e=>{
+  const t=e.target;
+  if(t.dataset.f){f=t.dataset.f;chips();list()}
+  if(t.dataset.id)open(t.dataset.id);
+  if(t.id==='close'||t.id==='close2')$('#dlg').close();
+  if(t.id==='reset'){f='ทั้งหมด';$('#q').value='';chips();list()}
+  if(t.id==='dlg')$('#dlg').close();
+  if(t.id==='use'&&pick){$('#verdict').innerHTML+=`<br><b>ส่งค่า ${cur.id} ${pick} ตร.มม. ไปเครื่องคิดเลขแล้ว</b> (เชื่อมกับหน้าคำนวณของระบบได้ที่จุดนี้)`}
+  if(t.id==='back')history.length>1&&history.back();
+  if(t.id==='theme'){const d=document.documentElement,dark=getComputedStyle(d).colorScheme==='dark';d.dataset.theme=dark?'light':'dark'}
+});
+['fi','fl','fs','fd'].forEach(i=>$('#'+i).addEventListener('input',calc));
+$('#q').addEventListener('input',list);
+$('#grid').addEventListener('pointermove',e=>{const c=e.target.closest('.card');if(!c)return;const r=c.getBoundingClientRect();c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px')});
+chips();list();
+
+/* flames: built after load, idle time only */
+(()=>{
+  const build=()=>{
+    const el=$('#fire'),n=Math.max(12,Math.min(32,Math.round(innerWidth/55))),r=Math.random;let h='';
+    for(let i=0;i<n;i++)h+=`<i class="fl${i%3===1?' vi':''}" style="--x:${((i+.5)/n*100+(r()-.5)*4).toFixed(1)}%;--w:${(80+r()*80)|0}px;--h:${(170+r()*190)|0}px;--d:${(.6+r()*.7).toFixed(2)}s;--dl:-${(r()*2).toFixed(2)}s"></i>`;
+    for(let i=0;i<26;i++)h+=`<b class="em${i%3===0?' bl':''}" style="--x:${(r()*100).toFixed(1)}%;--s:${(2+r()*2.5).toFixed(1)}px;--dx:${((r()-.5)*90)|0}px;--d:${(3+r()*3).toFixed(1)}s;--dl:-${(r()*5).toFixed(1)}s"></b>`;
+    el.innerHTML=h;
+  };
+  window.requestIdleCallback?requestIdleCallback(build,{timeout:600}):setTimeout(build,300);
+})();
+
+/* background: spark network + lightning */
+(()=>{
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const cv=$('#fx'),g=cv.getContext('2d');let W,H,D,P=[],mp={x:-999,y:-999},bolts=[],next=1200,last=0,run=true;
+  const size=()=>{D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;cv.width=W*D;cv.height=H*D;g.setTransform(D,0,0,D,0,0);
+    const n=Math.round(Math.min(90,W*H/16000));P=Array.from({length:n},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.8+.8,c:Math.random()<.25?'150,120,255':'255,150,80'}))};
+  size();addEventListener('resize',size);
+  addEventListener('pointermove',e=>{mp.x=e.clientX;mp.y=e.clientY});
+  document.addEventListener('visibilitychange',()=>{run=!document.hidden;if(run)requestAnimationFrame(tick)});
+  function bolt(){
+    let x=Math.random()*W,y=-10;const pts=[[x,y]],ex=x+(Math.random()-.5)*240,ey=H*(.35+Math.random()*.45);
+    while(y<ey){y+=18+Math.random()*30;x+=(Math.random()-.5)*50+(ex-x)*.06;pts.push([x,y])}
+    const br=[];for(let i=3;i<pts.length-1;i+=4+((Math.random()*3)|0)){let [bx,by]=pts[i];const b=[[bx,by]],dir=Math.random()<.5?-1:1;for(let k=0;k<4;k++){bx+=dir*(10+Math.random()*22);by+=10+Math.random()*18;b.push([bx,by])}br.push(b)}
+    bolts.push({pts,br,life:1});
+  }
+  function path(a){g.beginPath();a.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke()}
+  function tick(t){
+    if(!run)return;
+    g.clearRect(0,0,W,H);
+    for(const p of P){
+      const dx=mp.x-p.x,dy=mp.y-p.y,d=Math.hypot(dx,dy);
+      if(d<170&&d>1){p.vx+=dx/d*.012;p.vy+=dy/d*.012}
+      p.vx*=.995;p.vy*=.995;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<-10)p.x=W+10;else if(p.x>W+10)p.x=-10;if(p.y<-10)p.y=H+10;else if(p.y>H+10)p.y=-10;
+    }
+    g.lineWidth=1;
+    for(let i=0;i<P.length;i++){const a=P[i];
+      for(let j=i+1;j<P.length;j++){const b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+        if(d<120){g.strokeStyle=`rgba(255,150,80,${(1-d/120)*.28})`;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke()}}
+      const dm=Math.hypot(a.x-mp.x,a.y-mp.y);
+      if(dm<170){g.strokeStyle=`rgba(190,160,255,${(1-dm/170)*.55})`;g.beginPath();g.moveTo(a.x,a.y);g.lineTo(mp.x,mp.y);g.stroke()}
+    }
+    for(const p of P){g.fillStyle=`rgba(${p.c},.9)`;g.shadowColor=`rgba(${p.c},1)`;g.shadowBlur=10;g.beginPath();g.arc(p.x,p.y,p.r,0,6.283);g.fill()}
+    g.shadowBlur=0;
+    if(t-last>next){last=t;next=3500+Math.random()*5000;bolt()}
+    bolts=bolts.filter(b=>b.life>0);
+    for(const b of bolts){
+      const a=b.life>.8?1:b.life/.8;g.lineCap='round';g.lineJoin='round';
+      g.strokeStyle=`rgba(255,170,100,${a*.35})`;g.lineWidth=7;g.shadowColor='rgba(255,120,50,1)';g.shadowBlur=24;path(b.pts);
+      g.strokeStyle=`rgba(255,244,235,${a})`;g.lineWidth=1.6;g.shadowBlur=12;path(b.pts);
+      g.lineWidth=1;g.strokeStyle=`rgba(255,200,150,${a*.7})`;b.br.forEach(path);
+      b.life-=.035;
+    }
+    g.shadowBlur=0;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+    </script>
+</body>
+
+</html>

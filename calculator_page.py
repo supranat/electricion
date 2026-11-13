@@ -1,5 +1,12 @@
+import base64
+import functools
 import inspect
+import io
 import math
+import os
+from collections import deque
+
+from PIL import Image
 
 import streamlit as st
 
@@ -23,6 +30,81 @@ BUTTON_WIDTH = (
     if "width" in inspect.signature(st.button).parameters
     else {"use_container_width": True}
 )
+
+
+@functools.lru_cache(maxsize=2)
+def _breaker_calculator_image_uri(path, modified_at):
+    """Encode the supplied breaker photo with its edge-connected white backdrop removed."""
+    try:
+        with Image.open(path) as source:
+            image = source.convert("RGB")
+    except (OSError, ValueError) as exc:
+        raise ValueError(f"อ่านรูปเบรกเกอร์สำหรับหน้าคำนวณไม่ได้: {path}") from exc
+
+    width, height = image.size
+    pixels = image.load()
+    candidate = bytearray(width * height)
+    for y in range(height):
+        for x in range(width):
+            red, green, blue = pixels[x, y]
+            if min(red, green, blue) >= 210 and max(red, green, blue) - min(red, green, blue) <= 30:
+                candidate[y * width + x] = 1
+
+    background = bytearray(width * height)
+    queue = deque()
+
+    def enqueue(x, y):
+        index = y * width + x
+        if candidate[index] and not background[index]:
+            background[index] = 1
+            queue.append(index)
+
+    for x in range(width):
+        enqueue(x, 0)
+        enqueue(x, height - 1)
+    for y in range(height):
+        enqueue(0, y)
+        enqueue(width - 1, y)
+
+    while queue:
+        index = queue.popleft()
+        x, y = index % width, index // width
+        if x:
+            enqueue(x - 1, y)
+        if x + 1 < width:
+            enqueue(x + 1, y)
+        if y:
+            enqueue(x, y - 1)
+        if y + 1 < height:
+            enqueue(x, y + 1)
+
+    transparent_image = image.convert("RGBA")
+    output_pixels = transparent_image.load()
+    for y in range(height):
+        for x in range(width):
+            if background[y * width + x]:
+                red, green, blue = pixels[x, y]
+                brightness = (red + green + blue) // 3
+                alpha = max(0, min(255, round((253 - brightness) * 255 / 28)))
+                output_pixels[x, y] = (red, green, blue, alpha)
+
+    output = io.BytesIO()
+    transparent_image.save(output, format="PNG", optimize=True)
+    encoded = base64.b64encode(output.getvalue()).decode("ascii")
+    return f"data:image/png;base64,{encoded}"
+
+
+def _breaker_calculator_image():
+    image_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "transformer",
+        "images.jpg",
+    )
+    try:
+        modified_at = os.stat(image_path).st_mtime_ns
+    except FileNotFoundError as exc:
+        raise FileNotFoundError(f"ไม่พบรูปเบรกเกอร์สำหรับหน้าคำนวณ: {image_path}") from exc
+    return _breaker_calculator_image_uri(image_path, modified_at)
 
 CSS = """
 <style>
@@ -277,6 +359,19 @@ def _current_page_css():
     }}
     .ec-row span {{color:var(--ec-muted)}}
     .ec-row b {{text-align:right}}
+    .ec-breaker-photo {{
+        display:grid; grid-template-columns:100px minmax(0,1fr); align-items:center; gap:14px;
+        margin:14px 0 8px; padding:12px 14px; border:1px solid var(--ec-line);
+        border-radius:14px; background:linear-gradient(120deg,var(--ec-soft),transparent);
+    }}
+    .ec-breaker-photo img {{
+        display:block; width:100px; height:104px; object-fit:contain;
+        filter:drop-shadow(0 8px 9px rgba(12,42,91,.2));
+        transition:transform .22s ease,filter .22s ease;
+    }}
+    .ec-breaker-photo:hover img {{transform:translateY(-2px) scale(1.035);filter:drop-shadow(0 12px 11px rgba(12,42,91,.25))}}
+    .ec-breaker-photo strong {{display:block;color:var(--ec-ink);font-size:.94rem}}
+    .ec-breaker-photo small {{display:block;margin-top:4px;color:var(--ec-muted);font-size:.76rem;line-height:1.55}}
     .ec-formula {{
         margin-top:16px;padding:12px;border-radius:12px;text-align:center;
         background:#F2F7FF;color:var(--ec-accent);font-weight:750;
@@ -284,11 +379,13 @@ def _current_page_css():
     .ec-formula small {{display:block;margin-top:5px;color:var(--ec-muted);font-weight:500}}
     .ec-disclaimer {{font-size:.78rem;color:var(--ec-muted) !important;line-height:1.55}}
     @keyframes ec-flow {{to {{background-position:200% 0}}}}
-    @media (prefers-reduced-motion:reduce) {{.ec-title {{animation:none}}}}
+    @media (prefers-reduced-motion:reduce) {{.ec-title {{animation:none}} .ec-breaker-photo img {{transition:none}}}}
     @media (max-width:760px) {{
         [data-testid="stMainBlockContainer"] {{padding:1rem .75rem}}
         .ec-hero {{padding:20px;align-items:flex-start}}
         .ec-live {{font-size:.7rem}}
+        .ec-breaker-photo {{grid-template-columns:82px minmax(0,1fr);gap:10px;padding:10px}}
+        .ec-breaker-photo img {{width:82px;height:92px}}
     }}
     </style>
     """
@@ -1005,6 +1102,7 @@ def render_current_calc_page(go):
                     if recommended_breaker
                     else "เกิน 630 A ให้วิศวกรพิจารณา" if amps > 0 else "—"
                 )
+                breaker_image_uri = _breaker_calculator_image()
                 formula = "I = P / (√3 × V × PF)" if three_phase else "I = P / (V × PF)"
                 denominator = f"{'1.732 × ' if three_phase else ''}{voltage:g} × {pf:.2f}"
                 st.markdown(
@@ -1020,6 +1118,11 @@ def render_current_calc_page(go):
                     <div class="ec-row"><span>กำลังจริง</span><b>{power_w / 1000:,.3f} kW</b></div>
                     <div class="ec-row"><span>กำลังปรากฏ</span><b>{apparent_kva:,.3f} kVA</b></div>
                     <div class="ec-row"><span>เบรกเกอร์แนะนำ (เผื่อ 25%)</span><b>{breaker_text}</b></div>
+                    <div class="ec-breaker-photo">
+                        <img src="{breaker_image_uri}" alt="ตัวอย่างเบรกเกอร์ MCCB 3 โพล จากภาพที่ผู้ใช้ส่งมา">
+                        <div><strong>ตัวอย่างเบรกเกอร์ MCCB · 3P</strong>
+                        <small>ภาพประกอบการดูเบรกเกอร์ที่แนะนำ ไม่ได้ยืนยันรุ่นหรือพิกัดของอุปกรณ์ในภาพ</small></div>
+                    </div>
                     <div class="ec-formula">
                         {formula}
                         <small>= {power_w:,.2f} / ({denominator})</small>

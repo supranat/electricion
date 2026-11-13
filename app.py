@@ -19,16 +19,24 @@ import transformer_info_page
 
 
 LOGO_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "logo.jpg")  # โลโก้จริงของบริษัท วางไว้ข้าง app.py
-HOME_HTML_FILE = "electrical-hud-premium.html"  # ไฟล์หน้าแรกใหม่ (วางไว้ข้าง app.py)
+HOME_HTML_FILE = "electrical-hud-premium.html"
 TRANSFORMER_DETAILS_PAGE = "transformer_details"
+CABLE_CALCULATOR_PAGE = "cable_calculator"
+CABLE_TABLE_PAGE = "cable_table"
+CABLE_DETAIL_PAGE = "cable_detail"
+CABLE_HTML_DIR = os.path.join("cables")
 FULL_SCREEN_PAGES = {
     TRANSFORMER_DETAILS_PAGE,
     calculator_page.PAGE_TRANSFORMER_INFO,
     calculator_page.PAGE_TRANSFORMER_3D,
+    CABLE_CALCULATOR_PAGE,
+    CABLE_TABLE_PAGE,
+    CABLE_DETAIL_PAGE,
     "poles",
     "breakers",
     "dashboard",
 }
+
 
 st.set_page_config(
     page_title="Attaporn Engineering & Supply | Electrical Calculator",
@@ -47,6 +55,7 @@ BRAND = {"logo": "AK", "title": "Electrical Calculator", "tagline": "ATTAPORN EN
 # เมนูบน (ตามแถวบนของกระดาษ) ตอนนี้ทำไว้ 2 หน้า ที่เหลือเพิ่มได้ใน PAGES
 TOP_NAV = [
     (calculator_page.PAGE_HOME, "หน้าแรก"),
+    (CABLE_CALCULATOR_PAGE, "สายไฟ"),
     (calculator_page.PAGE_CURRENT, "คำนวณกระแส"),
     (calculator_page.PAGE_TRANSFORMER_CALC, "คำนวณหม้อแปลง"),
     (calculator_page.PAGE_TRANSFORMER_INFO, "ข้อมูลหม้อแปลง"),
@@ -475,6 +484,9 @@ if pending_session_cookie:
 APP_PAGE_QUERY_ROUTES = {
     "home": calculator_page.PAGE_HOME,
     "dashboard": calculator_page.PAGE_HOME,
+    "cable_calculator": CABLE_CALCULATOR_PAGE,
+    "cable_table": CABLE_TABLE_PAGE,
+    "cable_detail": CABLE_DETAIL_PAGE,
     "current_calc": calculator_page.PAGE_CURRENT,
     "equipment_calc": calculator_page.PAGE_EQUIPMENT,
     "transformer_calc": calculator_page.PAGE_TRANSFORMER_CALC,
@@ -747,6 +759,168 @@ def page_dashboard():
             )
 
 
+def _go_to_cable_detail(cable_id):
+    st.session_state["_cable_detail_to_open"] = cable_id
+    st.session_state.page = CABLE_DETAIL_PAGE
+
+
+def page_cable_screen(page_key):
+    """Render the standalone cable HTML pages inside Streamlit and bridge their links."""
+    page_files = {
+        CABLE_CALCULATOR_PAGE: "สายไฟ · AK Electrical Calculator.html",
+        CABLE_TABLE_PAGE: "ตารางขนาดสาย.html",
+        CABLE_DETAIL_PAGE: "สายไฟ · AK Electrical Calculator.html",
+    }
+    page_titles = {
+        CABLE_CALCULATOR_PAGE: "เครื่องคิดเลขสายไฟ",
+        CABLE_TABLE_PAGE: "ตารางขนาดสายไฟ",
+        CABLE_DETAIL_PAGE: "รายละเอียดสายไฟ",
+    }
+    page_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), CABLE_HTML_DIR, page_files[page_key])
+    with open(page_path, encoding="utf-8") as page_file:
+        page_html = page_file.read()
+
+    if page_key == CABLE_TABLE_PAGE:
+        image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), CABLE_HTML_DIR, "images", "thw-blue.jpg")
+        with open(image_path, "rb") as image_file:
+            image_data = base64.b64encode(image_file.read()).decode("ascii")
+        page_html = page_html.replace("images/thw-blue.jpg", f"data:image/jpeg;base64,{image_data}")
+
+    cable_id = None
+    if page_key in (CABLE_CALCULATOR_PAGE, CABLE_DETAIL_PAGE):
+        cable_id = st.session_state.pop("_cable_detail_to_open", None)
+    if page_key == CABLE_DETAIL_PAGE and cable_id:
+        injected_id = json.dumps(cable_id, ensure_ascii=True)
+        detail_css = """
+        <style>
+        :root[data-cable-detail="true"] .wrap { display:none!important; }
+        :root[data-cable-detail="true"] dialog#dlg[open] {
+          position:fixed; inset:0; margin:0; width:100%; height:100vh; max-height:100vh;
+          border:0; border-radius:0; box-shadow:none; background:var(--bg); overflow:auto;
+        }
+        :root[data-cable-detail="true"] dialog#dlg::backdrop { background:transparent; backdrop-filter:none; }
+        </style>
+        """
+        page_html = page_html.replace("</head>", detail_css + "</head>", 1)
+        detail_boot = f"""
+        <script>
+          window.__AK_CABLE_DETAIL_PAGE = true;
+          document.documentElement.dataset.cableDetail = "true";
+          open({injected_id});
+        </script>
+        """
+        page_html = page_html.replace("</body>", detail_boot + "</body>", 1)
+
+    link_bridge = """
+    <script>
+    (() => {
+      document.addEventListener("click", (event) => {
+        const link = event.target.closest("a[href]");
+        if (!link) return;
+        const href = link.getAttribute("href") || "";
+        let page = null;
+        let cable = null;
+        if (href.includes("ตารางขนาดสาย.html")) {
+          page = "cable_table";
+        } else if (href.includes("สายไฟ · AK Electrical Calculator.html")) {
+          try { cable = new URL(link.href, window.location.href).searchParams.get("cable"); }
+          catch (_) { cable = null; }
+          page = cable ? "cable_detail" : "cable_calculator";
+        }
+        if (!page) return;
+        event.preventDefault();
+        window.parent.postMessage({type: "ak-app-navigate", page, cable}, "*");
+      });
+    })();
+    </script>
+    """
+    page_html = page_html.replace("</body>", link_bridge + "</body>", 1)
+
+    st.markdown(
+        """
+        <style>
+        .block-container { max-width:none!important; padding:0!important; }
+        [data-testid="stHeader"] { display:none; }
+        .stApp,[data-testid="stAppViewContainer"],[data-testid="stMain"] { background:#000!important; }
+        .st-key-cable_nav_bridge { display:none!important; }
+        iframe[title="เครื่องคิดเลขสายไฟ"],iframe[title="ตารางขนาดสายไฟ"],iframe[title="รายละเอียดสายไฟ"] { display:block;width:100%!important;border:0; }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    cable_routes = json.dumps([CABLE_CALCULATOR_PAGE, CABLE_TABLE_PAGE, CABLE_DETAIL_PAGE, "home"])
+    cable_ids = json.dumps(["THW", "IEC 01", "VAF", "NYY", "CV"])
+    st.html(
+        f"""
+        <script>
+        (() => {{
+          if (window.__akCableNav) return;
+          window.__akCableNav = true;
+          const allowedPages = new Set({cable_routes});
+          const allowedCables = new Set({cable_ids});
+          window.addEventListener("message", (event) => {{
+            const message = event.data;
+            const fromCableFrame = Array.from(document.querySelectorAll("iframe"))
+              .some((frame) => frame.contentWindow === event.source);
+            if (!fromCableFrame || !message || message.type !== "ak-app-navigate" ||
+                !allowedPages.has(message.page)) return;
+            let selector;
+            if (message.page === "{CABLE_DETAIL_PAGE}" && allowedCables.has(message.cable)) {{
+              const slug = String(message.cable).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+              selector = ".st-key-cable_nav_detail_" + slug + " button";
+            }} else if (message.page === "home") {{
+              selector = ".st-key-cable_nav_home button";
+            }} else {{
+              selector = ".st-key-cable_nav_" + message.page + " button";
+            }}
+            const button = document.querySelector(selector);
+            if (button) button.click();
+          }});
+        }})();
+        </script>
+        """,
+        unsafe_allow_javascript=True,
+    )
+
+    iframe_height = 1000 if page_key == CABLE_DETAIL_PAGE else "content"
+    st.iframe(page_html, width="stretch", height=iframe_height, alt=page_titles[page_key])
+
+    with st.container(key="cable_nav_bridge"):
+        st.button(
+            "กลับหน้าแรก",
+            key="cable_nav_home",
+            on_click=go,
+            args=(calculator_page.PAGE_HOME,),
+        )
+        st.button(
+            "เปิดเครื่องคิดเลขสายไฟ",
+            key=f"cable_nav_{CABLE_CALCULATOR_PAGE}",
+            on_click=go,
+            args=(CABLE_CALCULATOR_PAGE,),
+        )
+        st.button(
+            "เปิดตารางขนาดสายไฟ",
+            key=f"cable_nav_{CABLE_TABLE_PAGE}",
+            on_click=go,
+            args=(CABLE_TABLE_PAGE,),
+        )
+        st.button(
+            "เปิดหน้ารายละเอียดสายไฟ",
+            key=f"cable_nav_{CABLE_DETAIL_PAGE}",
+            on_click=go,
+            args=(CABLE_DETAIL_PAGE,),
+        )
+        for cable_id in ["THW", "IEC 01", "VAF", "NYY", "CV"]:
+            slug = "_".join(cable_id.lower().split())
+            st.button(
+                f"เปิดรายละเอียด {cable_id}",
+                key=f"cable_nav_detail_{slug}",
+                on_click=_go_to_cable_detail,
+                args=(cable_id,),
+            )
+
+
 # =====================================================================
 # 6) หน้าต่าง ๆ
 # =====================================================================
@@ -916,461 +1090,313 @@ def _breaker_background_image_css():
 
 
 def page_breakers():
+    background_image = _breaker_background_image_css()
     st.html(
         """
         <style>
-        .stApp:has(.breaker-theme) .block-container {
-            max-width: none !important;
-            padding: 0 !important;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stHeader"] {
-            display: none;
-        }
+        .stApp:has(.breaker-theme) .block-container { max-width: none !important; padding: 0 !important; }
+        .stApp:has(.breaker-theme) [data-testid="stHeader"] { display: none; }
         .stApp:has(.breaker-theme),
         .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"],
         .stApp:has(.breaker-theme) [data-testid="stMain"] {
-            color: #eaf4ff !important;
-            background: linear-gradient(135deg, #06101f, #091a31 54%, #06101d) !important;
+            color: #edf5ff !important;
+            background: #071426 !important;
         }
-        .stApp:has(.breaker-theme) {
-            position: relative;
-            isolation: isolate;
-            min-height: 100vh;
-            --breaker-background-image: __BREAKER_BACKGROUND_IMAGE__;
-        }
+        .stApp:has(.breaker-theme) { position: relative; isolation: isolate; min-height: 100vh; --breaker-background-image: __BREAKER_BACKGROUND_IMAGE__; }
         .stApp:has(.breaker-theme)::before,
-        .stApp:has(.breaker-theme)::after {
-            content: "";
-            position: fixed;
-            pointer-events: none;
-        }
+        .stApp:has(.breaker-theme)::after { content: ""; position: fixed; inset: 0; pointer-events: none; }
         .stApp:has(.breaker-theme)::before {
-            inset: -12%;
             z-index: 0;
-            background-image:
-                linear-gradient(rgba(2, 8, 23, .3), rgba(2, 8, 23, .55)),
-                linear-gradient(rgba(58, 145, 255, .065) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(58, 145, 255, .065) 1px, transparent 1px),
+            background-image: linear-gradient(135deg, rgba(3,10,22,.72), rgba(4,20,37,.78)),
+                linear-gradient(rgba(58,145,255,.045) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(58,145,255,.045) 1px, transparent 1px),
                 var(--breaker-background-image);
             background-size: auto, 48px 48px, 48px 48px, cover;
             background-position: center, center, center, center;
             background-repeat: no-repeat, repeat, repeat, no-repeat;
-            transform: translate3d(-2.5%, -1.5%, 0) scale(1.08);
-            animation: breakerBackgroundDrift 14s ease-in-out infinite alternate;
-            will-change: transform;
         }
         .stApp:has(.breaker-theme)::after {
-            inset: -2%;
             z-index: 0;
-            background:
-                radial-gradient(circle at 22% 30%, rgba(0, 110, 255, .17), transparent 38%),
-                radial-gradient(circle at 80% 68%, rgba(0, 207, 255, .12), transparent 36%),
-                radial-gradient(circle at 54% 92%, rgba(214, 173, 88, .07), transparent 34%);
-            animation: breakerEnergyPulse 5.8s ease-in-out infinite alternate;
-            will-change: opacity, transform;
+            background: radial-gradient(circle at 18% 12%, rgba(0,130,255,.14), transparent 35%),
+                radial-gradient(circle at 85% 70%, rgba(0,205,255,.10), transparent 34%);
         }
         .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"],
-        .stApp:has(.breaker-theme) [data-testid="stMain"] {
-            position: relative;
-            z-index: 1;
-            background: transparent !important;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::before {
-            content: "";
-            position: fixed;
-            z-index: 0;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 130px;
-            pointer-events: none;
-            background: linear-gradient(
-                180deg,
-                transparent,
-                rgba(0, 140, 255, .025) 28%,
-                rgba(0, 190, 255, .085) 50%,
-                rgba(0, 140, 255, .025) 72%,
-                transparent
-            );
-            animation: breakerScanMove 7.5s linear infinite;
-            will-change: transform;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::after {
-            content: "";
-            position: fixed;
-            z-index: 0;
-            inset: -35%;
-            pointer-events: none;
-            background: linear-gradient(
-                112deg,
-                transparent 43%,
-                rgba(0, 170, 255, .018) 47%,
-                rgba(45, 205, 255, .13) 50%,
-                rgba(0, 170, 255, .025) 53%,
-                transparent 58%
-            );
-            mix-blend-mode: screen;
-            transform: translate3d(-55%, 0, 0);
-            animation: breakerLightSweep 9s ease-in-out infinite;
-            will-change: transform;
-        }
-        @keyframes breakerBackgroundDrift {
-            0% { transform: translate3d(-3%, -2%, 0) scale(1.1); }
-            100% { transform: translate3d(3%, 2%, 0) scale(1.1); }
-        }
-        @keyframes breakerEnergyPulse {
-            from { opacity: .55; transform: scale(1); }
-            to { opacity: 1; transform: scale(1.035); }
-        }
-        @keyframes breakerScanMove {
-            from { transform: translateY(-100vh); }
-            to { transform: translateY(100vh); }
-        }
-        @keyframes breakerLightSweep {
-            0%, 12% { transform: translate3d(-55%, 0, 0); opacity: 0; }
-            28% { opacity: .8; }
-            70% { opacity: .8; }
-            88%, 100% { transform: translate3d(55%, 0, 0); opacity: 0; }
-        }
-        .stApp:has(.breaker-theme) [data-testid="stMainBlockContainer"] {
-            position: relative;
-            z-index: 1;
-            background: transparent !important;
-        }
+        .stApp:has(.breaker-theme) [data-testid="stMain"],
+        .stApp:has(.breaker-theme) [data-testid="stMainBlockContainer"] { position: relative; z-index: 1; background: transparent !important; }
+        .stApp:has(.breaker-theme) [data-testid="stMainBlockContainer"] > div[data-testid="stVerticalBlock"] { gap: .55rem; }
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page {
-            --breaker-cyan: #efd18b;
-            --breaker-gold: #d6ad58;
-            --breaker-blue: #398cff;
-            --breaker-ink: #f3f5fa;
-            --breaker-muted: #a9b7c8;
-            color: var(--breaker-ink);
-            width: min(100%, 1600px);
-            margin: 0 auto;
-            padding: 12px clamp(18px, 4vw, 64px) 10px;
+            --breaker-gold: #efd18b; --breaker-blue: #69b8ff; --breaker-ink: #f3f5fa; --breaker-muted: #b3c1d1;
+            width: min(100%, 1540px); margin: 0 auto; padding: 8px clamp(18px, 4vw, 58px); color: var(--breaker-ink);
             font-family: 'Sarabun', 'Noto Sans Thai', Tahoma, sans-serif;
         }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page * {
-            font-family: inherit;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page p,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page h1,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page h2,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page h3,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page span,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page strong {
-            font-family: inherit !important;
-        }
+        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page * { font-family: inherit; }
         .breaker-theme { display: none; }
-        .stApp:has(.breaker-theme) .st-key-breakers_home {
-            padding: 12px clamp(18px, 4vw, 64px) 0;
-        }
+        .stApp:has(.breaker-theme) .st-key-breakers_home { padding: 14px clamp(18px, 4vw, 58px) 0; }
         .stApp:has(.breaker-theme) .st-key-breakers_home button {
-            width: auto !important;
-            min-height: 44px;
-            padding: 0 20px;
-            border: 1px solid rgba(224, 188, 104, .62) !important;
-            border-radius: 12px !important;
-            background: linear-gradient(120deg, rgba(91, 67, 29, .88), rgba(17, 43, 69, .96)) !important;
-            box-shadow: inset 0 1px rgba(255,255,255,.08), 0 5px 18px rgba(3,10,20,.25);
-            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+            width: auto !important; min-height: 42px; padding: 0 16px; border: 1px solid rgba(239,209,139,.48) !important;
+            border-radius: 10px !important; color: #f7e6bd !important; background: rgba(11,30,52,.85) !important;
         }
-        .stApp:has(.breaker-theme) .st-key-breakers_home button p {
-            color: #f7e6bd !important;
-            font-size: .9rem !important;
-            font-weight: 700 !important;
-            letter-spacing: .02em;
+        .stApp:has(.breaker-theme) .st-key-breakers_home button p { color: #f7e6bd !important; font-size: .88rem !important; font-weight: 700 !important; }
+        .stApp:has(.breaker-theme) .st-key-breakers_home button:hover { border-color: #efd18b !important; background: rgba(22,54,82,.96) !important; }
+        .stApp:has(.breaker-theme) .st-key-breakers_home button:focus-visible,
+        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page a:focus-visible {
+            outline: 2px solid #efd18b; outline-offset: 3px;
         }
-        .stApp:has(.breaker-theme) .st-key-breakers_home button:hover {
-            transform: translateY(-2px);
-            border-color: #f2d78e !important;
-            box-shadow: 0 8px 24px rgba(3,10,20,.34), 0 0 18px rgba(214,173,88,.18);
-        }
-        .stApp:has(.breaker-theme) .st-key-breakers_home button:focus-visible {
-            outline: 2px solid #f2d78e;
-            outline-offset: 3px;
-        }
-        .breaker-topline {
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 16px; padding: 4px 0 24px;
-            border-bottom: 1px solid rgba(214, 173, 88, .22);
-        }
-        .breaker-brand { display: flex; align-items: center; gap: 12px; }
-        .breaker-mark {
-            display: grid; place-items: center; width: 42px; height: 42px;
-            border: 1px solid rgba(224, 188, 104, .68); border-radius: 12px;
-            background: linear-gradient(145deg, rgba(57, 140, 255, .28), rgba(214, 173, 88, .12));
-            color: var(--breaker-cyan); font-weight: 900; letter-spacing: -1px;
-            box-shadow: 0 0 24px rgba(0, 181, 255, .12), 0 0 14px rgba(214,173,88,.12);
-        }
-        .breaker-brand strong { display: block; font-size: 1rem; letter-spacing: .08em; }
-        .breaker-brand small, .breaker-status { color: var(--breaker-muted); font-size: .76rem; letter-spacing: .12em; }
-        .breaker-status { display: flex; align-items: center; gap: 8px; }
-        .breaker-status i { width: 8px; height: 8px; border-radius: 50%; background: #e6c372; box-shadow: 0 0 12px rgba(230,195,114,.75); }
-        .breaker-hero {
-            display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
-            gap: clamp(24px, 5vw, 72px); align-items: center; padding: clamp(36px, 6vw, 86px) 0 42px;
-        }
-        .breaker-kicker { color: var(--breaker-cyan) !important; font-size: .78rem !important; font-weight: 800; letter-spacing: .16em; }
-        .breaker-hero-copy h1 {
-            max-width: 760px; margin: 12px 0 16px; font-size: clamp(2.5rem, 6vw, 5.2rem) !important;
-            line-height: 1.08 !important; letter-spacing: -.035em;
-            background: linear-gradient(100deg, #fff 8%, #dceaff 48%, #f0d48f 100%);
-            -webkit-background-clip: text; background-clip: text; color: transparent !important;
-            text-shadow: 0 0 42px rgba(51, 147, 255, .16), 0 0 22px rgba(214,173,88,.12);
-        }
-        .breaker-lead { max-width: 690px; color: #b6c8dc !important; font-size: 1.04rem !important; line-height: 1.9 !important; }
-        .breaker-chips { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 24px; }
-        .breaker-chip {
-            padding: 7px 12px; border: 1px solid rgba(214, 173, 88, .38); border-radius: 999px;
-            background: linear-gradient(120deg, rgba(10, 40, 70, .72), rgba(72, 54, 25, .34)); color: #f0dfb8 !important; font-size: .8rem;
-        }
-        .stApp:has(.breaker-theme) iframe[title="โมเดลเบรกเกอร์ 3D แบบหมุนได้"] {
-            display: block; width: 100% !important; height: 400px !important; border: 0;
-            background: transparent;
-        }
-        .breaker-hero-copy { padding-top: 18px; }
-        .breaker-model-note { margin: 2px 0 0; color: #8fa9c3 !important; font-size: .78rem !important; }
-        .breaker-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 54px; }
-        .breaker-metric {
-            padding: 18px 20px; border: 1px solid rgba(214, 173, 88, .22); border-radius: 16px;
-            background: linear-gradient(145deg, rgba(13, 36, 64, .88), rgba(7, 21, 39, .94));
-            box-shadow: inset 0 1px rgba(255,255,255,.035), 0 12px 30px rgba(0,0,0,.12);
-        }
-        .breaker-metric strong { display: block; color: #f0d48f !important; font-size: 1.6rem; line-height: 1.2; letter-spacing: .02em; }
-        .breaker-metric span { color: var(--breaker-muted) !important; font-size: .82rem; }
-        .breaker-section-head { display: flex; justify-content: space-between; gap: 18px; align-items: end; margin-bottom: 18px; }
-        .breaker-section-head h2 { margin: 4px 0 0; color: #f0f8ff !important; font-size: clamp(1.6rem, 3vw, 2.2rem) !important; }
-        .breaker-section-head p { margin: 0; color: #b7c3d1 !important; font-size: .86rem !important; }
-        .breaker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-        .breaker-card {
-            position: relative; padding: 22px; border: 1px solid rgba(214, 173, 88, .25); border-radius: 18px;
-            background:
-                linear-gradient(115deg, rgba(214,173,88,.045), transparent 42%),
-                linear-gradient(150deg, rgba(15, 39, 68, .96), rgba(7, 19, 36, .98));
-            box-shadow: 0 16px 40px rgba(0, 0, 0, .16); transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
-            overflow: hidden;
-        }
-        .breaker-card:hover { transform: translateY(-4px); border-color: rgba(240, 212, 143, .72); box-shadow: 0 20px 46px rgba(0, 118, 255, .14), 0 0 22px rgba(214,173,88,.12); }
-        .breaker-card::after { content: ""; position: absolute; width: 120px; height: 120px; right: -52px; top: -60px; border-radius: 50%; background: rgba(214, 173, 88, .1); filter: blur(2px); }
-        .breaker-image-stage {
-            display: grid; min-height: 190px; margin: 8px 0 16px; place-items: center;
-        }
-        .breaker-image-stage img {
-            display: block; width: auto; height: auto; max-width: 90%; max-height: 180px;
-            object-fit: contain; filter: drop-shadow(0 14px 12px rgba(0, 0, 0, .35));
-        }
-        .breaker-no-image {
-            max-width: 220px; color: #a9b7c8; font-size: .82rem; line-height: 1.65; text-align: center;
-        }
-        .breaker-reference {
-            display: grid; grid-template-columns: minmax(110px, 180px) minmax(0, 1fr);
-            align-items: center; gap: 20px; margin-top: 20px; padding: 14px 0;
-            border-top: 1px solid rgba(214, 173, 88, .18);
-        }
-        .breaker-reference img {
-            display: block; width: 100%; max-height: 190px; object-fit: contain;
-            filter: drop-shadow(0 14px 12px rgba(0, 0, 0, .35));
-        }
-        .breaker-reference h3 { margin: 4px 0 6px; color: #eef4fa !important; font-size: 1rem !important; }
-        .breaker-reference p { margin: 0; color: var(--breaker-muted) !important; font-size: .84rem !important; }
-        .breaker-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-        .breaker-type { color: #e8c879 !important; font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
-        .breaker-badge { padding: 4px 9px; border: 1px solid rgba(214, 173, 88, .42); border-radius: 999px; color: #f0dfb8 !important; background: rgba(214,173,88,.08); font-size: .72rem; }
-        .breaker-model { margin: 18px 0 2px; color: #eef4fa !important; font-size: 1.38rem; font-weight: 800; letter-spacing: .015em; }
-        .breaker-card .rating { margin: 0; color: #f0d48f !important; font-size: clamp(2rem, 3.5vw, 2.8rem) !important; font-weight: 900; line-height: 1.2 !important; text-shadow: 0 0 18px rgba(214,173,88,.16); }
-        .breaker-spec { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0 0; margin-top: 16px; border-top: 1px solid rgba(214, 173, 88, .18); color: var(--breaker-muted) !important; font-size: .84rem; }
-        .breaker-spec strong { color: #e8c879 !important; }
-        .breaker-notice {
-            display: flex; gap: 13px; align-items: flex-start; margin-top: 22px; padding: 16px 18px;
-            border: 1px solid rgba(214, 173, 88, .34); border-radius: 14px;
-            background: linear-gradient(110deg, rgba(75, 53, 20, .24), rgba(11, 34, 57, .55)); color: #e5d7b8 !important; font-size: .88rem;
-        }
-        .breaker-notice strong { color: #f0d48f !important; }
-        .breaker-footer { margin-top: 44px; padding-top: 18px; border-top: 1px solid rgba(214, 173, 88, .2); color: #9eacbd !important; font-size: .76rem; letter-spacing: .08em; }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page p {
-            color: #b7c3d1 !important;
-        }
+        .breaker-topline { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:4px 0 17px; border-bottom:1px solid rgba(185,211,242,.24); }
+        .breaker-brand { display:flex; align-items:center; gap:11px; }
+        .breaker-mark { display:grid; place-items:center; width:40px; height:40px; border:1px solid rgba(239,209,139,.55); border-radius:11px; color:#efd18b; background:rgba(18,54,89,.72); font-weight:900; }
+        .breaker-brand strong { display:block; color:#f3f5fa; font-size:.95rem; letter-spacing:.07em; }
+        .breaker-brand small,.breaker-status { color:#aebfd1; font-size:.68rem; letter-spacing:.1em; }
+        .breaker-status { display:flex; align-items:center; gap:8px; }
+        .breaker-status i { width:7px; height:7px; border-radius:50%; background:#83d6a0; box-shadow:0 0 10px rgba(131,214,160,.5); animation:breaker-pulse 2.8s ease-in-out infinite; }
+        .breaker-anchor-nav { display:flex; gap:8px; flex-wrap:wrap; padding:13px 0 4px; }
+        .breaker-anchor-nav a { padding:6px 11px; border:1px solid rgba(185,211,242,.22); border-radius:999px; color:#d3deea; background:rgba(8,24,42,.65); font-size:.76rem; text-decoration:none; }
+        .breaker-anchor-nav a:hover { border-color:rgba(239,209,139,.6); color:#efd18b; }
+        .breaker-hero { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(330px,.92fr); gap:clamp(22px,4vw,58px); align-items:center; padding:clamp(28px,4vw,54px) 0 28px; }
+        .breaker-kicker { margin:0 0 9px; color:#efd18b !important; font-size:.72rem !important; font-weight:800; letter-spacing:.13em; }
+        .breaker-hero-copy h1 { max-width:680px; margin:0 0 13px; color:#f5f8fc !important; font-size:clamp(2.15rem,4.2vw,3.75rem) !important; line-height:1.12 !important; letter-spacing:-.025em; }
+        .breaker-hero-copy h1 span { color:#efd18b; }
+        .breaker-lead { max-width:610px; margin:0; color:#c2cfdd !important; font-size:.98rem !important; line-height:1.8 !important; }
+        .breaker-actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:20px; }
+        .breaker-actions a { display:inline-flex; align-items:center; gap:8px; min-height:40px; padding:8px 13px; border:1px solid rgba(239,209,139,.46); border-radius:9px; color:#fff1ce; background:rgba(82,59,24,.28); font-size:.78rem; font-weight:700; text-decoration:none; }
+        .breaker-actions a:first-child { color:#071426; border-color:#efd18b; background:#efd18b; }
+        .breaker-actions a:hover { filter:brightness(1.08); }
+        .breaker-hero-note { margin:15px 0 0; color:#9fb0c3 !important; font-size:.72rem !important; line-height:1.6 !important; }
+        .breaker-model-panel { padding:13px 14px 8px; border:1px solid rgba(185,211,242,.24); border-radius:15px; background:linear-gradient(145deg,rgba(13,38,64,.88),rgba(5,17,31,.93)); box-shadow:0 16px 36px rgba(0,0,0,.18); }
+        .breaker-model-heading { display:flex; justify-content:space-between; gap:12px; align-items:center; color:#dce7f2; font-size:.78rem; font-weight:700; }
+        .breaker-model-heading span:last-child { color:#efd18b; font-size:.68rem; }
+        .breaker-model-note { margin:0 0 2px; color:#a5b5c6 !important; font-size:.68rem !important; text-align:center; }
+        .stApp:has(.breaker-theme) iframe[title="โมเดลเบรกเกอร์ 3D แบบหมุนได้"] { display:block; width:calc(100% - clamp(36px,8vw,116px)) !important; height:330px !important; margin:0 clamp(18px,4vw,58px); border:1px solid rgba(185,211,242,.2); border-radius:12px; background:rgba(6,18,32,.7); box-shadow:inset 0 1px rgba(255,255,255,.035); }
+        .breaker-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:10px 0 39px; }
+        .breaker-metric { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:72px; padding:14px 17px; border:1px solid rgba(185,211,242,.2); border-radius:12px; background:rgba(7,23,41,.78); }
+        .breaker-metric strong { color:#efd18b !important; font-size:1.28rem; line-height:1.2; }
+        .breaker-metric span { color:#c0ccda !important; font-size:.76rem; text-align:right; }
+        .breaker-section-head { display:flex; justify-content:space-between; gap:18px; align-items:end; margin:0 0 15px; }
+        .breaker-section-head h2 { margin:3px 0 0; color:#f1f6fc !important; font-size:clamp(1.4rem,2.7vw,1.9rem) !important; }
+        .breaker-section-head p { max-width:470px; margin:0; color:#b2c0cf !important; font-size:.76rem !important; text-align:right; }
+        .breaker-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:13px; }
+        .breaker-card { position:relative; padding:18px; border:1px solid rgba(185,211,242,.22); border-radius:14px; background:linear-gradient(145deg,rgba(15,39,66,.96),rgba(7,19,35,.98)); box-shadow:0 12px 26px rgba(0,0,0,.14); overflow:hidden; }
+        .breaker-card { animation:breaker-enter .55s cubic-bezier(.2,.7,.25,1) both; transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease; }
+        .breaker-card:nth-child(2) { animation-delay:.08s; }
+        .breaker-card:nth-child(3) { animation-delay:.16s; }
+        .breaker-card::after { content:""; position:absolute; inset:0; z-index:0; pointer-events:none; background:linear-gradient(112deg,transparent 20%,rgba(255,255,255,.055) 48%,transparent 70%); transform:translateX(-130%); transition:transform .7s ease; }
+        .breaker-card:hover { transform:translateY(-4px); border-color:rgba(239,209,139,.68); box-shadow:0 18px 36px rgba(0,0,0,.25),0 0 22px rgba(65,153,230,.08); }
+        .breaker-card:hover::after { transform:translateX(130%); }
+        .breaker-card-top { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+        .breaker-type { color:#efd18b !important; font-size:.66rem; font-weight:800; letter-spacing:.1em; }
+        .breaker-badge { padding:3px 8px; border:1px solid rgba(185,211,242,.25); border-radius:999px; color:#c4d0dd !important; background:rgba(185,211,242,.06); font-size:.64rem; }
+        .breaker-image-stage { display:grid; min-height:145px; margin:10px 0 7px; place-items:center; }
+        .breaker-image-stage img { display:block; width:auto; height:auto; max-width:82%; max-height:145px; object-fit:contain; filter:drop-shadow(0 12px 11px rgba(0,0,0,.32)); transition:transform .24s ease,filter .24s ease; }
+        .breaker-card:hover .breaker-image-stage img { transform:scale(1.045); filter:drop-shadow(0 15px 13px rgba(0,0,0,.42)); }
+        .breaker-no-image { max-width:230px; padding:12px; border:1px dashed rgba(185,211,242,.28); border-radius:10px; color:#afbdcc; font-size:.75rem; line-height:1.6; text-align:center; }
+        .breaker-model { margin:7px 0 0; color:#edf4fb !important; font-size:1.03rem; font-weight:800; }
+        .breaker-rating-row { display:flex; align-items:baseline; gap:7px; margin:2px 0 10px; }
+        .breaker-card .rating { margin:0; color:#efd18b !important; font-size:2rem !important; font-weight:900; line-height:1.15 !important; }
+        .breaker-card .rating-unit { color:#b8c6d4 !important; font-size:.8rem; }
+        .breaker-spec { display:flex; justify-content:space-between; gap:12px; padding:8px 0 0; margin-top:8px; border-top:1px solid rgba(185,211,242,.14); color:#b5c3d1 !important; font-size:.72rem; }
+        .breaker-spec strong { color:#e6d39d !important; font-weight:700; text-align:right; }
+        .breaker-reference { display:grid; grid-template-columns:minmax(120px,170px) minmax(0,1fr); align-items:center; gap:18px; margin-top:16px; padding:14px 17px; border:1px solid rgba(185,211,242,.18); border-radius:12px; background:rgba(6,20,36,.64); }
+        .breaker-reference img { display:block; width:100%; max-height:140px; object-fit:contain; filter:drop-shadow(0 10px 9px rgba(0,0,0,.3)); }
+        .breaker-reference h3 { margin:3px 0 5px; color:#edf4fb !important; font-size:.95rem !important; }
+        .breaker-reference p { margin:0; color:#b4c2d0 !important; font-size:.75rem !important; line-height:1.7 !important; }
+        .breaker-photo-feature { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(250px,.9fr); gap:clamp(16px,3vw,30px); align-items:center; margin:18px 0 8px; padding:clamp(14px,2.2vw,22px); border:1px solid rgba(185,211,242,.2); border-radius:15px; background:linear-gradient(120deg,rgba(12,34,58,.9),rgba(7,20,35,.78)); }
+        .breaker-photo-feature figure { margin:0; overflow:hidden; border:1px solid rgba(185,211,242,.18); border-radius:11px; background:#f4f6f8; }
+        .breaker-photo-feature img { display:block; width:100%; max-height:260px; object-fit:contain; transition:transform .35s ease; }
+        .breaker-photo-feature figure:hover img { transform:scale(1.025); }
+        .breaker-photo-feature h3 { margin:4px 0 8px; color:#f1f6fc !important; font-size:1.05rem !important; }
+        .breaker-photo-feature p { margin:0; color:#b8c6d4 !important; font-size:.78rem !important; line-height:1.75 !important; }
+        .breaker-photo-label { display:inline-flex; padding:4px 9px; border:1px solid rgba(239,209,139,.34); border-radius:999px; color:#efd18b; font-size:.65rem; font-weight:800; letter-spacing:.06em; }
+        @keyframes breaker-enter { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes breaker-pulse { 0%,100% { box-shadow:0 0 7px rgba(131,214,160,.35); } 50% { box-shadow:0 0 14px rgba(131,214,160,.75); } }
+        .breaker-guide-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:11px; margin-top:14px; }
+        .breaker-guide-item { display:flex; gap:10px; padding:13px; border:1px solid rgba(185,211,242,.17); border-radius:11px; background:rgba(6,20,36,.54); }
+        .breaker-guide-item b { display:grid; place-items:center; flex:0 0 25px; width:25px; height:25px; border-radius:8px; color:#071426; background:#efd18b; font-size:.7rem; }
+        .breaker-guide-item span { color:#c1cbd7 !important; font-size:.72rem; line-height:1.55; }
+        .breaker-notice { display:flex; gap:11px; align-items:flex-start; margin-top:16px; padding:13px 15px; border:1px solid rgba(239,209,139,.27); border-radius:11px; color:#e0d5bd !important; background:rgba(70,49,21,.2); font-size:.75rem; line-height:1.7; }
+        .breaker-notice strong { color:#efd18b !important; }
+        .breaker-footer { display:flex; justify-content:space-between; gap:12px; margin-top:27px; padding:13px 0 4px; border-top:1px solid rgba(185,211,242,.18); color:#9eacbd !important; font-size:.66rem; letter-spacing:.06em; }
+        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page p { color:#b7c3d1 !important; }
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-kicker,
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-type,
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-badge,
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-spec strong,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-notice strong {
-            color: #efd18b !important;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-hero-copy h1 {
-            color: transparent !important;
-        }
+        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-notice strong { color:#efd18b !important; }
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-brand strong,
         .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-model,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-section-head h2 {
-            color: #eef4fa !important;
+        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-section-head h2 { color:#edf4fb !important; }
+        @media(max-width:1050px) {
+            .breaker-hero { grid-template-columns:minmax(0,1fr) minmax(280px,.9fr); gap:24px; }
+            .breaker-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+            .breaker-guide-grid { grid-template-columns:1fr; }
         }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-metric strong,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-card .rating {
-            color: #f0d48f !important;
+        @media(max-width:760px) {
+            .stApp:has(.breaker-theme) iframe[title="โมเดลเบรกเกอร์ 3D แบบหมุนได้"] { width:calc(100% - 36px) !important; margin:0 18px; }
+            .breaker-topline { align-items:flex-start; }
+            .breaker-status { font-size:.62rem; }
+            .breaker-hero { grid-template-columns:1fr; padding-top:28px; }
+            .breaker-hero-copy h1 { font-size:clamp(2rem,8vw,3rem) !important; }
+            .breaker-model-panel { max-width:600px; width:100%; margin:0 auto; }
+            .breaker-metrics { grid-template-columns:1fr; gap:8px; margin-bottom:29px; }
+            .breaker-metric { min-height:58px; }
+            .breaker-section-head { display:block; }
+            .breaker-section-head p { margin-top:5px; text-align:left; }
+            .breaker-grid { grid-template-columns:1fr; }
+            .breaker-reference { grid-template-columns:105px minmax(0,1fr); gap:12px; }
+            .breaker-photo-feature { grid-template-columns:1fr; }
+            .breaker-anchor-nav { overflow-x:auto; flex-wrap:nowrap; }
+            .breaker-anchor-nav a { white-space:nowrap; }
         }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-brand small,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-status,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-metric span,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-spec,
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page .breaker-footer {
-            color: #a9b7c8 !important;
+        @media(max-width:480px) {
+            .breaker-brand small { font-size:.58rem; }
+            .breaker-status { max-width:125px; text-align:right; }
+            .breaker-reference { grid-template-columns:1fr; }
+            .breaker-reference img { max-height:120px; }
+            .breaker-footer { display:block; line-height:1.8; }
         }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page button {
-            color: #f5e5bd;
-        }
-        .stApp:has(.breaker-theme) [data-testid="stMarkdownContainer"] .breaker-page :focus-visible {
-            outline: 2px solid #efd18b;
-            outline-offset: 3px;
-        }
-        @media (max-width: 900px) {
-            .breaker-hero { grid-template-columns: 1fr; }
-            .breaker-grid { grid-template-columns: 1fr 1fr; }
-        }
-        @media (max-width: 600px) {
-            .breaker-topline { align-items: flex-start; }
-            .breaker-status { font-size: .65rem; }
-            .breaker-metrics { grid-template-columns: 1fr; gap: 9px; margin-bottom: 38px; }
-            .breaker-metric { display: flex; justify-content: space-between; align-items: center; }
-            .breaker-grid { grid-template-columns: 1fr; }
-            .breaker-reference { grid-template-columns: 110px minmax(0, 1fr); gap: 12px; }
-            .breaker-section-head { display: block; }
-            .breaker-section-head p { margin-top: 6px; }
-            .stApp:has(.breaker-theme)::before {
-                background-size: auto, 38px 38px, 38px 38px, cover;
-                animation-duration: 18s;
-            }
-            .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::before { height: 90px; }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .stApp:has(.breaker-theme)::before,
-            .stApp:has(.breaker-theme)::after,
-            .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::before,
-            .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::after {
-                animation: none !important;
-            }
-            .stApp:has(.breaker-theme)::before {
-                transform: none;
-                will-change: auto;
-            }
-            .stApp:has(.breaker-theme)::after {
-                transform: none;
-                opacity: .7;
-                will-change: auto;
-            }
-            .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::before {
-                opacity: 0;
-                will-change: auto;
-            }
-            .stApp:has(.breaker-theme) [data-testid="stAppViewContainer"]::after {
-                opacity: 0;
-                will-change: auto;
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .breaker-card, .breaker-card:hover { transition: none; transform: none; }
-            .stApp:has(.breaker-theme) .st-key-breakers_home button { transition: none; }
+        @media(prefers-reduced-motion:reduce) {
+            .stApp:has(.breaker-theme)::before,.stApp:has(.breaker-theme)::after { animation:none !important; }
+            .breaker-status i,.breaker-card { animation:none !important; }
+            .breaker-card,.breaker-card::after,.breaker-image-stage img,.breaker-photo-feature img { transition:none !important; }
+            .breaker-card:hover { transform:none; }
         }
         </style>
         <div class="breaker-theme" aria-hidden="true"></div>
-        """.replace("__BREAKER_BACKGROUND_IMAGE__", _breaker_background_image_css()),
+        """.replace("__BREAKER_BACKGROUND_IMAGE__", background_image),
     )
+
     st.button(
         "← กลับหน้าแรก",
         on_click=go,
         args=(calculator_page.PAGE_HOME,),
         key="breakers_home",
+        **WIDE,
     )
 
     image_100a = _breaker_product_image("mccb-3p-100a.png")
     image_unrated = _breaker_product_image("mccb-reference-unrated.png")
+    image_overview = _breaker_product_image("overview.png")
     product_cards = []
     for product in SAMPLE_PRODUCTS["breakers"]:
         product_parts = product.split()
         model_name = " ".join(product_parts[:-2])
-        rating = " ".join(product_parts[-2:])
-        if rating == "100 A":
+        rating_value, rating_unit = product_parts[-2:]
+        if rating_value == "100":
             product_image = (
                 '<div class="breaker-image-stage">'
-                f'<img src="{image_100a}" alt="เบรกเกอร์ MCCB 3P 100 A จากภาพที่ผู้ใช้ให้มา">'
+                f'<img src="{image_100a}" alt="เบรกเกอร์ MCCB 3P 100 A จากภาพสินค้า">'
                 '</div>'
             )
         else:
             product_image = (
                 '<div class="breaker-image-stage"><span class="breaker-no-image">'
-                'ยังไม่มีรูปสินค้ารุ่นนี้ที่ยืนยันพิกัดได้</span></div>'
+                'ยังไม่มีภาพที่ยืนยันว่าเป็นรุ่นนี้'
+                '</span></div>'
             )
         product_cards.append(
             '<article class="breaker-card">'
-            '<div class="breaker-card-top"><span class="breaker-type">MCCB · 3-POLE</span>'
-            '<span class="breaker-badge">ตัวอย่าง</span></div>'
+            '<div class="breaker-card-top"><span class="breaker-type">MCCB · 3 POLE</span>'
+            '<span class="breaker-badge">ข้อมูลตัวอย่าง</span></div>'
             f'{product_image}'
-            f'<div class="breaker-model">{html.escape(model_name)}</div>'
-            f'<p class="rating">{html.escape(rating)}</p>'
+            f'<h3 class="breaker-model">{html.escape(model_name)}</h3>'
+            f'<div class="breaker-rating-row"><p class="rating">{html.escape(rating_value)}</p>'
+            f'<span class="rating-unit">{html.escape(rating_unit)}</span></div>'
             '<div class="breaker-spec"><span>จำนวนขั้ว</span><strong>3P</strong></div>'
             '<div class="breaker-spec"><span>ข้อมูลรุ่นและราคา</span><strong>รอยืนยัน</strong></div>'
             '</article>'
         )
 
     st.markdown(
-        '<main class="breaker-page">'
-        '<div class="breaker-topline">'
+        '<div class="breaker-page">'
+        '<header class="breaker-topline">'
         '<div class="breaker-brand"><div class="breaker-mark">AK</div>'
         '<div><strong>AK ELECTRICAL</strong><small>ENGINEERING &amp; SUPPLY</small></div></div>'
         '<div class="breaker-status"><i></i> PROTECTION SYSTEMS</div>'
-        '</div>'
-        '</main>',
+        '</header>'
+        '<nav class="breaker-anchor-nav" aria-label="ทางลัดในหน้า">'
+        '<a href="#breaker-catalog">รายการเบรกเกอร์</a><a href="#breaker-guide">ข้อมูลที่ควรตรวจสอบ</a>'
+        '</nav>'
+        '</div>',
         unsafe_allow_html=True,
     )
-    hero_copy, model_column = st.columns([1.05, 0.95], gap="large", vertical_alignment="center")
+
+    hero_copy, model_column = st.columns([1.08, 0.92], gap="large", vertical_alignment="center")
     with hero_copy:
         st.markdown(
-            '<div class="breaker-page breaker-hero-copy">'
+            '<section class="breaker-page breaker-hero-copy">'
             '<p class="breaker-kicker">SMART POWER · CIRCUIT PROTECTION</p>'
-            '<h1>ระบบป้องกัน<br>วงจรไฟฟ้า</h1>'
-            '<p class="breaker-lead">เลือกดูเบรกเกอร์ตัวอย่าง พร้อมภาพและข้อมูลเบื้องต้นในหน้าเดียว '
-            'ออกแบบให้อ่านง่ายทั้งบนคอมพิวเตอร์และโทรศัพท์มือถือ</p>'
-            '<div class="breaker-chips"><span class="breaker-chip">MCCB</span>'
-            '<span class="breaker-chip">3 Pole</span><span class="breaker-chip">Interactive 3D</span></div>'
-            '<p class="breaker-model-note">ภาพสินค้า 100A แบบเอียง/หมุนเพื่อแสดงมิติ 3D ไม่ใช่โมเดล GLB</p>'
-            '</div>',
+            '<h1>เบรกเกอร์ไฟฟ้า<br><span>ข้อมูลรวมในหน้าเดียว</span></h1>'
+            '<p class="breaker-lead">เลือกดูรายการเบรกเกอร์ตัวอย่าง ภาพสินค้า และข้อมูลเบื้องต้นได้ในหน้าเดียว '
+            'จัดลำดับให้อ่านภาพรวมก่อน แล้วค่อยเปรียบเทียบรายการ</p>'
+            '<div class="breaker-actions"><a href="#breaker-catalog">ดูรายการเบรกเกอร์ <span>↓</span></a>'
+            '<a href="#breaker-guide">ข้อมูลที่ควรตรวจสอบ</a></div>'
+            '<p class="breaker-hero-note">ภาพ MCCB 3P 100 A เป็นภาพตัวอย่าง และหมุนปรับมุมได้ด้วยเมาส์หรือการสัมผัส</p>'
+            '</section>',
             unsafe_allow_html=True,
         )
     with model_column:
+        st.markdown(
+            '<div class="breaker-page breaker-model-panel"><div class="breaker-model-heading">'
+            '<span>ภาพตัวอย่างเบรกเกอร์</span><span>MCCB · 3P · 100 A</span></div></div>',
+            unsafe_allow_html=True,
+        )
         st.iframe(
             _build_breaker_model_html(image_100a),
             width="stretch",
-            height=400,
+            height=330,
             tab_index=0,
             alt="ภาพสินค้าเบรกเกอร์ 3D แบบเอียงและหมุนได้",
         )
+        st.markdown(
+            '<div class="breaker-page breaker-model-note">ลากภาพเพื่อปรับมุมมอง · กดรีเซ็ตมุมเพื่อกลับตำแหน่งเริ่มต้น</div>',
+            unsafe_allow_html=True,
+        )
 
     st.markdown(
-        '<main class="breaker-page">'
+        '<div class="breaker-page">'
         '<section class="breaker-metrics" aria-label="ภาพรวมรายการ">'
-        '<div class="breaker-metric"><strong>03</strong><span>รายการตัวอย่าง</span></div>'
-        '<div class="breaker-metric"><strong>MCCB</strong><span>ชนิดอุปกรณ์ในรายการตัวอย่าง</span></div>'
-        '<div class="breaker-metric"><strong>3P</strong><span>จำนวนขั้วตามชื่อรุ่นตัวอย่าง</span></div>'
+        '<div class="breaker-metric"><strong>03</strong><span>รายการตัวอย่างในหน้านี้</span></div>'
+        '<div class="breaker-metric"><strong>MCCB</strong><span>ชนิดที่แสดงในรายการตัวอย่าง</span></div>'
+        '<div class="breaker-metric"><strong>3P</strong><span>จำนวนขั้วตามชื่อรายการ</span></div>'
         '</section>'
-        '<section aria-labelledby="breaker-catalog-title">'
-        '<div class="breaker-section-head"><div><p class="breaker-kicker">CATALOG / SAMPLE RANGE</p>'
+        '<section id="breaker-catalog" aria-labelledby="breaker-catalog-title">'
+        '<div class="breaker-section-head"><div><p class="breaker-kicker">CATALOG · SAMPLE RANGE</p>'
         '<h2 id="breaker-catalog-title">รายการเบรกเกอร์</h2></div>'
-        '<p>ตัวเลขด้านล่างเป็นรายการตัวอย่าง ไม่ใช่การยืนยันสินค้าคงคลัง</p></div>'
+        '<p>รายการนี้เป็นตัวอย่าง ยังไม่ใช่การยืนยันสินค้าคงคลังหรือรายละเอียดจากผู้ผลิต</p></div>'
         f'<div class="breaker-grid">{"".join(product_cards)}</div>'
         '</section>'
-        '<section class="breaker-reference" aria-label="ภาพสินค้าอ้างอิงที่ยังไม่ระบุรุ่น">'
-        f'<img src="{image_unrated}" alt="ภาพเบรกเกอร์ MCCB อ้างอิง ยังไม่ระบุรุ่นหรือกระแสพิกัด">'
+        '<section class="breaker-reference" aria-label="ภาพอ้างอิงที่ยังไม่ระบุรุ่น">'
+        f'<img src="{image_unrated}" alt="ภาพเบรกเกอร์ MCCB อ้างอิง ยังไม่ระบุรุ่นหรือพิกัด">'
         '<div><span class="breaker-type">REFERENCE IMAGE</span>'
-        '<h3>ภาพเบรกเกอร์อ้างอิง</h3>'
-        '<p>ภาพนี้ยังยืนยันรุ่นและกระแสพิกัดไม่ได้ จึงไม่ผูกกับรายการ 63A หรือ 250A</p></div>'
+        '<h3>ภาพอ้างอิงที่ยังไม่ผูกกับรายการสินค้า</h3>'
+        '<p>ยังยืนยันรุ่นและกระแสพิกัดจากภาพนี้ไม่ได้ จึงแสดงแยกจากรายการ 63 A และ 250 A</p></div>'
         '</section>'
+        '<section class="breaker-photo-feature" aria-label="ภาพรวมเบรกเกอร์หลายรูปแบบ">'
+        f'<figure><img src="{image_overview}" alt="ภาพรวมตัวอย่างเบรกเกอร์หลายรูปแบบและหลายแบรนด์" loading="lazy"></figure>'
+        '<div><span class="breaker-photo-label">PHOTO OVERVIEW</span>'
+        '<h3>ภาพรวมอุปกรณ์หลายรูปแบบ</h3>'
+        '<p>ภาพนี้ใช้ประกอบการดูรูปทรงเบื้องต้น มีสินค้าหลายแบบและหลายแบรนด์รวมอยู่ด้วย '
+        'จึงไม่ได้จับคู่กับพิกัดหรือรุ่นใดในรายการด้านบน</p></div>'
+        '</section>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        '<div class="breaker-page"><section id="breaker-guide" aria-labelledby="breaker-guide-title">'
+        '<div class="breaker-section-head"><div><p class="breaker-kicker">BEFORE YOU COMPARE</p>'
+        '<h2 id="breaker-guide-title">ข้อมูลที่ควรตรวจสอบก่อนเลือก</h2></div>'
+        '<p>ใช้รายละเอียดจากฉลากและเอกสารผู้ผลิตของรุ่นจริง</p></div>'
+        '<div class="breaker-guide-grid">'
+        '<div class="breaker-guide-item"><b>01</b><span>รุ่น ผู้ผลิต และจำนวนขั้ว</span></div>'
+        '<div class="breaker-guide-item"><b>02</b><span>กระแสและแรงดันพิกัด</span></div>'
+        '<div class="breaker-guide-item"><b>03</b><span>ความสามารถตัดกระแสลัดวงจรและข้อมูลการตัดวงจร</span></div>'
+        '</div>'
         '<div class="breaker-notice"><span aria-hidden="true">ⓘ</span><span>'
-        '<strong>หมายเหตุ:</strong> รุ่นและกระแสพิกัดที่แสดงเป็นข้อมูลตัวอย่างจากรายการเดิม '
-        'ยังไม่มีข้อมูลแรงดันพิกัด ความสามารถตัดกระแสลัดวงจร เส้นโค้งการตัด ผู้ผลิต ราคา '
-        'หรือสถานะสินค้า โปรดตรวจสอบเอกสารผู้ผลิตและข้อมูลจริงก่อนเลือกใช้งาน</span></div>'
-        '<footer class="breaker-footer">AK ELECTRICAL · CIRCUIT PROTECTION · '
-        'ข้อมูลเพื่อแสดงตัวอย่างเท่านั้น</footer>'
-        '</main>',
+        '<strong>หมายเหตุ:</strong> รายการรุ่นและกระแสที่แสดงเป็นข้อมูลตัวอย่างจากรายการเดิม '
+        'ข้อมูลแรงดันพิกัด ความสามารถตัดกระแสลัดวงจร เส้นโค้งการตัด ราคา และสถานะสินค้ายังรอยืนยัน '
+        'โปรดตรวจสอบเอกสารผู้ผลิตและข้อมูลจริงก่อนเลือกใช้งาน</span></div>'
+        '</section><footer class="breaker-footer"><span>AK ELECTRICAL · CIRCUIT PROTECTION</span>'
+        '<span>ข้อมูลตัวอย่างสำหรับการเปิดดู</span></footer></div>',
         unsafe_allow_html=True,
     )
 
@@ -1858,6 +1884,9 @@ def page_logout():
 
 ROUTES = {
     calculator_page.PAGE_HOME: page_dashboard,
+    CABLE_CALCULATOR_PAGE: lambda: page_cable_screen(CABLE_CALCULATOR_PAGE),
+    CABLE_TABLE_PAGE: lambda: page_cable_screen(CABLE_TABLE_PAGE),
+    CABLE_DETAIL_PAGE: lambda: page_cable_screen(CABLE_DETAIL_PAGE),
     calculator_page.PAGE_CURRENT: lambda: calculator_page.render_current_calc_page(go),
     calculator_page.PAGE_EQUIPMENT: lambda: calculator_page.render_calculator_page(go),
     calculator_page.PAGE_TRANSFORMER_CALC: lambda: calculator_page.render_transformer_calc_page(go),
